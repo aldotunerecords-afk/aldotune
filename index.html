@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Login - Aldotune</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        aldo: {
+                            black: '#0a0a0a',
+                            disabled: '#E5E7EB',
+                            textDisabled: '#9CA3AF',
+                        }
+                    },
+                    animation: {
+                        'modal-in': 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'modal-out': 'modalOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 0.3s ease-out forwards',
+                    },
+                    keyframes: {
+                        modalIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        },
+                        modalOut: {
+                            '0%': { opacity: '1', transform: 'scale(1)' },
+                            '100%': { opacity: '0', transform: 'scale(0.95)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #ffffff;
+            overflow: hidden; 
+        }
+
+        .minimal-input {
+            width: 100%;
+            background-color: transparent;
+            border-bottom: 2px solid #e5e7eb;
+            border-top: none; border-left: none; border-right: none;
+            border-radius: 0;
+            padding: 12px 0;
+            font-size: 1.125rem;
+            transition: all 0.3s ease;
+        }
+        
+        .minimal-input:focus {
+            border-bottom-color: #000000;
+            outline: none;
+            box-shadow: none;
+        }
+        
+        .minimal-input:disabled {
+            color: #9CA3AF;
+            cursor: not-allowed;
+            background-color: #f9fafb00;
+            border-bottom-color: #E5E7EB;
+            opacity: 0.7;
+        }
+
+        #form-container {
+            overflow-y: auto;
+            height: 100%;
+            transition: padding-bottom 0.3s ease;
+            position: relative;
+        }
+
+        #form-container::-webkit-scrollbar { display: none; }
+        #form-container { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .infinite-mode { padding-bottom: 80vh !important; }
+
+        #pageLoader { transition: opacity 0.5s ease-out, visibility 0.5s ease-out; }
+        
+        /* Utility classes for view switching */
+        .view-hidden {
+            display: none !important;
+        }
+        .view-active {
+            display: block !important;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="flex flex-col lg:flex-row h-screen">
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toastContainer" class="fixed top-0 left-0 w-full z-[100] flex justify-center pointer-events-none p-4">
+        <div id="toast" class="bg-black text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-auto">
+            <i id="toastIcon" data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
+            <span id="toastMessage" class="font-medium text-sm">Pesan notifikasi</span>
+        </div>
+    </div>
+
+    <!-- BAGIAN KIRI (IMAGE) -->
+    <div class="hidden lg:flex lg:w-1/2 bg-black relative items-center justify-center overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop" 
+             class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale" alt="Studio Background">
+        <div class="relative z-10 p-16 text-white max-w-xl">
+            <h2 class="text-7xl font-extrabold tracking-tighter mb-6">aldotune.</h2>
+            <p class="text-2xl text-gray-300 font-light leading-relaxed">
+                Creative Management Platform. <br>
+                <span class="font-bold text-white">Built for Artists.</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- BAGIAN KANAN (FORM CONTAINER) -->
+    <div id="form-container" class="w-full lg:w-1/2 h-full bg-white flex flex-col pt-10 lg:pt-24 px-8 relative">
+        
+        <!-- INITIAL LOADING SPINNER -->
+        <div id="pageLoader" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center">
+            <div class="relative">
+                <div class="w-12 h-12 border-4 border-gray-100 rounded-full"></div>
+                <div class="w-12 h-12 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
+            </div>
+            <p class="mt-4 text-xs font-bold text-gray-400 tracking-widest uppercase animate-pulse">Memuat Sistem...</p>
+        </div>
+
+        <div class="max-w-md w-full mx-auto relative min-h-[400px]"> 
+            
+            <!-- HEADER LOGO (Selalu Muncul) -->
+            <div class="mb-10">
+                <h1 class="text-5xl font-extrabold tracking-tighter text-black mb-2">aldotune.</h1>
+                <p class="text-gray-500 font-medium">Portal Label & Manajemen Artis</p>
+            </div>
+
+            <!-- === VIEW 1: PILIHAN METODE LOGIN === -->
+            <div id="selectionView" class="view-active space-y-4">
+                <p class="text-sm text-gray-400 font-bold tracking-widest uppercase mb-4">Pilih Metode Masuk</p>
+                
+                <!-- Opsi 1: Google -->
+                <button 
+                    onclick="handleGoogleLogin()"
+                    class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group shadow-sm hover:shadow-md"
+                >
+                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-white transition-colors border border-gray-100">
+                        <svg class="w-7 h-7" viewBox="0 0 48 48">
+                            <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                            <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                            <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                            <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                        </svg>
+                    </div>
+                    <div class="flex flex-col items-start text-left">
+                        <span class="text-lg font-extrabold">Google Account</span>
+                        <span class="text-xs text-gray-500 font-medium">Masuk instan otomatis</span>
+                    </div>
+                    <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-200">
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-gray-400"></i>
+                    </div>
+                </button>
+
+                <!-- Opsi 2: Email (Trigger Form) -->
+                <button 
+                    onclick="showEmailForm()"
+                    class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group shadow-sm hover:shadow-md"
+                >
+                    <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-white transition-colors border border-gray-100">
+                        <i data-lucide="mail" class="w-6 h-6 text-gray-600 group-hover:text-black transition-colors"></i>
+                    </div>
+                    <div class="flex flex-col items-start text-left">
+                        <span class="text-lg font-extrabold">Email & PIN</span>
+                        <span class="text-xs text-gray-500 font-medium">Gunakan kredensial manual</span>
+                    </div>
+                    <div class="ml-auto opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 transform duration-200">
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-gray-400"></i>
+                    </div>
+                </button>
+
+                <!-- Footer Help -->
+                <div class="pt-10 flex justify-center">
+                    <button onclick="openHelpModal()" class="text-sm font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-50">
+                        <i data-lucide="help-circle" class="w-4 h-4"></i>
+                        Pusat Bantuan
+                    </button>
+                </div>
+            </div>
+
+            <!-- === VIEW 2: FORM EMAIL (Hidden by Default) === -->
+            <div id="emailView" class="view-hidden">
+                
+                <!-- Tombol Kembali -->
+                <button onclick="showSelection()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors group py-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-gray-200 transition-colors border border-gray-100">
+                        <i data-lucide="arrow-left" class="w-4 h-4 text-gray-600 group-hover:text-black"></i>
+                    </div>
+                    <span class="text-sm font-bold">Kembali ke Menu</span>
+                </button>
+
+                <form id="loginForm" class="space-y-8" autocomplete="on">
+                    
+                    <!-- Email Input -->
+                    <div class="group relative">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest">Email</label>
+                            <button type="button" id="switchAccountBtn" onclick="openLogoutModal()" class="hidden text-[10px] font-bold text-red-600 hover:text-red-800 uppercase tracking-wider bg-red-50 px-2 py-1 rounded transition-colors">
+                                GANTI AKUN
+                            </button>
+                        </div>
+                        <input 
+                            type="email" 
+                            id="email"
+                            name="email"
+                            autocomplete="username" 
+                            class="minimal-input text-black placeholder-gray-300 font-medium disabled:opacity-50"
+                            placeholder="nama@aldotune.com"
+                            required
+                        >
+                        <div id="emailLockIcon" class="hidden absolute right-0 bottom-3 text-gray-400">
+                            <i data-lucide="lock" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+
+                    <!-- PIN Input -->
+                    <div class="group relative">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Akses (6 Digit)</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="pin" 
+                                name="password"
+                                autocomplete="current-password"
+                                maxlength="6"
+                                inputmode="numeric"
+                                pattern="\d{6}"
+                                class="minimal-input text-black font-mono tracking-[0.3em] placeholder-gray-300 font-medium disabled:opacity-50"
+                                placeholder="••••••"
+                                required
+                            >
+                            <button type="button" id="togglePinBtn" class="absolute right-0 bottom-3 text-gray-400 hover:text-black transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                                <i id="eyeIcon" data-lucide="eye" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Additional Links -->
+                    <div class="flex justify-between items-center pt-2">
+                        <a href="reset.html" class="text-sm font-bold text-black hover:underline decoration-2 underline-offset-4 transition-colors">
+                            Lupa PIN?
+                        </a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button 
+                            type="submit" 
+                            id="submitBtn"
+                            disabled
+                            class="w-full bg-aldo-disabled text-aldo-textDisabled font-bold h-16 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-not-allowed shadow-none text-lg"
+                        >
+                            <span id="btnText">Login</span>
+                            <i id="btnIcon" data-lucide="arrow-right" class="w-5 h-5 opacity-50"></i>
+                            
+                            <div id="btnLoader" class="hidden">
+                                <svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+            
+            <!-- COPYRIGHT -->
+            <div class="mt-12 border-t border-gray-100 pt-6 mb-10">
+                <p class="text-xs text-gray-400 font-medium">
+                    &copy; 2026 Aldotune Creative Studio. <br>
+                    All Rights Reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- === MODALS === -->
+    
+    <!-- Help Modal -->
+    <div id="helpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="helpCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 opacity-0 transition-all duration-300 relative">
+            <button onclick="closeHelpModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-500 shadow-lg shadow-green-500/30">
+                <i data-lucide="message-circle" class="w-8 h-8 text-white"></i>
+            </div>
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-black mb-2">Hubungi Admin</h3>
+                <p class="text-gray-500 text-sm mb-1">Butuh bantuan akses?</p>
+                <p class="text-black font-mono font-bold text-lg">0853-8518-4618</p>
+            </div>
+            <a href="https://wa.me/6285385184618" target="_blank" class="block w-full py-4 rounded-xl font-bold text-white bg-[#25D366] hover:bg-[#1da851] shadow-lg transition-transform active:scale-95 text-center flex items-center justify-center gap-2">
+                <span>Buka WhatsApp</span>
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logoutModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+        <div id="logoutCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 opacity-0 transition-all duration-300">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-yellow-500 shadow-lg shadow-yellow-500/30">
+                <i data-lucide="log-out" class="w-8 h-8 text-white"></i>
+            </div>
+            <div class="text-center mb-6">
+                <h3 class="text-xl font-bold text-black mb-2">Ganti Akun?</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">
+                    Anda akan keluar dari sesi ini.<br>Apakah Anda yakin?
+                </p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeLogoutModal()" class="flex-1 py-3 rounded-xl font-bold text-black bg-gray-100 hover:bg-gray-200 transition-colors">Batal</button>
+                <button onclick="confirmLogout()" class="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transition-transform active:scale-95">Ya, Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE & APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+            authDomain: "aldotune-records.firebaseapp.com",
+            databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "aldotune-records",
+            storageBucket: "aldotune-records.firebasestorage.app",
+            messagingSenderId: "311200667476",
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
+            measurementId: "G-GQ3Y2GKWG1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // --- DOM ELEMENTS ---
+        const emailInput = document.getElementById('email');
+        const pinInput = document.getElementById('pin');
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const btnLoader = document.getElementById('btnLoader');
+        const togglePinBtn = document.getElementById('togglePinBtn');
+        const loginForm = document.getElementById('loginForm');
+        const container = document.getElementById('form-container');
+        const switchAccountBtn = document.getElementById('switchAccountBtn');
+        const emailLockIcon = document.getElementById('emailLockIcon');
+        const pageLoader = document.getElementById('pageLoader');
+        
+        // Views
+        const selectionView = document.getElementById('selectionView');
+        const emailView = document.getElementById('emailView');
+        
+        // Toast
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        // --- VIEW SWITCHING LOGIC ---
+        window.showEmailForm = () => {
+            selectionView.classList.remove('view-active');
+            selectionView.classList.add('view-hidden');
+            
+            emailView.classList.remove('view-hidden');
+            emailView.classList.add('view-active');
+            
+            // Focus email input if not disabled
+            setTimeout(() => {
+                if(!emailInput.disabled) emailInput.focus();
+            }, 100);
+        };
+
+        window.showSelection = () => {
+            emailView.classList.remove('view-active');
+            emailView.classList.add('view-hidden');
+            
+            selectionView.classList.remove('view-hidden');
+            selectionView.classList.add('view-active');
+        };
+
+        // --- AUTH STATE & INIT ---
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) { window.location.reload(); }
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User detected: Show Email Form view with pre-filled email
+                // This simulates "Remember Me" or re-authentication scenario
+                emailInput.value = user.email;
+                emailInput.disabled = true;
+                emailLockIcon.classList.remove('hidden');
+                switchAccountBtn.classList.remove('hidden');
+                
+                // Force switch to email view directly
+                selectionView.classList.remove('view-active');
+                selectionView.classList.add('view-hidden');
+                emailView.classList.remove('view-hidden');
+                emailView.classList.add('view-active');
+
+                setTimeout(() => { pinInput.focus(); }, 100);
+            } else {
+                resetUIState();
+            }
+            checkForm();
+            setTimeout(() => { pageLoader.classList.add('opacity-0', 'invisible'); }, 500);
+        });
+
+        function resetUIState() {
+            // Reset to clean state
+            emailInput.disabled = false;
+            emailInput.value = "";
+            pinInput.value = "";
+            emailLockIcon.classList.add('hidden');
+            switchAccountBtn.classList.add('hidden');
+            checkForm();
+            
+            // If we just logged out, ensure we are on the selection screen
+            if (emailView.classList.contains('view-active')) {
+                showSelection();
+            }
+        }
+
+        // --- TOAST NOTIFICATIONS ---
+        const showToast = (message, type = 'error') => {
+            toastMessage.innerText = message;
+            
+            if (type === 'error') {
+                toastIcon.setAttribute('data-lucide', 'alert-circle');
+                toastIcon.classList.remove('text-green-400');
+                toastIcon.classList.add('text-red-400');
+            } else {
+                toastIcon.setAttribute('data-lucide', 'check-circle');
+                toastIcon.classList.remove('text-red-400');
+                toastIcon.classList.add('text-green-400');
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 3000);
+        };
+
+        // --- MODAL HANDLING ---
+        function toggleModal(id, show) {
+            const modal = document.getElementById(id + 'Modal');
+            const card = document.getElementById(id + 'Card');
+            if (show) {
+                modal.classList.remove('hidden'); void modal.offsetWidth;
+                modal.classList.remove('opacity-0'); card.classList.add('animate-modal-in');
+            } else {
+                modal.classList.add('opacity-0'); card.classList.remove('animate-modal-in'); card.classList.add('animate-modal-out');
+                setTimeout(() => { modal.classList.add('hidden'); card.classList.remove('animate-modal-out'); }, 300);
+            }
+        }
+
+        window.openHelpModal = () => toggleModal('help', true);
+        window.closeHelpModal = () => toggleModal('help', false);
+        window.openLogoutModal = () => toggleModal('logout', true);
+        window.closeLogoutModal = () => toggleModal('logout', false);
+
+        window.confirmLogout = () => {
+            closeLogoutModal();
+            pageLoader.classList.remove('opacity-0', 'invisible');
+            
+            signOut(auth).then(() => {
+                localStorage.clear();
+                sessionStorage.clear();
+                
+                // Reset cookies
+                document.cookie.split(";").forEach((c) => {
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                });
+
+                setTimeout(() => {
+                    resetUIState();
+                    pageLoader.classList.add('opacity-0', 'invisible');
+                    showToast("Sesi berhasil diakhiri.", "success");
+                }, 500);
+
+            }).catch((error) => {
+                pageLoader.classList.add('opacity-0', 'invisible');
+                showToast("Gagal Logout", "error");
+            });
+        };
+
+        // --- INFINITE SCROLL & FORM INPUT ---
+        let scrollTimeout;
+        const enableInfiniteScroll = (element) => {
+            clearTimeout(scrollTimeout);
+            container.classList.add('infinite-mode');
+            setTimeout(() => { element.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 300);
+        }
+        const disableInfiniteScroll = () => {
+            scrollTimeout = setTimeout(() => {
+                if (document.activeElement.tagName !== 'INPUT') { container.classList.remove('infinite-mode'); }
+            }, 200);
+        }
+
+        [emailInput, pinInput].forEach(input => {
+            input.addEventListener('focus', () => enableInfiniteScroll(input));
+            input.addEventListener('blur', disableInfiniteScroll);
+            input.addEventListener('input', checkForm);
+        });
+
+        function checkForm() {
+            pinInput.value = pinInput.value.replace(/[^0-9]/g, '');
+            const isValid = emailInput.value.length > 0 && pinInput.value.length === 6;
+
+            if (isValid) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('bg-aldo-disabled', 'text-aldo-textDisabled', 'cursor-not-allowed', 'shadow-none');
+                submitBtn.classList.add('bg-black', 'text-white', 'hover:bg-gray-800', 'shadow-xl', 'cursor-pointer', 'active:scale-[0.98]');
+                btnIcon.classList.remove('opacity-50');
+                pinInput.style.borderBottomColor = "#000000";
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('bg-aldo-disabled', 'text-aldo-textDisabled', 'cursor-not-allowed', 'shadow-none');
+                submitBtn.classList.remove('bg-black', 'text-white', 'hover:bg-gray-800', 'shadow-xl', 'cursor-pointer', 'active:scale-[0.98]');
+                btnIcon.classList.add('opacity-50');
+                if(pinInput.value.length > 0) pinInput.style.borderBottomColor = "#e5e7eb";
+            }
+        }
+
+        togglePinBtn.addEventListener('click', () => {
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (pinInput.type === 'password') { pinInput.type = 'text'; eyeIcon.setAttribute('data-lucide', 'eye-off'); }
+            else { pinInput.type = 'password'; eyeIcon.setAttribute('data-lucide', 'eye'); }
+            lucide.createIcons();
+        });
+
+        // --- LOGIN HANDLERS ---
+        function lockUI(isGoogle = false) {
+            emailInput.disabled = true;
+            pinInput.disabled = true;
+            togglePinBtn.disabled = true;
+            switchAccountBtn.disabled = true;
+            
+            if (!isGoogle) {
+                submitBtn.disabled = true;
+                btnText.classList.add('hidden');
+                btnIcon.classList.add('hidden');
+                btnLoader.classList.remove('hidden');
+            }
+        }
+
+        function unlockUI(isGoogle = false) {
+            if (switchAccountBtn.classList.contains('hidden')) { emailInput.disabled = false; }
+            pinInput.disabled = false;
+            togglePinBtn.disabled = false;
+            switchAccountBtn.disabled = false;
+
+            if (!isGoogle) {
+                submitBtn.disabled = false;
+                btnText.innerText = "Login";
+                btnText.classList.remove('hidden');
+                btnIcon.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+            checkForm(); 
+        }
+
+        // Google Login
+        window.handleGoogleLogin = () => {
+            signInWithPopup(auth, googleProvider)
+                .then((result) => {
+                    showToast("Google Login Berhasil. Mengalihkan...", "success");
+                    return result.user.getIdToken();
+                })
+                .then((token) => {
+                    setTimeout(() => { window.location.assign(`beranda.html?token=${token}`); }, 1000);
+                })
+                .catch((error) => {
+                    let msg = "Google Login Gagal.";
+                    if (error.code === 'auth/popup-closed-by-user') msg = "Login dibatalkan.";
+                    showToast(msg, "error");
+                });
+        };
+
+        // Email Login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            lockUI(false);
+
+            const email = emailInput.value;
+            const pin = pinInput.value;
+
+            signInWithEmailAndPassword(auth, email, pin)
+                .then((userCredential) => {
+                    return userCredential.user.getIdToken();
+                })
+                .then((token) => {
+                    showToast("Login Berhasil. Mengalihkan...", "success");
+                    setTimeout(() => { window.location.assign(`beranda.html?token=${token}`); }, 1000);
+                })
+                .catch((error) => {
+                    unlockUI(false);
+                    let pesanError = "Terjadi kesalahan sistem.";
+                    if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password') { pesanError = "PIN Akses tidak valid."; }
+                    else if (error.code === 'auth/user-not-found') { pesanError = "User tidak ditemukan."; }
+                    else if (error.code === 'auth/too-many-requests') { pesanError = "Terlalu banyak percobaan."; }
+
+                    showToast(pesanError, "error");
+                    pinInput.style.borderBottomColor = "red";
+                    pinInput.focus();
+                });
+        });
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+
+
