@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Masuk - Aldotune Record Label</title>
+    <title>Masuk - Aldotune</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -30,10 +30,10 @@
         }
     </script>
     <style>
-        /* MENGGUNAKAN 100dvh AGAR PAS DI TABLET/HP DENGAN BROWSER BAR */
-        html, body { height: 100%; margin: 0; background-color: #ffffff; overflow: hidden; }
-        body { height: 100dvh; } 
+        /* Optimasi Scroll & Tampilan */
+        html, body { margin: 0; background-color: #ffffff; overflow-x: hidden; }
         
+        /* Input Style */
         .minimal-input {
             width: 100%; background-color: transparent; border-bottom: 2px solid #e5e7eb;
             border-top: none; border-left: none; border-right: none; border-radius: 0;
@@ -42,10 +42,7 @@
         .minimal-input:focus { border-bottom-color: #000000; outline: none; }
         .minimal-input:disabled { color: #9CA3AF; cursor: not-allowed; border-bottom-color: #E5E7EB; background-color: #fafafa; }
         
-        /* Custom Scrollbar */
-        #scrollable-content { overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
-        #scrollable-content::-webkit-scrollbar { display: none; }
-
+        /* Utility Classes */
         .view-hidden { display: none !important; }
         .view-active { display: block !important; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .step-content { display: none; }
@@ -53,7 +50,7 @@
         .step-indicator.active { background-color: black; width: 2rem; }
     </style>
 </head>
-<body class="flex flex-col lg:flex-row h-[100dvh] w-full overflow-hidden">
+<body class="flex flex-col w-full min-h-screen">
 
     <div id="toastContainer" class="fixed top-0 left-0 w-full z-[100] flex justify-center pointer-events-none p-4">
         <div id="toast" class="bg-black text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-auto">
@@ -62,184 +59,220 @@
         </div>
     </div>
 
-    <div class="hidden lg:flex lg:w-1/2 bg-black relative items-center justify-center overflow-hidden h-full">
-        <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale">
-        
-        <div class="relative z-10 p-16 text-white max-w-xl flex flex-col justify-center h-full">
-            <div class="flex-1 flex flex-col justify-center">
-                <h2 class="text-7xl font-extrabold tracking-tighter mb-6">aldotune.</h2>
-                <p class="text-2xl text-gray-300 font-light leading-relaxed mb-10">
-                    Amplify Your Voice.<br>
-                    <span class="font-bold text-white">Global Distribution.</span>
-                </p>
-            </div>
+    <div class="flex flex-col lg:flex-row w-full flex-grow relative">
 
-            <div class="border-t border-white/20 pt-6 shrink-0">
-                <p class="text-white/60 text-xs font-medium leading-loose">&copy; 2026 PT. Aldotune Creative Studio.</p>
-                <div class="flex gap-4 mt-2 text-xs font-medium text-white/60">
-                    <a href="syarat&ketentuan.html" class="hover:text-white transition-colors border-b border-transparent hover:border-white">Syarat & Ketentuan</a>
-                    <span>•</span>
-                    <a href="kebijakanprivasi.html" class="hover:text-white transition-colors border-b border-transparent hover:border-white">Kebijakan Privasi</a>
+        <div class="hidden lg:flex lg:w-1/2 bg-black relative items-center justify-center overflow-hidden lg:h-screen lg:sticky lg:top-0">
+            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale">
+            
+            <div class="relative z-10 p-16 text-white max-w-xl flex flex-col justify-center h-full">
+                <div class="flex-1 flex flex-col justify-center">
+                    <h2 class="text-7xl font-extrabold tracking-tighter mb-6">aldotune.</h2>
+                    <p class="text-2xl text-gray-300 font-light leading-relaxed">
+                        Amplify Your Voice.<br>
+                        <span class="font-bold text-white">Global Distribution.</span>
+                    </p>
+                </div>
+                <div class="border-t border-white/20 pt-6 shrink-0">
+                    <p class="text-white/60 text-xs font-medium leading-loose">&copy; 2026 PT. Aldotune Creative Studio.</p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="w-full lg:w-1/2 h-full bg-white flex flex-col relative">
-        
-        <div id="pageLoader" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center transition-all duration-500">
-            <div class="w-12 h-12 border-4 border-gray-100 rounded-full relative">
-                <div class="w-12 h-12 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
+        <div class="w-full lg:w-1/2 bg-white flex flex-col relative">
+            
+            <div id="pageLoader" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center transition-all duration-500 min-h-[500px]">
+                <div class="w-12 h-12 border-4 border-gray-100 rounded-full relative">
+                    <div class="w-12 h-12 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
+                </div>
+                <p class="mt-4 text-xs font-bold text-gray-400 tracking-widest uppercase animate-pulse">Memuat Studio...</p>
             </div>
-            <p class="mt-4 text-xs font-bold text-gray-400 tracking-widest uppercase animate-pulse">Memuat Studio...</p>
-        </div>
 
-        <div id="scrollable-content" class="flex-1 w-full px-8 pt-10 lg:pt-0 pb-4 flex flex-col justify-center">
-            <div class="max-w-md w-full mx-auto relative min-h-[400px] flex flex-col justify-center">
-                <div class="mb-8">
-                    <h1 class="text-5xl font-extrabold tracking-tighter text-black mb-2">aldotune.</h1>
-                    <p class="text-gray-500 font-medium">Ekosistem Musik Digital &<br>Manajemen Royalti.</p>
-                </div>
-
-                <div id="selectionView" class="view-hidden space-y-4">
-                    <p class="text-sm text-gray-400 font-bold tracking-widest uppercase mb-4">Akses Label</p>
-                    <button onclick="handleGoogleLogin()" class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
-                        <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100">
-                            <svg class="w-7 h-7" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-                        </div>
-                        <div class="text-left"><span class="block text-lg font-extrabold">Google Account</span><span class="text-xs text-gray-500 font-medium">Masuk / Daftar Artis</span></div>
-                    </button>
-                    <button onclick="showEmailForm()" class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
-                        <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="mail" class="w-6 h-6 text-gray-600 group-hover:text-black"></i></div>
-                        <div class="text-left"><span class="block text-lg font-extrabold">Email & PIN</span><span class="text-xs text-gray-500 font-medium">Login Manual</span></div>
-                    </button>
-                    <div class="py-4 text-center">
-                        <span class="text-gray-400 text-sm font-medium">Belum bergabung?</span>
-                        <button onclick="openRegisterInfoModal()" class="ml-1 text-black font-bold text-sm hover:underline decoration-2 underline-offset-4">Daftar Sekarang</button>
-                    </div>
-                    <div class="pt-2 flex justify-center"><button onclick="openHelpModal()" class="text-sm font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-50"><i data-lucide="help-circle" class="w-4 h-4"></i>Bantuan Label</button></div>
-                </div>
-
-                <div id="emailView" class="view-hidden">
-                    <button onclick="handleBack()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors py-2"><div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="arrow-left" class="w-4 h-4"></i></div><span class="text-sm font-bold">Kembali</span></button>
-                    <form id="loginForm" class="space-y-6">
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email Artis/Manajer</label><input type="email" id="email" class="minimal-input text-black font-bold" placeholder="nama@aldotune.com" required></div>
-                        <div class="group relative">
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Akses (Login)</label>
-                            <div class="relative">
-                                <input type="password" id="pin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
-                                <button type="button" id="togglePinBtn" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                            </div>
-                            <div class="mt-2 text-right"><a href="reset.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors">Lupa PIN Akses?</a></div>
-                        </div>
-                        <div class="pt-2"><button type="submit" id="submitBtn" disabled class="w-full bg-aldo-disabled text-aldo-textDisabled font-bold h-16 rounded-full flex items-center justify-center gap-2 cursor-not-allowed shadow-none text-lg"><span id="btnText">Masuk Dashboard</span><div id="btnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
-                    </form>
-                </div>
-
-                <div id="securityPinView" class="view-hidden">
-                    <div class="mb-6 flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                        <img id="secUserImg" src="" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
-                        <div><p id="secUserName" class="text-sm font-bold text-black truncate max-w-[200px]">User</p><p id="secUserEmail" class="text-xs text-gray-500 truncate max-w-[200px]">email</p></div>
-                    </div>
-                    <div class="space-y-6">
-                        <div><h3 class="text-2xl font-bold text-black mb-2">PIN Transaksi</h3><p class="text-gray-500 text-sm">Keamanan data royalti. Masukkan PIN Database Anda.</p></div>
-                        <div class="group relative">
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN TRANSAKSI (6 DIGIT)</label>
-                            <div class="relative">
-                                <input type="password" id="secPinInput" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
-                                <button type="button" id="toggleSecPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeSecIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                            </div>
-                            <div class="mt-2 text-right"><button onclick="switchToRecovery()" class="text-xs font-bold text-gray-400 hover:text-black transition-colors underline decoration-2 underline-offset-4">Lupa PIN Transaksi?</button></div>
-                        </div>
-                        <div class="pt-4 flex gap-3">
-                            <button onclick="openLogoutModal()" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full hover:bg-gray-200">Keluar</button>
-                            <button id="secPinSubmitBtn" onclick="submitSecurityPin()" disabled class="flex-1 bg-aldo-disabled text-aldo-textDisabled font-bold h-14 rounded-full flex items-center justify-center gap-2 cursor-not-allowed"><span id="secBtnText">Buka Dashboard</span><div id="secBtnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="registerView" class="view-hidden">
-                    <div class="flex items-center gap-2 mb-8"><div id="step1Dot" class="step-indicator w-8 h-2 rounded-full bg-black"></div><div id="step2Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div><div id="step3Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div></div>
-                    <div class="mb-6"><h3 id="stepTitle" class="text-2xl font-bold text-black mb-1">Profil Artis</h3><p id="stepDesc" class="text-gray-500 text-sm">Langkah 1 dari 3: Data Dasar</p></div>
-                    <div id="regStep1" class="step-content active space-y-6">
-                        <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100"><img id="regUserImg" src="" class="w-12 h-12 rounded-full border border-gray-200 object-cover"><div><p class="text-xs text-gray-400 font-bold uppercase">Tautan Google</p><p id="regUserEmail" class="text-sm font-bold text-black truncate max-w-[200px]">email</p></div></div>
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Nama Lengkap / Stage Name</label><input type="text" id="regFullName" class="minimal-input text-gray-500 font-bold bg-gray-50 px-2 rounded cursor-not-allowed" disabled></div>
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">WhatsApp Aktif</label><input type="number" id="regWhatsapp" class="minimal-input text-black font-bold placeholder-gray-300" placeholder="628xxxxx" required></div>
-                        <button onclick="nextStep(2)" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4 flex items-center justify-center gap-2">Lanjut <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-                    </div>
-                    <div id="regStep2" class="step-content space-y-6">
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP) - Verifikasi Royalti</label><input type="number" id="regNik" class="minimal-input text-black font-mono tracking-widest font-bold placeholder-gray-300" placeholder="35xxxxxxxxxxxxxx" required></div>
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="regBirthDate" class="minimal-input text-black font-bold" required></div>
-                        <div class="flex gap-3 mt-8"><button onclick="prevStep(1)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button onclick="nextStep(3)" class="flex-1 bg-black text-white font-bold h-14 rounded-full">Lanjut</button></div>
-                    </div>
-                    <div id="regStep3" class="step-content space-y-6">
-                        <div class="group relative">
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Buat PIN Akses (Login)</label>
-                            <div class="relative">
-                                <input type="password" id="regAccessPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
-                                <button type="button" id="toggleRegAccess" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegAccessIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                            </div>
-                        </div>
-                        <div class="group relative">
-                            <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Buat PIN Transaksi (Database)</label>
-                            <div class="relative">
-                                <input type="password" id="regTransPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium border-black" placeholder="••••••" required>
-                                <button type="button" id="toggleRegTrans" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegTransIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                            </div>
-                        </div>
-                        <div class="flex gap-3 mt-8"><button onclick="prevStep(2)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button id="regFinalSubmitBtn" onclick="submitRegistration()" class="flex-1 bg-black text-white font-bold h-14 rounded-full flex items-center justify-center gap-2"><span id="regFinalBtnText">Selesai</span><div id="regFinalLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
-                    </div>
-                    <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Batalkan Pendaftaran</button>
-                </div>
-
-                <div id="updateProfileView" class="view-hidden">
-                    <div class="mb-6"><h3 class="text-2xl font-bold text-black mb-2">Lengkapi Data</h3><p class="text-gray-500 text-sm">Akun Anda belum memiliki Tanggal Lahir. Mohon lengkapi untuk validasi data.</p></div>
-                    <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="updateBirthDate" class="minimal-input text-black font-bold" required></div>
-                    <div class="pt-6"><button onclick="submitUpdateProfile()" id="updateProfileBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Simpan & Lanjut</button></div>
-                    <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Keluar</button>
-                </div>
-
-                <div id="lockedView" class="view-hidden">
-                    <div class="mb-6 flex justify-center"><div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-50"><i data-lucide="shield-alert" class="w-10 h-10 text-red-600"></i></div></div>
-                    <div class="text-center mb-8"><h3 id="lockedTitle" class="text-3xl font-extrabold text-black mb-2">Keamanan</h3><p id="lockedDesc" class="text-gray-500 text-sm mt-4 leading-relaxed">Verifikasi identitas untuk reset PIN Transaksi dan membuka akses royalti.</p></div>
+            <div class="flex-1 w-full px-8 py-12 lg:py-20 flex flex-col justify-center min-h-[80vh]">
+                <div class="max-w-md w-full mx-auto relative">
                     
-                    <div id="unlockFormStep1">
-                        <div class="space-y-6">
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP)</label><input type="number" id="unlockNik" class="minimal-input text-black font-mono tracking-widest font-bold" placeholder="35xxxxxxxxxxxxxx"></div>
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="unlockBirthDate" class="minimal-input text-black font-bold"></div>
-                        </div>
-                        <div class="pt-6"><button onclick="handleUnlockVerification()" id="unlockBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Verifikasi Data</button></div>
-                        <div class="pt-4 text-center"><button onclick="openLogoutModal()" class="text-sm font-bold text-red-600 hover:text-red-800 transition-colors underline decoration-2 underline-offset-4">Keluar Akun</button></div>
+                    <div class="mb-10 lg:mb-12">
+                        <h1 class="text-5xl font-extrabold tracking-tighter text-black mb-2">aldotune.</h1>
+                        <p class="text-gray-500 font-medium">Ekosistem Musik Digital &<br>Manajemen Royalti.</p>
                     </div>
 
-                    <div id="unlockFormStep2" class="hidden space-y-6">
-                        <p class="text-green-600 font-bold text-center text-sm">Identitas Terverifikasi! Buat PIN Baru.</p>
-                        <div class="group relative">
-                            <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Transaksi Baru</label>
-                            <div class="relative">
-                                <input type="password" id="unlockNewPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
-                                <button type="button" id="toggleUnlockPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeUnlockIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                    <div id="selectionView" class="view-hidden space-y-4">
+                        <p class="text-sm text-gray-400 font-bold tracking-widest uppercase mb-4">Akses Label</p>
+                        <button onclick="handleGoogleLogin()" class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
+                            <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100">
+                                <svg class="w-7 h-7" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+                            </div>
+                            <div class="text-left"><span class="block text-lg font-extrabold">Google Account</span><span class="text-xs text-gray-500 font-medium">Masuk / Daftar Artis</span></div>
+                        </button>
+                        <button onclick="showEmailForm()" class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
+                            <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="mail" class="w-6 h-6 text-gray-600 group-hover:text-black"></i></div>
+                            <div class="text-left"><span class="block text-lg font-extrabold">Email & PIN</span><span class="text-xs text-gray-500 font-medium">Login Manual</span></div>
+                        </button>
+                        <div class="py-4 text-center">
+                            <span class="text-gray-400 text-sm font-medium">Belum bergabung?</span>
+                            <button onclick="openRegisterInfoModal()" class="ml-1 text-black font-bold text-sm hover:underline decoration-2 underline-offset-4">Daftar Sekarang</button>
+                        </div>
+                        <div class="pt-2 flex justify-center"><button onclick="openHelpModal()" class="text-sm font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-50"><i data-lucide="help-circle" class="w-4 h-4"></i>Bantuan Label</button></div>
+                    </div>
+
+                    <div id="emailView" class="view-hidden">
+                        <button onclick="handleBack()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors py-2"><div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="arrow-left" class="w-4 h-4"></i></div><span class="text-sm font-bold">Kembali</span></button>
+                        <form id="loginForm" class="space-y-6">
+                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email Artis/Manajer</label><input type="email" id="email" class="minimal-input text-black font-bold" placeholder="nama@aldotune.com" required></div>
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Akses (Login)</label>
+                                <div class="relative">
+                                    <input type="password" id="pin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
+                                    <button type="button" id="togglePinBtn" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                                </div>
+                                <div class="mt-2 text-right"><a href="reset.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors">Lupa PIN Akses?</a></div>
+                            </div>
+                            <div class="pt-2"><button type="submit" id="submitBtn" disabled class="w-full bg-aldo-disabled text-aldo-textDisabled font-bold h-16 rounded-full flex items-center justify-center gap-2 cursor-not-allowed shadow-none text-lg"><span id="btnText">Masuk Dashboard</span><div id="btnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
+                        </form>
+                    </div>
+
+                    <div id="securityPinView" class="view-hidden">
+                        <div class="mb-6 flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <img id="secUserImg" src="" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
+                            <div><p id="secUserName" class="text-sm font-bold text-black truncate max-w-[200px]">User</p><p id="secUserEmail" class="text-xs text-gray-500 truncate max-w-[200px]">email</p></div>
+                        </div>
+                        <div class="space-y-6">
+                            <div><h3 class="text-2xl font-bold text-black mb-2">PIN Transaksi</h3><p class="text-gray-500 text-sm">Keamanan data royalti. Masukkan PIN Database Anda.</p></div>
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN TRANSAKSI (6 DIGIT)</label>
+                                <div class="relative">
+                                    <input type="password" id="secPinInput" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
+                                    <button type="button" id="toggleSecPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeSecIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                                </div>
+                                <div class="mt-2 text-right"><button onclick="switchToRecovery()" class="text-xs font-bold text-gray-400 hover:text-black transition-colors underline decoration-2 underline-offset-4">Lupa PIN Transaksi?</button></div>
+                            </div>
+                            <div class="pt-4 flex gap-3">
+                                <button onclick="openLogoutModal()" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full hover:bg-gray-200">Keluar</button>
+                                <button id="secPinSubmitBtn" onclick="submitSecurityPin()" disabled class="flex-1 bg-aldo-disabled text-aldo-textDisabled font-bold h-14 rounded-full flex items-center justify-center gap-2 cursor-not-allowed"><span id="secBtnText">Buka Dashboard</span><div id="secBtnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button>
                             </div>
                         </div>
-                        <button onclick="handleUnlockSave()" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4">Simpan PIN Baru</button>
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="shrink-0 p-6 border-t border-gray-100 bg-white z-20">
-            <div class="max-w-md w-full mx-auto">
-                <p class="text-xs text-gray-400 font-medium leading-relaxed">
-                    &copy; 2026 PT. Aldotune Creative Studio.<br>
-                    Hak Cipta Dilindungi Undang-Undang.
-                </p>
-                <div class="flex gap-4 mt-2">
-                    <a href="syarat&ketentuan.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors">Syarat & Ketentuan</a>
-                    <a href="kebijakanprivasi.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors">Kebijakan Privasi</a>
+                    <div id="lockedView" class="view-hidden">
+                        <button id="recoveryBackBtn" onclick="handleRecoveryBack()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors py-2">
+                            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100">
+                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            </div>
+                            <span class="text-sm font-bold">Kembali</span>
+                        </button>
+
+                        <div class="mb-6 flex justify-center"><div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-50"><i data-lucide="shield-alert" class="w-10 h-10 text-red-600"></i></div></div>
+                        <div class="text-center mb-8"><h3 id="lockedTitle" class="text-3xl font-extrabold text-black mb-2">Keamanan</h3><p id="lockedDesc" class="text-gray-500 text-sm mt-4 leading-relaxed">Verifikasi identitas untuk reset PIN Transaksi dan membuka akses royalti.</p></div>
+                        
+                        <div id="unlockFormStep1">
+                            <div class="space-y-6">
+                                <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP)</label><input type="number" id="unlockNik" class="minimal-input text-black font-mono tracking-widest font-bold" placeholder="35xxxxxxxxxxxxxx"></div>
+                                <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="unlockBirthDate" class="minimal-input text-black font-bold"></div>
+                            </div>
+                            <div class="pt-6"><button onclick="handleUnlockVerification()" id="unlockBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Verifikasi Data</button></div>
+                            <div class="pt-4 text-center"><button onclick="openLogoutModal()" class="text-sm font-bold text-red-600 hover:text-red-800 transition-colors underline decoration-2 underline-offset-4">Keluar Akun</button></div>
+                        </div>
+
+                        <div id="unlockFormStep2" class="hidden space-y-6">
+                            <p class="text-green-600 font-bold text-center text-sm">Identitas Terverifikasi! Buat PIN Baru.</p>
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Transaksi Baru</label>
+                                <div class="relative">
+                                    <input type="password" id="unlockNewPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
+                                    <button type="button" id="toggleUnlockPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeUnlockIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                                </div>
+                            </div>
+                            <button onclick="handleUnlockSave()" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4">Simpan PIN Baru</button>
+                        </div>
+                    </div>
+
+                    <div id="registerView" class="view-hidden">
+                        <div class="flex items-center gap-2 mb-8"><div id="step1Dot" class="step-indicator w-8 h-2 rounded-full bg-black"></div><div id="step2Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div><div id="step3Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div></div>
+                        <div class="mb-6"><h3 id="stepTitle" class="text-2xl font-bold text-black mb-1">Profil Artis</h3><p id="stepDesc" class="text-gray-500 text-sm">Langkah 1 dari 3: Data Dasar</p></div>
+                        <div id="regStep1" class="step-content active space-y-6">
+                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100"><img id="regUserImg" src="" class="w-12 h-12 rounded-full border border-gray-200 object-cover"><div><p class="text-xs text-gray-400 font-bold uppercase">Tautan Google</p><p id="regUserEmail" class="text-sm font-bold text-black truncate max-w-[200px]">email</p></div></div>
+                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Nama Lengkap / Stage Name</label><input type="text" id="regFullName" class="minimal-input text-gray-500 font-bold bg-gray-50 px-2 rounded cursor-not-allowed" disabled></div>
+                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">WhatsApp Aktif</label><input type="number" id="regWhatsapp" class="minimal-input text-black font-bold placeholder-gray-300" placeholder="628xxxxx" required></div>
+                            <button onclick="nextStep(2)" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4 flex items-center justify-center gap-2">Lanjut <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                        </div>
+                        <div id="regStep2" class="step-content space-y-6">
+                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP) - Verifikasi Royalti</label><input type="number" id="regNik" class="minimal-input text-black font-mono tracking-widest font-bold placeholder-gray-300" placeholder="35xxxxxxxxxxxxxx" required></div>
+                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="regBirthDate" class="minimal-input text-black font-bold" required></div>
+                            <div class="flex gap-3 mt-8"><button onclick="prevStep(1)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button onclick="nextStep(3)" class="flex-1 bg-black text-white font-bold h-14 rounded-full">Lanjut</button></div>
+                        </div>
+                        <div id="regStep3" class="step-content space-y-6">
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Buat PIN Akses (Login)</label>
+                                <div class="relative">
+                                    <input type="password" id="regAccessPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
+                                    <button type="button" id="toggleRegAccess" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegAccessIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                                </div>
+                            </div>
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Buat PIN Transaksi (Database)</label>
+                                <div class="relative">
+                                    <input type="password" id="regTransPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium border-black" placeholder="••••••" required>
+                                    <button type="button" id="toggleRegTrans" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegTransIcon" data-lucide="eye" class="w-6 h-6"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex gap-3 mt-8"><button onclick="prevStep(2)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button id="regFinalSubmitBtn" onclick="submitRegistration()" class="flex-1 bg-black text-white font-bold h-14 rounded-full flex items-center justify-center gap-2"><span id="regFinalBtnText">Selesai</span><div id="regFinalLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
+                        </div>
+                        <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Batalkan Pendaftaran</button>
+                    </div>
+
+                    <div id="updateProfileView" class="view-hidden">
+                        <div class="mb-6"><h3 class="text-2xl font-bold text-black mb-2">Lengkapi Data</h3><p class="text-gray-500 text-sm">Akun Anda belum memiliki Tanggal Lahir. Mohon lengkapi untuk validasi data.</p></div>
+                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="updateBirthDate" class="minimal-input text-black font-bold" required></div>
+                        <div class="pt-6"><button onclick="submitUpdateProfile()" id="updateProfileBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Simpan & Lanjut</button></div>
+                        <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Keluar</button>
+                    </div>
+
                 </div>
             </div>
+
         </div>
     </div>
+
+    <footer class="w-full bg-black text-white border-t border-white/10 pt-16 pb-12 z-20 relative">
+        <div class="max-w-7xl mx-auto px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-2">
+                    <h2 class="text-3xl font-extrabold tracking-tighter mb-4">aldotune.</h2>
+                    <p class="text-gray-400 leading-relaxed max-w-sm text-sm">
+                        Kami membantu musisi independen menjangkau audiens global melalui distribusi digital yang transparan dan manajemen royalti yang akurat. Bergabunglah dengan revolusi musik digital.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 tracking-wide">PERUSAHAAN</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Karir</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Blog & Berita</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Hubungi Kami</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-bold mb-6 tracking-wide">LEGAL</h4>
+                    <ul class="space-y-4 text-sm text-gray-400">
+                        <li><a href="syarat&ketentuan.html" class="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
+                        <li><a href="kebijakanprivasi.html" class="hover:text-white transition-colors">Kebijakan Privasi</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Laporan Penyalahgunaan</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Royalti & Klaim</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-gray-500 text-xs font-medium">
+                    &copy; 2026 PT. Aldotune Creative Studio. Hak Cipta Dilindungi Undang-Undang.
+                </p>
+                <div class="flex gap-6">
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="youtube" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <div id="registerInfoModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden opacity-0 flex items-center justify-center p-4 transition-opacity duration-300">
         <div id="regInfoCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-all duration-300">
@@ -310,7 +343,24 @@
         window.showEmailForm = () => switchView('emailView');
         window.showSelection = () => switchView('selectionView');
         window.handleBack = () => { resetUI(); showSelection(); };
-        window.switchToRecovery = () => switchView('lockedView');
+        
+        // NEW: Fungsi untuk kembali dari Locked View (jika manual)
+        window.handleRecoveryBack = () => {
+            if(activeUser) {
+                setupSecurityPinView(activeUser);
+            } else {
+                handleBack();
+            }
+        };
+
+        // NEW: Fungsi Tombol Lupa PIN (Manual)
+        window.switchToRecovery = () => {
+            document.getElementById('lockedTitle').innerText = "Keamanan";
+            document.getElementById('lockedDesc').innerText = "Verifikasi identitas untuk reset PIN Transaksi.";
+            // Tampilkan tombol back
+            document.getElementById('recoveryBackBtn').classList.remove('hidden');
+            switchView('lockedView');
+        };
         
         function switchView(viewId) {
             ['selectionView', 'emailView', 'securityPinView', 'registerView', 'lockedView', 'updateProfileView'].forEach(id => {
@@ -340,9 +390,12 @@
                 els.pageLoader.classList.add('opacity-0', 'invisible');
                 setLoading(false, 'manual');
 
+                // UPDATE: Logic Lock
                 if (data && data.isLocked === true) {
                     document.getElementById('lockedTitle').innerText = "Akun Terkunci";
                     document.getElementById('lockedDesc').innerText = "3x Salah PIN. Verifikasi NIK & Tgl Lahir untuk buka kunci.";
+                    // Sembunyikan tombol back jika hard-locked
+                    document.getElementById('recoveryBackBtn').classList.add('hidden');
                     switchView('lockedView');
                     return;
                 }
@@ -438,6 +491,7 @@
                         update(ref(db, `users/${activeUser.uid}`), updates).then(() => {
                             document.getElementById('lockedTitle').innerText = "Akun Terkunci";
                             document.getElementById('lockedDesc').innerText = "3x Salah PIN. Verifikasi NIK & Tgl Lahir untuk buka kunci.";
+                            document.getElementById('recoveryBackBtn').classList.add('hidden'); // Lock back btn
                             switchView('lockedView');
                         });
                     } else {
@@ -593,7 +647,6 @@
             else { m.classList.add('opacity-0'); setTimeout(() => m.classList.add('hidden'), 300); }
         }
 
-        // Setup toggles for all password fields
         function setupToggle(inputId, btnId, iconId) {
             const btn = document.getElementById(btnId);
             if(btn) {
