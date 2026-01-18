@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Blog & Wawasan - Aldotune Creative Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { aldo: { black: '#0a0a0a' } },
+                    animation: { 'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' },
+                    keyframes: { slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body { margin: 0; background-color: #ffffff; height: 100%; overflow-x: hidden; }
+        .view-active { animation: slideUp 0.4s forwards; }
+        .article-card:hover h4 { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    </style>
+</head>
+<body class="flex flex-col w-full min-h-screen">
+
+    <div class="flex flex-col lg:flex-row w-full flex-grow relative">
+
+        <div class="hidden lg:flex lg:w-1/2 bg-black relative items-center justify-center overflow-hidden lg:h-screen lg:sticky lg:top-0">
+            <img src="https://images.unsplash.com/photo-1555696958-c5049b866f6f?q=80&w=2574&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale">
+            
+            <div class="relative z-10 p-16 text-white max-w-xl flex flex-col justify-center h-full">
+                <h2 class="text-6xl font-extrabold tracking-tighter mb-6">Insights.</h2>
+                <p class="text-2xl text-gray-300 font-light leading-relaxed mb-8">
+                    Pelajari cara kerja industri musik. Dari produksi hingga royalti.
+                </p>
+                <div class="flex gap-4">
+                    <div class="px-4 py-2 border border-white/30 rounded-full text-xs font-bold uppercase tracking-widest">Tips</div>
+                    <div class="px-4 py-2 border border-white/30 rounded-full text-xs font-bold uppercase tracking-widest">Tutorial</div>
+                    <div class="px-4 py-2 border border-white/30 rounded-full text-xs font-bold uppercase tracking-widest">News</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full lg:w-1/2 bg-white flex flex-col relative min-h-screen overflow-y-auto">
+            
+            <div class="w-full px-8 pt-8 pb-4 flex justify-between items-center">
+                <a href="index.html" class="text-sm font-bold text-gray-400 hover:text-black flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+                </a>
+                <div class="flex gap-4">
+                    <a href="#" class="text-gray-400 hover:text-black"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-black"><i data-lucide="youtube" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+
+            <div class="w-full px-8 py-12 flex flex-col justify-center items-center flex-grow">
+                <div class="max-w-xl w-full view-active text-left">
+                    
+                    <div class="mb-10 border-b-2 border-black pb-8">
+                        <h1 class="text-5xl font-extrabold tracking-tighter text-black mb-2">Blog.</h1>
+                        <p class="text-xl text-gray-500 font-medium">Kabar terbaru & Tips untuk Artis.</p>
+                    </div>
+
+                    <section class="mb-12 group cursor-pointer" onclick="openArticle('release')">
+                        <div class="w-full h-64 bg-gray-100 rounded-2xl overflow-hidden mb-4 relative shadow-md">
+                            <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 grayscale group-hover:grayscale-0">
+                            <div class="absolute top-4 left-4 bg-black text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase">Wajib Baca</div>
+                        </div>
+                        <h3 class="text-2xl font-bold text-black mb-2 group-hover:underline decoration-2 underline-offset-4">Checklist Sebelum Rilis Lagu ke Spotify</h3>
+                        <p class="text-gray-500 text-sm line-clamp-2 leading-relaxed">
+                            Jangan sampai lagumu ditolak karena masalah sepele. Pastikan Artwork, Format Audio, dan Metadata sudah sesuai standar industri.
+                        </p>
+                        <div class="flex items-center gap-2 mt-3 text-xs font-bold text-gray-400">
+                            <span>Admin Aldotune</span> • <span>5 Menit Baca</span>
+                        </div>
+                    </section>
+
+                    <section class="space-y-8 mb-12">
+                        <h3 class="text-sm font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span class="w-8 h-[2px] bg-black"></span> Terbaru
+                        </h3>
+
+                        <div class="flex gap-6 items-start article-card cursor-pointer group" onclick="openArticle('isrc')">
+                            <div class="w-24 h-24 bg-gray-100 rounded-xl shrink-0 overflow-hidden shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-black mb-1">Apa itu ISRC & ISWC?</h4>
+                                <p class="text-sm text-gray-500 mb-2 line-clamp-2">Memahami kode identitas lagu agar royaltimu tidak nyasar ke orang lain.</p>
+                                <span class="text-[10px] text-gray-400 font-bold uppercase">Edukasi</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6 items-start article-card cursor-pointer group" onclick="openArticle('promo')">
+                            <div class="w-24 h-24 bg-gray-100 rounded-xl shrink-0 overflow-hidden shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1611162616475-46b635cb6868?q=80&w=1974&auto=format&fit=crop" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-black mb-1">Strategi Promosi Gratis</h4>
+                                <p class="text-sm text-gray-500 mb-2 line-clamp-2">Cara memaksimalkan TikTok dan Reels untuk memviralkan lagu tanpa biaya iklan.</p>
+                                <span class="text-[10px] text-gray-400 font-bold uppercase">Marketing</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-6 items-start article-card cursor-pointer group" onclick="openArticle('fraud')">
+                            <div class="w-24 h-24 bg-gray-100 rounded-xl shrink-0 overflow-hidden shadow-sm">
+                                <img src="https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=2070&auto=format&fit=crop" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-black mb-1">Bahaya Jasa "Tambah Stream"</h4>
+                                <p class="text-sm text-gray-500 mb-2 line-clamp-2">Kenapa membeli stream palsu bisa membuat akunmu di-banned permanen oleh Spotify.</p>
+                                <span class="text-[10px] text-red-500 font-bold uppercase">Penting</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="bg-gray-50 border border-gray-200 p-8 rounded-3xl text-center">
+                        <h3 class="text-xl font-bold mb-2 text-black">Gabung Komunitas</h3>
+                        <p class="text-gray-500 text-sm mb-6">
+                            Dapatkan tips musik terbaru dan diskusi dengan sesama artis Aldotune di grup WhatsApp kami.
+                        </p>
+                        <a href="https://wa.me/6285385184618" class="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">
+                            <i data-lucide="message-circle" class="w-4 h-4"></i> Gabung Grup WA
+                        </a>
+                    </section>
+
+                </div>
+            </div>
+
+            <div class="w-full text-center py-6 border-t border-gray-100">
+                <p class="text-xs text-gray-400 font-medium">© 2026 PT. Aldotune Creative Studio.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="articleModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden opacity-0 flex items-end lg:items-center justify-center transition-all duration-300">
+        <div id="modalContent" class="bg-white w-full lg:max-w-2xl h-[90vh] lg:h-auto lg:max-h-[80vh] rounded-t-3xl lg:rounded-3xl p-8 overflow-y-auto transform translate-y-full lg:translate-y-0 transition-all duration-300 relative shadow-2xl">
+            <button onclick="closeArticle()" class="absolute top-6 right-6 p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            
+            <div class="mt-4">
+                <span id="modalCategory" class="text-xs font-bold text-black uppercase tracking-widest border border-black px-2 py-1 rounded mb-4 inline-block">Kategori</span>
+                <h2 id="modalTitle" class="text-3xl font-extrabold text-black mb-6 leading-tight">Judul Artikel</h2>
+                
+                <div class="prose prose-sm text-gray-600 leading-relaxed space-y-4">
+                    <p id="modalBody">Konten artikel...</p>
+                    <div class="pt-6 border-t border-gray-100">
+                        <p class="font-bold text-black mb-2">Ingin konsultasi lebih lanjut?</p>
+                        <a href="https://wa.me/6285385184618" class="inline-flex items-center gap-2 text-black font-bold hover:underline">
+                            <i data-lucide="message-square" class="w-4 h-4"></i> Chat Admin Aldotune
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Data Artikel
+        const articles = {
+            'release': {
+                title: "Checklist Sebelum Rilis",
+                category: "Tips Rilis",
+                body: "<strong>1. Artwork (Cover Art):</strong><br>Wajib 3000x3000px, format JPG, mode warna RGB. Jangan ada logo brand lain (seperti logo Nike, Apple) atau teks promosi 'Available on Spotify'.<br><br><strong>2. Audio:</strong><br>Gunakan format WAV 16-bit, 44.1kHz. Jangan gunakan MP3 hasil convert.<br><br><strong>3. Metadata:</strong><br>Pastikan nama Penulis Lagu (Composer) diisi dengan nama asli sesuai KTP, bukan nama panggung."
+            },
+            'isrc': {
+                title: "Apa itu ISRC & ISWC?",
+                category: "Edukasi",
+                body: "<strong>ISRC (International Standard Recording Code)</strong> adalah 'nomor KTP' untuk rekaman suaramu. Kode ini yang melacak jumlah stream di Spotify.<br><br><strong>ISWC (International Standard Musical Work Code)</strong> adalah kode untuk komposisi (lirik & notasi). Ini digunakan untuk melacak royalti publishing.<br><br>Di Aldotune, kamu mendapatkan ISRC gratis otomatis."
+            },
+            'promo': {
+                title: "Strategi Promosi Gratis",
+                category: "Marketing",
+                body: "Jangan habiskan uang untuk iklan di awal. Fokus pada konten organik:<br>1. Buat video 15 detik di TikTok/Reels menggunakan bagian <em>Hook</em> (reff) lagumu.<br>2. Posting konsisten 1x sehari selama 2 minggu sebelum rilis.<br>3. Gunakan fitur 'Pre-Save' agar fans bisa langsung dengar saat rilis."
+            },
+            'fraud': {
+                title: "Bahaya Fake Stream",
+                category: "Penting",
+                body: "Hati-hati dengan jasa 'Masuk Playlist 50k Stream cuma 100rb'. Itu 99% adalah Bot. Spotify memiliki sistem deteksi canggih. Jika lagumu terdeteksi bot:<br>- Lagu akan dihapus (Takedown).<br>- Royalti ditahan.<br>- Akun artist bisa di-banned permanen (Blacklist).<br>Lebih baik 1.000 pendengar asli daripada 1 juta bot."
+            }
+        };
+
+        function openArticle(id) {
+            const data = articles[id];
+            if(!data) return;
+
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalCategory').innerText = data.category;
+            document.getElementById('modalBody').innerHTML = data.body;
+
+            const m = document.getElementById('articleModal');
+            const c = document.getElementById('modalContent');
+            
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                c.classList.remove('translate-y-full'); 
+            }, 10);
+        }
+
+        function closeArticle() {
+            const m = document.getElementById('articleModal');
+            const c = document.getElementById('modalContent');
+            
+            m.classList.add('opacity-0');
+            c.classList.add('translate-y-full');
+            
+            setTimeout(() => {
+                m.classList.add('hidden');
+            }, 300);
+        }
+    </script>
+</body>
+</html>
