@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebijakan Privasi - Aldotune Creative Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    animation: { 'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards' },
+                    keyframes: { slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } } }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mencegah elemen terpotong saat di-print ke PDF */
+        .pdf-keep { page-break-inside: avoid; break-inside: avoid; }
+    </style>
+</head>
+<body class="bg-white text-gray-900 font-sans antialiased">
+
+    <div id="toastContainer" class="fixed top-0 left-0 w-full z-[100] flex justify-center pointer-events-none p-4 print:hidden">
+        <div id="toast" class="bg-black text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-auto">
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+            <div>
+                <span class="font-bold text-sm block">Berhasil Disimpan</span>
+                <span class="text-xs text-gray-400">Dokumen Privasi telah diunduh.</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="w-full border-b border-gray-100 py-6 sticky top-0 bg-white/90 backdrop-blur-md z-50 print:hidden" data-html2canvas-ignore="true">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <span class="text-xl font-extrabold tracking-tighter">aldotune.</span>
+            <div class="flex items-center gap-4">
+                <button onclick="downloadPDF()" id="downloadBtn" class="text-sm font-bold text-black border border-black px-4 py-2 rounded-full hover:bg-black hover:text-white transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i> Simpan PDF
+                </button>
+                <a href="index.html" class="text-sm font-bold text-gray-500 hover:text-black flex items-center gap-2">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="pdf-content" class="max-w-4xl mx-auto px-8 py-12 bg-white">
+        
+        <div class="mb-10 border-b-2 border-black pb-6 pdf-keep">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h1 class="text-4xl font-extrabold mb-2 tracking-tight">Kebijakan Privasi</h1>
+                    <p class="text-gray-500 font-medium">Perlindungan Data & Informasi Pengguna</p>
+                    <p class="text-xs text-gray-400 mt-1">Ref: ALD-PRIVACY-2026-V2</p>
+                </div>
+                <div class="text-right">
+                    <h2 class="text-xl font-extrabold tracking-tighter mb-1">aldotune.</h2>
+                    <p class="text-xs text-gray-500 uppercase tracking-widest font-bold">Creative Studio</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-8 text-gray-800 leading-relaxed text-justify text-sm">
+
+            <section class="pdf-keep">
+                <h3 class="text-base font-bold text-black mb-2 uppercase border-b border-gray-200 pb-1">1. Data yang Kami Kumpulkan</h3>
+                <p class="mb-2">Untuk memberikan layanan distribusi musik dan manajemen royalti yang akurat, Aldotune Creative Studio mengumpulkan data pribadi berikut:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Identitas Dasar:</strong> Nama Lengkap, Alamat Email (via Google), Foto Profil, dan Nomor WhatsApp aktif.</li>
+                    <li><strong>Verifikasi Legal (KYC):</strong> Nomor Induk Kependudukan (NIK) dan Tanggal Lahir. Data ini wajib untuk validasi kepemilikan hak cipta, pemulihan akun terkunci, dan pelaporan pajak royalti.</li>
+                    <li><strong>Kredensial Keamanan:</strong> PIN Akses (Login) dan PIN Transaksi (Database) yang dienkripsi penuh.</li>
+                </ul>
+            </section>
+            
+            <section class="pdf-keep">
+                <h3 class="text-base font-bold text-black mb-2 uppercase border-b border-gray-200 pb-1">2. Penggunaan Data</h3>
+                <p>Data Anda digunakan semata-mata untuk:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Mendistribusikan musik ke Toko Digital (Spotify, Apple Music, YouTube, dll).</li>
+                    <li>Memproses pembayaran royalti dan laporan keuangan bulanan.</li>
+                    <li>Menghubungi Anda terkait status rilis, revisi metadata, atau masalah teknis.</li>
+                    <li>Mencegah penipuan (Fraud) dan pencurian identitas karya musik.</li>
+                </ul>
+            </section>
+
+            <section class="pdf-keep">
+                <h3 class="text-base font-bold text-black mb-2 uppercase border-b border-gray-200 pb-1">3. Keamanan & Penyimpanan</h3>
+                <p>Kami menggunakan infrastruktur kelas dunia untuk melindungi aset digital Anda:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li><strong>Enkripsi End-to-End:</strong> PIN dan data sensitif dienkripsi sebelum disimpan di server (Google Cloud / Firebase).</li>
+                    <li><strong>Akses Terbatas:</strong> Hanya tim verifikasi Aldotune yang memiliki akses terbatas ke data identitas untuk keperluan Quality Control (QC).</li>
+                    <li><strong>Mitra Distribusi:</strong> Kami hanya membagikan metadata lagu (bukan data pribadi sensitif) ke mitra Toko Musik Digital (DSP).</li>
+                </ul>
+            </section>
+
+            <section class="pdf-keep">
+                <h3 class="text-base font-bold text-black mb-2 uppercase border-b border-gray-200 pb-1">4. Hak Pengguna</h3>
+                <p>Anda memiliki kendali penuh atas data Anda:</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    <li>Mengakses dan memperbarui profil pribadi melalui Dashboard.</li>
+                    <li>Meminta penghapusan akun permanen (dengan konsekuensi seluruh konten musik akan ditarik dari peredaran/Takedown).</li>
+                    <li>Mengunduh laporan royalti yang transparan setiap bulan.</li>
+                </ul>
+            </section>
+
+             <section class="pdf-keep">
+                <h3 class="text-base font-bold text-black mb-2 uppercase border-b border-gray-200 pb-1">5. Cookies & Pelacakan</h3>
+                <p>Aplikasi web kami menggunakan cookies sesi (session cookies) hanya untuk menjaga Anda tetap login dengan aman. Kami tidak menjual data browsing Anda kepada pihak ketiga.</p>
+            </section>
+
+        </div>
+
+        <div class="mt-12 pt-6 border-t-2 border-black flex justify-between items-end pdf-keep">
+            <div class="w-1/2">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">DOKUMEN PRIVASI RESMI</p>
+                <div class="h-12 flex items-center">
+                    <span class="text-2xl font-extrabold text-black font-serif italic">Amiraldo Billy Aldiansyah.</span>
+                </div>
+                <p class="text-sm font-bold text-black mt-1">Direktur</p>
+                <p class="text-sm font-bold text-black mt-1">Aldotune Creative Studio</p>
+                <p class="text-[10px] text-gray-500">Authorized Data Controller</p>
+            </div>
+            
+            <div class="w-1/2 flex flex-col items-end">
+                <div class="text-center">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Aldotune%20Privacy%20Policy%20Validation%20-%20Secure" class="w-24 h-24 mb-2 mx-auto border border-gray-200 p-1">
+                    <p class="text-[10px] font-bold text-black uppercase">Validasi Dokumen</p>
+                    <p class="text-[8px] text-gray-500 max-w-[120px] mx-auto leading-tight mt-1">
+                        Pindai untuk memverifikasi keaslian Kebijakan Privasi ini.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-8 text-center border-t border-gray-100 pt-2">
+             <p class="text-[10px] text-gray-400">&copy; 2026 Aldotune Creative Studio. Hak Cipta Dilindungi Undang-Undang.</p>
+        </div>
+    </div>
+
+    <div class="mt-12 text-center pb-12 print:hidden" data-html2canvas-ignore="true">
+        <p class="text-gray-500 text-sm mb-4">Ada pertanyaan tentang data Anda?</p>
+        <a href="https://wa.me/6285385184618" class="inline-flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full font-bold hover:bg-gray-800 transition-colors">
+            Hubungi Data Officer
+        </a>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-[-100px]', 'opacity-0');
+            }, 4000);
+        }
+
+        function downloadPDF() {
+            const element = document.getElementById('pdf-content');
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            
+            // Loading State
+            btn.innerHTML = '<svg class="animate-spin h-4 w-4 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...';
+            btn.disabled = true;
+
+            const opt = {
+                margin:       [0.4, 0.4, 0.4, 0.4],
+                filename:     'Kebijakan_Privasi_Aldotune.pdf',
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' },
+                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                showToast();
+            }).catch(err => {
+                console.error(err);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert("Gagal mengunduh PDF.");
+            });
+        }
+    </script>
+</body>
+</html>
