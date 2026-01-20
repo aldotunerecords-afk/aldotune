@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Musisi - Aldotune Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } } }
+    </script>
+    <style>
+        body { background-color: #f9fafb; } 
+        /* Input Teks Terkunci */
+        .admin-input:disabled { background-color: #e5e7eb; color: #9ca3af; cursor: not-allowed; border-color: #d1d5db; }
+        /* Input Teks Terbuka */
+        .admin-input { width: 100%; border: 1px solid #e5e7eb; border-radius: 0.5rem; padding: 10px; font-size: 0.875rem; font-weight: 600; transition: all 0.3s; background-color: white; color: black; }
+        .admin-input:focus { border-color: black; outline: none; box-shadow: 0 0 0 2px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="text-black pb-20">
+
+    <div class="max-w-3xl mx-auto p-6 md:p-10">
+        <button onclick="window.location.href='musisi.html'" class="flex items-center gap-2 text-gray-500 hover:text-black mb-6 font-bold text-sm">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali
+        </button>
+
+        <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-8 relative">
+            
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-black" id="userName">Memuat...</h1>
+                    <p class="text-sm text-gray-500" id="userEmail">...</p>
+                </div>
+                <button onclick="triggerUnlock()" id="unlockBtn" class="flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg font-bold text-sm hover:bg-yellow-200 transition-colors">
+                    <i data-lucide="lock" class="w-4 h-4"></i> Buka Edit
+                </button>
+            </div>
+
+            <form id="detailForm" class="space-y-8">
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2">Profil & Keamanan</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="text-xs font-bold text-gray-500">Nama Lengkap</label><input type="text" id="editName" class="admin-input" disabled></div>
+                        <div><label class="text-xs font-bold text-gray-500">NIK (KTP)</label><input type="text" id="editNik" class="admin-input font-mono" disabled></div>
+                        <div><label class="text-xs font-bold text-gray-500">WhatsApp</label><input type="text" id="editWa" class="admin-input" disabled></div>
+                        <div><label class="text-xs font-bold text-gray-500">Reset PIN User</label><input type="text" id="editPin" class="admin-input bg-yellow-50" placeholder="Isi untuk reset" disabled></div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest border-b pb-2">Status Akun</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div><label class="text-xs font-bold text-gray-500">Paket</label><select id="editPaket" class="admin-input" disabled><option value="Basic">Basic</option><option value="Pro Lifetime">Pro Lifetime</option><option value="VIP Bulanan">VIP Bulanan</option><option value="VIP Tahunan">VIP Tahunan</option></select></div>
+                        <div><label class="text-xs font-bold text-gray-500">Role</label><select id="editRole" class="admin-input" disabled><option value="ua">Musisi</option><option value="a">ADMIN</option></select></div>
+                        <div><label class="text-xs font-bold text-gray-500">Kunci Akun</label><select id="editLocked" class="admin-input" disabled><option value="false">Aman (Aktif)</option><option value="true">BANNED (Terkunci)</option></select></div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                    <h4 class="text-xs font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2"><i data-lucide="wallet" class="w-4 h-4"></i> Manajemen Saldo (Royalti)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Saldo Saat Ini</p>
+                            <p id="currentSaldoDisplay" class="text-3xl font-bold font-mono text-black">Rp 0</p>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="text-xs font-bold text-gray-400">Nominal Perubahan</label>
+                                <input type="text" id="saldoInputSmart" class="admin-input text-right font-mono text-lg" placeholder="0" disabled oninput="formatInputRupiah(this)">
+                            </div>
+                            <div class="flex gap-2">
+                                <label class="flex-1 cursor-pointer opacity-50" id="radioAdd"><input type="radio" name="saldoAction" value="add" class="peer hidden" checked disabled><div class="py-2 text-center text-xs font-bold rounded-lg bg-white border peer-checked:bg-green-600 peer-checked:text-white">+ Tambah (Masuk)</div></label>
+                                <label class="flex-1 cursor-pointer opacity-50" id="radioSub"><input type="radio" name="saldoAction" value="subtract" class="peer hidden" disabled><div class="py-2 text-center text-xs font-bold rounded-lg bg-white border peer-checked:bg-red-600 peer-checked:text-white">- Kurangi (Keluar)</div></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="actionButtons" class="pt-6 border-t flex justify-between items-center hidden">
+                    <button type="button" onclick="triggerDelete()" class="px-4 py-2 text-red-600 font-bold hover:bg-red-50 rounded-lg text-sm border border-red-200">Hapus Akun</button>
+                    <button type="submit" class="px-8 py-3 bg-black text-white font-bold rounded-xl shadow-lg hover:bg-gray-800">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="secModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50 transition-all">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl">
+            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <i data-lucide="shield-lock" class="w-6 h-6 text-black"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-1" id="secTitle">Verifikasi Admin</h3>
+            <p class="text-sm text-gray-500 mb-4" id="secDesc">Masukkan PIN Transaksi untuk membuka akses edit.</p>
+            
+            <input type="password" id="adminSecret" class="w-full text-center text-2xl font-bold font-mono border-b-2 border-gray-300 py-2 mb-6 outline-none focus:border-black tracking-[0.5em]" placeholder="••••••" maxlength="6">
+            
+            <div class="flex gap-2">
+                <button onclick="closeSecModal()" class="flex-1 py-3 bg-gray-100 rounded-xl font-bold hover:bg-gray-200">Batal</button>
+                <button onclick="executeSecurityCheck()" id="secConfirmBtn" class="flex-1 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800">Verifikasi</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, update, remove, child, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY", authDomain: "aldotune-records.firebaseapp.com", databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aldotune-records", storageBucket: "aldotune-records.firebasestorage.app", messagingSenderId: "311200667476", appId: "1:311200667476:web:7805289d9d01c981ef5ac1" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let targetUid = new URLSearchParams(window.location.search).get('uid');
+        let adminData = null;
+        let targetData = null;
+        let pendingAction = null; // 'unlock', 'save', 'delete'
+
+        if(!targetUid) window.location.href = 'musisi.html';
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                get(child(ref(db), `users/${user.uid}`)).then((s) => {
+                    adminData = s.val();
+                    if (adminData?.j !== "a") window.location.replace("beranda.html");
+                    else loadTargetMusisi();
+                });
+            } else window.location.replace("login.html");
+        });
+
+        function loadTargetMusisi() {
+            get(child(ref(db), `users/${targetUid}`)).then((s) => {
+                if(!s.exists()) return alert("User tidak ditemukan");
+                targetData = s.val();
+                
+                document.getElementById('userName').innerText = targetData.fullName || 'Tanpa Nama';
+                document.getElementById('userEmail').innerText = targetData.email;
+                document.getElementById('currentSaldoDisplay').innerText = `Rp ${(targetData.saldo || 0).toLocaleString('id-ID')}`;
+                
+                document.getElementById('editName').value = targetData.fullName || '';
+                document.getElementById('editNik').value = targetData.nik || '';
+                document.getElementById('editWa').value = targetData.whatsapp || '';
+                document.getElementById('editPaket').value = targetData.paket || 'Basic';
+                document.getElementById('editRole').value = targetData.j || 'ua';
+                document.getElementById('editLocked').value = targetData.isLocked ? "true" : "false";
+            });
+        }
+
+        // --- SMART INPUT FORMATTER ---
+        window.formatInputRupiah = (input) => {
+            let value = input.value.replace(/\D/g, ""); // Hapus non-digit
+            if (value === "") { input.value = ""; return; }
+            let formatted = new Intl.NumberFormat('id-ID').format(value);
+            input.value = formatted;
+        };
+
+        function getRawSaldo() {
+            return parseInt(document.getElementById('saldoInputSmart').value.replace(/\./g, '')) || 0;
+        }
+
+        // --- SECURITY LOGIC ---
+        
+        // 1. Trigger Buka Kunci (Edit)
+        window.triggerUnlock = () => {
+            pendingAction = 'unlock';
+            openSecModal("Buka Akses Edit", "Masukkan PIN Admin untuk membuka kunci kolom.");
+        };
+
+        // 2. Trigger Simpan (Save)
+        document.getElementById('detailForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            pendingAction = 'save';
+            // Konfirmasi dialog dulu sebelum PIN
+            if(confirm("Apakah Anda yakin ingin menyimpan perubahan ini?")) {
+                openSecModal("Konfirmasi Simpan", "Verifikasi terakhir. Masukkan PIN Admin.");
+            }
+        });
+
+        // 3. Trigger Hapus (Delete)
+        window.triggerDelete = () => {
+            if(confirm("PERINGATAN: Akun ini akan dihapus permanen beserta saldonya. Lanjutkan?")) {
+                pendingAction = 'delete';
+                openSecModal("Hapus Permanen", "Masukkan PIN Admin untuk konfirmasi penghapusan.");
+            }
+        };
+
+        function openSecModal(title, desc) {
+            document.getElementById('secTitle').innerText = title;
+            document.getElementById('secDesc').innerText = desc;
+            document.getElementById('adminSecret').value = "";
+            document.getElementById('secModal').classList.remove('hidden');
+        }
+
+        window.closeSecModal = () => document.getElementById('secModal').classList.add('hidden');
+
+        window.executeSecurityCheck = async () => {
+            const secret = document.getElementById('adminSecret').value;
+            const btn = document.getElementById('secConfirmBtn');
+            
+            // Verifikasi PIN/NIK Admin
+            if(String(secret) !== String(adminData.pin) && String(secret) !== String(adminData.nik)) {
+                return alert("PIN Admin Salah!");
+            }
+
+            btn.innerText = "Memproses...";
+            btn.disabled = true;
+
+            try {
+                if (pendingAction === 'unlock') {
+                    // BUKA KUNCI INPUT
+                    const inputs = document.querySelectorAll('.admin-input');
+                    inputs.forEach(el => el.disabled = false);
+                    document.getElementById('radioAdd').classList.remove('opacity-50');
+                    document.getElementById('radioAdd').querySelector('input').disabled = false;
+                    document.getElementById('radioSub').classList.remove('opacity-50');
+                    document.getElementById('radioSub').querySelector('input').disabled = false;
+                    
+                    document.getElementById('unlockBtn').classList.add('hidden');
+                    document.getElementById('actionButtons').classList.remove('hidden');
+                    alert("Mode Edit Terbuka.");
+                } 
+                else if (pendingAction === 'save') {
+                    // SIMPAN DATA
+                    const saldoChange = getRawSaldo();
+                    const action = document.querySelector('input[name="saldoAction"]:checked').value;
+                    
+                    let newSaldo = targetData.saldo || 0;
+                    let updates = {
+                        fullName: document.getElementById('editName').value,
+                        nik: document.getElementById('editNik').value,
+                        whatsapp: document.getElementById('editWa').value,
+                        paket: document.getElementById('editPaket').value,
+                        j: document.getElementById('editRole').value,
+                        isLocked: document.getElementById('editLocked').value === "true"
+                    };
+
+                    const newPin = document.getElementById('editPin').value;
+                    if(newPin.length === 6) updates.pin = newPin;
+
+                    if (saldoChange > 0) {
+                        if (action === 'add') {
+                            newSaldo += saldoChange;
+                            push(ref(db, `transactions/${targetUid}`), { type: 'credit', amount: saldoChange, date: new Date().toISOString(), desc: 'Topup / Bonus Admin', status: 'success' });
+                        } else {
+                            newSaldo = Math.max(0, newSaldo - saldoChange);
+                            push(ref(db, `transactions/${targetUid}`), { type: 'debit', amount: saldoChange, date: new Date().toISOString(), desc: 'Penyesuaian / Withdraw Admin', status: 'success' });
+                        }
+                        updates.saldo = newSaldo;
+                    }
+
+                    await update(ref(db, `users/${targetUid}`), updates);
+                    alert("Data Berhasil Disimpan!");
+                    window.location.reload();
+                } 
+                else if (pendingAction === 'delete') {
+                    // HAPUS AKUN
+                    await remove(ref(db, `users/${targetUid}`));
+                    alert("Akun Musisi Dihapus.");
+                    window.location.href = 'musisi.html';
+                }
+            } catch (err) {
+                alert("Terjadi kesalahan: " + err.message);
+            } finally {
+                closeSecModal();
+                btn.innerText = "Verifikasi";
+                btn.disabled = false;
+            }
+        };
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
