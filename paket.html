@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Langganan & Paket - Aldotune</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 
+                        aldo: { 
+                            black: '#0a0a0a', 
+                            hover: '#f4f4f5',
+                            border: '#e4e4e7' 
+                        } 
+                    },
+                    animation: { 
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'scale-in': 'scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: { 
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        scaleIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #ffffff; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background-color: #e5e7eb; border-radius: 4px; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-black bg-white">
+
+    <div id="toastContainer" class="fixed top-0 left-0 w-full z-[100] flex justify-center pointer-events-none p-4">
+        <div id="toast" class="bg-black text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-auto">
+            <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+            <span id="toastMessage" class="font-medium text-sm">Berhasil disimpan</span>
+        </div>
+    </div>
+
+    <div id="appLoader" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-10 h-10 border-4 border-gray-100 rounded-full relative">
+            <div class="w-10 h-10 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
+        </div>
+        <p class="mt-4 text-xs font-bold text-gray-400 tracking-widest uppercase">Memuat Paket...</p>
+    </div>
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden lg:hidden transition-opacity duration-300 opacity-0"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-aldo-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col h-full">
+        <div class="h-20 flex items-center px-8 border-b border-gray-100 shrink-0 justify-between">
+            <h1 class="text-2xl font-extrabold tracking-tighter">aldotune.</h1>
+            <button onclick="toggleSidebar()" class="lg:hidden text-gray-400 hover:text-black"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto sidebar-scroll py-6 px-4 space-y-8">
+            <div>
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Menu Utama</p>
+                <nav class="space-y-1">
+                    <a href="beranda.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="layout-grid" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Beranda</span>
+                    </a>
+                    <a href="musisi.html" id="adminMenuLink" class="hidden flex items-center gap-3 px-4 py-3 text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all group">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span class="text-sm font-bold">Data Musisi</span>
+                    </a>
+                    <a href="katalog.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="disc-3" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Katalog Musik</span>
+                    </a>
+                    <a href="analitik.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Analitik</span>
+                    </a>
+                </nav>
+            </div>
+            <div>
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Promosi & Profil</p>
+                <nav class="space-y-1">
+                    <a href="verifikasi.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-[#1DB954] hover:bg-green-50 rounded-xl transition-all group">
+                        <i data-lucide="badge-check" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Verifikasi Spotify</span>
+                    </a>
+                    <a href="playlist.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="list-music" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Playlist Spotify</span>
+                    </a>
+                    <a href="promosi.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="megaphone" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Promosi</span>
+                    </a>
+                </nav>
+            </div>
+            <div>
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Manajemen Aset</p>
+                <nav class="space-y-1">
+                    <a href="publishing.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="globe" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Publishing</span>
+                    </a>
+                    <a href="lirik.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="mic-2" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Lirik & Sync</span>
+                    </a>
+                    <a href="hakcipta.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="shield-check" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Hak Cipta / Legal</span>
+                    </a>
+                </nav>
+            </div>
+            <div>
+                <p class="px-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Keuangan</p>
+                <nav class="space-y-1">
+                    <a href="dompet.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-aldo-hover rounded-xl transition-all group">
+                        <i data-lucide="wallet" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                        <span class="text-sm font-medium">Dompet & Royalti</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </aside>
+
+    <div id="mainContent" class="flex-1 flex flex-col lg:pl-64 h-full relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-aldo-border flex items-center justify-between px-6 sticky top-0 z-20">
+            <button onclick="toggleSidebar()" class="p-2 -ml-2 mr-2 text-black hover:bg-gray-100 rounded-lg"><i data-lucide="menu" class="w-6 h-6"></i></button>
+            <div class="flex-1"></div>
+            <div class="flex items-center gap-3">
+                <a href="upload.html" class="bg-black hover:bg-gray-800 text-white text-sm font-bold px-5 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-lg shadow-black/20">
+                    <i data-lucide="upload-cloud" class="w-4 h-4"></i><span class="hidden sm:inline">Rilis Baru</span>
+                </a>
+                <div class="h-8 w-[1px] bg-gray-200 mx-1"></div>
+                <div class="relative">
+                    <button id="profileBtn" onclick="toggleProfileMenu()" class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full hover:bg-gray-50 border border-transparent hover:border-gray-200 transition-all group select-none">
+                        <div class="text-right hidden md:block"><p id="navUserName" class="text-xs font-bold text-black leading-none skeleton h-3 w-16 rounded mb-1"></p><p class="text-[10px] text-gray-400 font-medium">Akun Saya</p></div>
+                        <img id="navUserImg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" class="w-9 h-9 rounded-full bg-gray-200 object-cover border border-gray-100 group-hover:scale-105 transition-transform">
+                        <i data-lucide="chevron-down" class="w-3 h-3 text-gray-400"></i>
+                    </button>
+                    <div id="profileMenu" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-50">
+                        <a href="profil.html" class="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-50 rounded-xl transition-colors"><i data-lucide="user" class="w-4 h-4"></i> Lihat Profil</a>
+                        <a href="pin-transaksi.html" class="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-50 rounded-xl transition-colors"><i data-lucide="key" class="w-4 h-4"></i> Ubah PIN Transaksi</a>
+                        <a href="reset.html" class="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-50 rounded-xl transition-colors"><i data-lucide="lock" class="w-4 h-4"></i> Ubah PIN Akses</a>
+                        <div class="h-[1px] bg-gray-100 my-1"></div>
+                        <button onclick="openLogoutModal()" class="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl text-left"><i data-lucide="log-out" class="w-4 h-4"></i> Keluar</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 md:p-10 bg-white">
+            <div class="max-w-7xl mx-auto space-y-8 opacity-0 animate-fade-in pb-32">
+                
+                <div class="flex items-center gap-4 mb-4">
+                    <a href="profil.html" class="p-2 rounded-full hover:bg-gray-100 transition-colors"><i data-lucide="arrow-left" class="w-6 h-6 text-black"></i></a>
+                    <div><h1 class="text-2xl font-extrabold text-black">Langganan & Paket</h1><p class="text-sm text-gray-500">Pilih paket distribusi yang sesuai dengan kebutuhan Anda.</p></div>
+                </div>
+
+                <div class="bg-black text-white rounded-3xl p-8 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl shadow-black/10">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+                    <div class="relative z-10 flex items-center gap-6">
+                        <div class="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/10"><i data-lucide="zap" class="w-8 h-8 text-yellow-400 fill-current"></i></div>
+                        <div>
+                            <p class="text-xs font-bold text-white/60 uppercase tracking-widest mb-1">Paket Aktif</p>
+                            <h2 id="activePlanName" class="text-3xl font-extrabold tracking-tight">Memuat...</h2>
+                            <p class="text-sm text-gray-300 mt-1">Status: <span class="text-green-400 font-bold">Aktif</span></p>
+                        </div>
+                    </div>
+                    <div class="relative z-10 hidden md:block text-right">
+                        <p class="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Semua Paket Termasuk</p>
+                        <p class="text-sm font-bold flex items-center gap-2 justify-end"><i data-lucide="check" class="w-4 h-4"></i> Unlimited Upload</p>
+                        <p class="text-sm font-bold flex items-center gap-2 justify-end"><i data-lucide="check" class="w-4 h-4"></i> Music Publishing</p>
+                        <p class="text-sm font-bold flex items-center gap-2 justify-end"><i data-lucide="check" class="w-4 h-4"></i> YouTube Content ID</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 pt-4">
+                    
+                    <div class="bg-white border border-gray-200 rounded-3xl p-6 hover:border-black transition-all group flex flex-col h-full relative">
+                        <div class="mb-4"><span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-widest">Pemula</span></div>
+                        <h3 class="text-2xl font-extrabold text-black mb-2">Basic</h3>
+                        <div class="flex items-baseline gap-1 mb-6"><span class="text-4xl font-extrabold">Gratis</span></div>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-black shrink-0"></i> 65% Royalti Artis</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-black shrink-0"></i> Unlimited Upload</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-black shrink-0"></i> QC 15 Hari Kerja</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-black shrink-0"></i> Masa Aktif Selamanya</li>
+                        </ul>
+                        <button onclick="changePlan('Basic', 0)" id="btnBasic" class="w-full py-3 rounded-xl font-bold border-2 border-black text-black hover:bg-black hover:text-white transition-all">Pilih Paket</button>
+                    </div>
+
+                    <div class="bg-white border-2 border-blue-600 rounded-3xl p-6 relative flex flex-col h-full shadow-lg">
+                        <div class="absolute top-0 right-0 bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl uppercase tracking-widest">Sekali Bayar</div>
+                        <div class="mb-4 mt-2"><span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest">Lifetime</span></div>
+                        <h3 class="text-2xl font-extrabold text-black mb-2">Pro Lifetime</h3>
+                        <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold">Rp 350rb</span></div>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-blue-600 shrink-0"></i> 85% Royalti Artis</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-blue-600 shrink-0"></i> Unlimited Upload</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-blue-600 shrink-0"></i> Publishing + Content ID</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-600"><i data-lucide="check" class="w-5 h-5 text-blue-600 shrink-0"></i> Seumur Hidup</li>
+                        </ul>
+                        <button onclick="changePlan('Pro Lifetime', 350000)" id="btnProLife" class="w-full py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all">Upgrade</button>
+                    </div>
+
+                    <div class="bg-black text-white rounded-3xl p-6 flex flex-col h-full relative border border-gray-800">
+                        <div class="mb-4"><span class="px-3 py-1 rounded-full bg-gray-800 text-white text-[10px] font-bold uppercase tracking-widest">Bulanan</span></div>
+                        <h3 class="text-2xl font-extrabold mb-2">VIP Bulanan</h3>
+                        <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold">Rp 50rb</span><span class="text-sm text-gray-400">/bln</span></div>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-green-400 shrink-0"></i> 100% Royalti Artis</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-green-400 shrink-0"></i> Unlimited Upload</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-green-400 shrink-0"></i> Prioritas Support</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-green-400 shrink-0"></i> Akses Fitur Eksklusif</li>
+                        </ul>
+                        <button onclick="changePlan('VIP Bulanan', 50000)" id="btnVipMonth" class="w-full py-3 rounded-xl font-bold bg-white text-black hover:bg-gray-200 transition-all">Pilih VIP</button>
+                    </div>
+
+                    <div class="bg-black text-white rounded-3xl p-6 flex flex-col h-full relative border border-yellow-500 shadow-xl transform xl:-translate-y-4">
+                        <div class="absolute top-0 right-0 bg-yellow-500 text-black text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl uppercase tracking-widest">Hemat</div>
+                        <div class="mb-4 mt-2"><span class="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-[10px] font-bold uppercase tracking-widest">Tahunan</span></div>
+                        <h3 class="text-2xl font-extrabold mb-2 text-yellow-400">VIP Tahunan</h3>
+                        <div class="flex items-baseline gap-1 mb-6"><span class="text-3xl font-extrabold">Rp 450rb</span><span class="text-sm text-gray-400">/thn</span></div>
+                        <ul class="space-y-3 mb-8 flex-1">
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-yellow-400 shrink-0"></i> 100% Royalti Artis</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-yellow-400 shrink-0"></i> Unlimited Upload</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-yellow-400 shrink-0"></i> Prioritas Support (Cepat)</li>
+                            <li class="flex items-start gap-3 text-sm font-medium text-gray-300"><i data-lucide="check" class="w-5 h-5 text-yellow-400 shrink-0"></i> Hemat Rp 150.000/tahun</li>
+                        </ul>
+                        <button onclick="changePlan('VIP Tahunan', 450000)" id="btnVipYear" class="w-full py-3 rounded-xl font-bold bg-yellow-500 text-black hover:bg-yellow-400 transition-all">Ambil Promo</button>
+                    </div>
+                </div>
+
+                <div class="text-center text-xs text-gray-400 italic mt-8">*Semua konten melalui proses kurasi manual (Quality Control) selama 15 Hari Kerja.</div>
+            </div>
+        </main>
+    </div>
+
+    <div id="logoutModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden opacity-0 flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-all">
+            <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-4 text-red-600"><i data-lucide="log-out" class="w-6 h-6"></i></div>
+            <div class="text-center mb-6"><h3 class="text-xl font-bold text-black mb-1">Konfirmasi</h3><p class="text-gray-500 text-sm">Pilih tindakan untuk akun Anda.</p></div>
+            <div class="space-y-3">
+                <button onclick="handleSoftExit()" class="w-full py-3 rounded-xl font-bold text-black bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">Keluar <span class="text-xs font-medium text-gray-500">(Ke Halaman Login)</span></button>
+                <button onclick="handleHardLogout()" class="w-full py-3 rounded-xl font-bold text-white bg-black hover:bg-gray-800 transition-colors">Akhiri Sesi (Logout)</button>
+                <button onclick="closeLogoutModal()" class="w-full py-2 text-sm font-bold text-gray-400 hover:text-black mt-2">Batal</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+            authDomain: "aldotune-records.firebaseapp.com",
+            databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "aldotune-records",
+            storageBucket: "aldotune-records.firebasestorage.app",
+            messagingSenderId: "311200667476",
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        const els = {
+            appLoader: document.getElementById('appLoader'),
+            navUserName: document.getElementById('navUserName'),
+            navUserImg: document.getElementById('navUserImg'),
+            activePlanName: document.getElementById('activePlanName'),
+            adminMenu: document.getElementById('adminMenuLink'),
+            profileMenu: document.getElementById('profileMenu'),
+            toast: document.getElementById('toast'),
+            btnBasic: document.getElementById('btnBasic'),
+            btnProLife: document.getElementById('btnProLife'),
+            btnVipMonth: document.getElementById('btnVipMonth'),
+            btnVipYear: document.getElementById('btnVipYear')
+        };
+
+        let activeUser = null;
+        let currentPlan = "Basic";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                activeUser = user;
+                loadUserData(user);
+            } else {
+                window.location.replace("login.html");
+            }
+        });
+
+        function loadUserData(user) {
+            const uid = user.uid;
+            const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.email.substring(0,2)}&background=random`;
+            els.navUserImg.src = avatarUrl;
+
+            get(child(ref(db), `users/${uid}`)).then((snapshot) => {
+                const data = snapshot.val();
+                
+                if (data && data.j === "a") els.adminMenu.classList.remove('hidden');
+                else els.adminMenu.classList.add('hidden');
+
+                const name = data?.fullName || user.displayName || "Artis";
+                els.navUserName.innerText = name.split(' ')[0];
+
+                currentPlan = data?.paket || "Basic";
+                updatePlanUI(currentPlan);
+
+                setTimeout(() => els.appLoader.classList.add('opacity-0', 'pointer-events-none'), 500);
+            }).catch(e => {
+                console.error(e);
+                els.appLoader.classList.add('opacity-0', 'pointer-events-none');
+            });
+        }
+
+        function updatePlanUI(plan) {
+            els.activePlanName.innerText = plan;
+            
+            const resetBtn = (btn, text, styleClass) => {
+                if(!btn) return;
+                btn.disabled = false;
+                btn.innerText = text;
+                btn.className = styleClass;
+            };
+
+            const styleBasic = "w-full py-3 rounded-xl font-bold border-2 border-black text-black hover:bg-black hover:text-white transition-all";
+            const stylePro = "w-full py-3 rounded-xl font-bold bg-blue-600 text-white hover:bg-blue-700 transition-all";
+            const styleVipM = "w-full py-3 rounded-xl font-bold bg-white text-black hover:bg-gray-200 transition-all";
+            const styleVipY = "w-full py-3 rounded-xl font-bold bg-yellow-500 text-black hover:bg-yellow-400 transition-all";
+            const styleActive = "w-full py-3 rounded-xl font-bold bg-green-500 text-white cursor-not-allowed border-none";
+
+            resetBtn(els.btnBasic, "Pilih Paket", styleBasic);
+            resetBtn(els.btnProLife, "Upgrade", stylePro);
+            resetBtn(els.btnVipMonth, "Pilih VIP", styleVipM);
+            resetBtn(els.btnVipYear, "Ambil Promo", styleVipY);
+
+            let activeBtn = null;
+            if (plan === "Basic") activeBtn = els.btnBasic;
+            else if (plan === "Pro Lifetime") activeBtn = els.btnProLife;
+            else if (plan === "VIP Bulanan") activeBtn = els.btnVipMonth;
+            else if (plan === "VIP Tahunan") activeBtn = els.btnVipYear;
+
+            if (activeBtn) {
+                activeBtn.disabled = true;
+                activeBtn.innerText = "Paket Aktif";
+                activeBtn.className = styleActive;
+            }
+        }
+
+        // --- DIRECT PAYMENT LINK LOGIC ---
+        window.changePlan = (plan, price) => {
+            if(plan === currentPlan) return;
+            
+            // Jika Basic (Gratis), langsung update
+            if (price === 0) {
+                update(ref(db, `users/${activeUser.uid}`), { paket: plan }).then(() => {
+                    currentPlan = plan;
+                    updatePlanUI(plan);
+                    alert("Berhasil beralih ke paket Basic.");
+                });
+            } else {
+                // Redirect ke halaman pembayaran
+                window.location.assign(`pembayaran.html?plan=${encodeURIComponent(plan)}&price=${price}`);
+            }
+        };
+
+        // --- UI TOGGLES ---
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainContent = document.getElementById('mainContent');
+            if (window.innerWidth < 1024) {
+                if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); overlay.classList.remove('hidden', 'opacity-0'); }
+                else { sidebar.classList.add('-translate-x-full'); overlay.classList.add('opacity-0'); setTimeout(() => overlay.classList.add('hidden'), 300); }
+            } else {
+                if (sidebar.classList.contains('-translate-x-full')) { sidebar.classList.remove('-translate-x-full'); mainContent.classList.add('lg:pl-64'); mainContent.classList.remove('lg:pl-0'); }
+                else { sidebar.classList.add('-translate-x-full'); mainContent.classList.remove('lg:pl-64'); mainContent.classList.add('lg:pl-0'); }
+            }
+        };
+
+        window.toggleProfileMenu = () => els.profileMenu.classList.toggle('hidden');
+        document.addEventListener('click', (e) => { if (!document.getElementById('profileBtn').contains(e.target) && !els.profileMenu.contains(e.target)) els.profileMenu.classList.add('hidden'); });
+        window.openLogoutModal = () => { els.profileMenu.classList.add('hidden'); document.getElementById('logoutModal').classList.remove('hidden', 'opacity-0'); };
+        window.closeLogoutModal = () => { const m = document.getElementById('logoutModal'); m.classList.add('opacity-0'); setTimeout(() => m.classList.add('hidden'), 300); };
+        window.handleSoftExit = () => window.location.href = "login.html";
+        window.handleHardLogout = () => signOut(auth).then(() => window.location.replace("login.html"));
+
+        lucide.createIcons();
+    </script>
+</body>
+</html>
