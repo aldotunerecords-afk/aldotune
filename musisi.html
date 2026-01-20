@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Musisi (Admin) - Aldotune</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: { aldo: { black: '#0a0a0a' } }, animation: { 'fade-in': 'fadeIn 0.5s ease-out forwards' }, keyframes: { fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } } } } } }
+    </script>
+    <style>body { background-color: #ffffff; } .table-row-hover:hover td { background-color: #f9fafb; cursor: pointer; }</style>
+</head>
+<body class="flex h-screen overflow-hidden text-black bg-white">
+
+    <div id="appLoader" class="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center">
+        <div class="w-10 h-10 border-4 border-gray-100 rounded-full relative"><div class="w-10 h-10 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div></div>
+    </div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-white border-r border-gray-200 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col h-full">
+        <div class="h-20 flex items-center px-8 border-b border-gray-100"><h1 class="text-2xl font-extrabold tracking-tighter">aldotune.</h1></div>
+        <div class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <a href="beranda.html" class="flex items-center gap-3 px-4 py-3 text-gray-500 hover:text-black hover:bg-gray-50 rounded-xl font-bold text-sm"><i data-lucide="layout-grid" class="w-5 h-5"></i>Beranda</a>
+            <a href="musisi.html" class="flex items-center gap-3 px-4 py-3 text-red-600 bg-red-50 rounded-xl font-bold text-sm"><i data-lucide="users" class="w-5 h-5"></i>Data Musisi</a>
+        </div>
+    </aside>
+
+    <div id="mainContent" class="flex-1 flex flex-col lg:pl-64 h-full relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-20">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                <h1 class="text-lg font-bold flex items-center gap-2"><span class="bg-red-100 text-red-600 text-[10px] px-2 py-1 rounded uppercase tracking-wider">Admin</span> Database Musisi</h1>
+            </div>
+            <div class="flex items-center bg-gray-50 border border-gray-200 rounded-full px-4 py-2 w-full max-w-[200px] md:max-w-xs">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400 mr-2"></i>
+                <input type="text" id="searchInput" placeholder="Cari..." class="bg-transparent border-none outline-none text-sm w-full">
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-6 md:p-10 bg-white">
+            <div class="max-w-7xl mx-auto space-y-6 opacity-0 animate-fade-in pb-20">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-black text-white p-6 rounded-2xl shadow-lg flex flex-col justify-center min-h-[120px]">
+                        <p class="text-xs text-white/60 uppercase font-bold tracking-widest">Total Musisi</p>
+                        <h3 class="text-4xl font-extrabold mt-1">48,291,050</h3>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 p-6 rounded-2xl flex flex-col justify-center min-h-[120px]">
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-widest">VIP / Pro</p>
+                        <h3 class="text-3xl font-extrabold mt-1">12,500,210</h3>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 p-6 rounded-2xl flex flex-col justify-center min-h-[120px]">
+                        <p class="text-xs text-gray-400 uppercase font-bold tracking-widest">Basic</p>
+                        <h3 class="text-3xl font-extrabold mt-1">35,790,840</h3>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-200 p-6 rounded-2xl flex flex-col justify-center min-h-[120px]">
+                        <p class="text-xs text-blue-600 uppercase font-bold tracking-widest">Total Saldo (Real)</p>
+                        <h3 id="statSaldo" class="text-xl font-extrabold mt-1 text-blue-800 break-words">Rp 0</h3>
+                    </div>
+                </div>
+
+                <div class="border border-gray-200 rounded-2xl overflow-hidden shadow-sm bg-white">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Profil Musisi</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Kontak</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Paket</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Saldo</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-widest text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = { apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY", authDomain: "aldotune-records.firebaseapp.com", databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "aldotune-records", storageBucket: "aldotune-records.firebasestorage.app", messagingSenderId: "311200667476", appId: "1:311200667476:web:7805289d9d01c981ef5ac1" };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        let allUsers = [];
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                get(child(ref(db), `users/${user.uid}`)).then((s) => {
+                    if (s.val()?.j !== "a") window.location.replace("beranda.html");
+                    else fetchAllMusicians();
+                });
+            } else window.location.replace("login.html");
+        });
+
+        function fetchAllMusicians() {
+            get(ref(db, 'users')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    allUsers = Object.keys(data).map(key => ({ uid: key, ...data[key] }));
+                    updateRealSaldo();
+                    renderTable(allUsers);
+                    document.getElementById('appLoader').classList.add('hidden');
+                }
+            });
+        }
+
+        function updateRealSaldo() {
+            const total = allUsers.reduce((sum, u) => sum + (u.saldo || 0), 0);
+            document.getElementById('statSaldo').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '';
+            if(users.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400">Tidak ada data.</td></tr>`; return; }
+
+            users.forEach(u => {
+                const isAdmin = u.j === 'a';
+                const tr = document.createElement('tr');
+                tr.className = "table-row-hover bg-white border-b border-gray-50 transition-colors";
+                tr.onclick = (e) => { if(!e.target.closest('button')) window.location.href = `detailmusisi.html?uid=${u.uid}`; };
+
+                tr.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center font-bold text-gray-500 text-sm">${u.fullName ? u.fullName.substring(0,2).toUpperCase() : 'NA'}</div>
+                            <div><p class="text-sm font-bold text-black hover:text-blue-600 transition-colors">${u.fullName || 'Tanpa Nama'}</p><p class="text-xs text-gray-500 truncate max-w-[150px]">${u.email}</p></div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><p class="text-xs text-gray-500">${u.whatsapp || '-'}</p></td>
+                    <td class="px-6 py-4"><div class="flex flex-col gap-1 items-start">${isAdmin ? '<span class="bg-red-100 text-red-600 px-2 py-0.5 rounded text-[10px] font-bold">ADMIN</span>' : ''}<span class="text-[10px] font-bold border px-2 rounded border-gray-200 text-gray-500">${u.paket || 'Basic'}</span></div></td>
+                    <td class="px-6 py-4"><p class="text-sm font-bold text-blue-700 font-mono">Rp ${(u.saldo || 0).toLocaleString('id-ID')}</p></td>
+                    <td class="px-6 py-4 text-right"><button onclick="window.location.href='detailmusisi.html?uid=${u.uid}'" class="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg hover:bg-gray-800">Detail</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            renderTable(allUsers.filter(u => (u.fullName && u.fullName.toLowerCase().includes(term)) || (u.email && u.email.toLowerCase().includes(term))));
+        });
+
+        window.toggleSidebar = () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); };
+        lucide.createIcons();
+    </script>
+</body>
+</html>
