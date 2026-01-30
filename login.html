@@ -2,326 +2,95 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Masuk - Aldotune</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masuk - Aldotune Creative Studio</title>
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { aldo: { black: '#0a0a0a', disabled: '#E5E7EB', textDisabled: '#9CA3AF' } },
-                    animation: { 
-                        'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                        'modal-in': 'modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-                    },
-                    keyframes: { 
-                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
-                        modalIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
-                    }
-                }
-            }
-        }
-    </script>
+    <style id="main-style" media="not all">
+        /* --- RESET & STYLE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', 'Open Sans', Helvetica, Arial, sans-serif; }
+        body { background-color: #ffffff; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; color: #333; padding-top: 60px; }
+        .login-container { width: 100%; max-width: 480px; padding: 20px; text-align: center; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .logo-wrapper { margin-bottom: 50px; display: flex; justify-content: center; }
+        .logo-img { max-width: 280px; height: auto; display: block; }
+        
+        .form-row { display: flex; align-items: center; margin-bottom: 25px; height: 55px; }
+        .icon-wrapper { width: 40px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
+        .icon-wrapper svg { width: 22px; height: 22px; fill: #bfbfbf; }
+        
+        .custom-input { width: 100%; height: 100%; background-color: #f2f2f2; border: none; padding: 0 20px; font-size: 16px; color: #333; outline: none; transition: 0.2s; border-radius: 4px; }
+        .custom-input::placeholder { color: #b0b0b0; font-size: 15px; }
+        .custom-input:focus { background-color: #e8e8e8; box-shadow: inset 4px 0 0 #0056b3; }
+        
+        .btn-wrapper { margin-top: 50px; margin-bottom: 30px; }
+        .btn-login { background-color: #bfbfbf; color: white; border: none; padding: 15px 80px; border-radius: 50px; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: not-allowed; transition: all 0.3s ease; }
+        .btn-login.active { background-color: #0056b3; cursor: pointer; box-shadow: 0 5px 15px rgba(0, 86, 179, 0.2); }
+        .btn-login.active:hover { background-color: #004494; transform: translateY(-2px); }
+        
+        /* Style Link Footer */
+        .footer-links { margin-top: 10px; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        
+        .forgot-link { font-size: 14px; color: #5caad9; text-decoration: none; cursor: pointer; }
+        .forgot-link:hover { color: #4a8ab3; text-decoration: underline; }
+
+        /* Style Link Daftar */
+        .register-text { font-size: 14px; color: #888; }
+        .register-link { color: #333; text-decoration: none; font-weight: bold; }
+        .register-link:hover { color: #0056b3; text-decoration: underline; }
+
+    </style>
+
     <style>
-        /* Optimasi Scroll & Tampilan */
-        html, body { margin: 0; background-color: #ffffff; overflow-x: hidden; }
+        #boot-terminal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; color: #333333; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; padding: 20px; z-index: 9999; display: block; overflow: hidden; }
+        .log-line { display: block; margin-bottom: 4px; white-space: pre-wrap; }
         
-        /* Input Style */
-        .minimal-input {
-            width: 100%; background-color: transparent; border-bottom: 2px solid #e5e7eb;
-            border-top: none; border-left: none; border-right: none; border-radius: 0;
-            padding: 12px 0; font-size: 1.125rem; transition: all 0.3s ease;
-        }
-        .minimal-input:focus { border-bottom-color: #000000; outline: none; }
-        .minimal-input:disabled { color: #9CA3AF; cursor: not-allowed; border-bottom-color: #E5E7EB; background-color: #fafafa; }
-        
-        /* Utility Classes */
-        .view-hidden { display: none !important; }
-        .view-active { display: block !important; animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .step-content { display: none; }
-        .step-content.active { display: block; animation: slideUp 0.3s ease-out; }
-        .step-indicator.active { background-color: black; width: 2rem; }
+        /* ANTI SPAM & CURSOR */
+        body.is-loading { cursor: wait !important; }
+        body.is-loading * { pointer-events: none !important; cursor: wait !important; }
     </style>
 </head>
-<body class="flex flex-col w-full min-h-screen">
+<body class="is-loading">
 
-    <div id="toastContainer" class="fixed top-0 left-0 w-full z-[100] flex justify-center pointer-events-none p-4">
-        <div id="toast" class="bg-black text-white px-6 py-4 rounded-full shadow-2xl flex items-center gap-3 transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-auto">
-            <i id="toastIcon" data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
-            <span id="toastMessage" class="font-medium text-sm">Berhasil</span>
+    <div id="boot-terminal"></div>
+
+    <div class="login-container">
+        <div class="logo-wrapper">
+            <img src="acss.png" alt="Aldotune Logo" class="logo-img" id="mainLogo" style="display: none;">
         </div>
-    </div>
 
-    <div class="flex flex-col lg:flex-row w-full flex-grow relative">
+        <form id="loginForm">
+            <div class="form-row">
+                <div class="icon-wrapper" id="iconEmail" style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                </div>
+                <input type="email" id="emailInput" class="custom-input" placeholder="Email Perusahaan" readonly="true" onfocus="this.removeAttribute('readonly');" autocomplete="off">
+            </div>
 
-        <div class="hidden lg:flex lg:w-1/2 bg-black relative items-center justify-center overflow-hidden lg:h-screen lg:sticky lg:top-0">
-            <img src="https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=2070&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 grayscale">
+            <div class="form-row">
+                <div class="icon-wrapper" id="iconPin" style="display: none;">
+                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                </div>
+                <input type="password" id="pinInput" class="custom-input" placeholder="PIN (6 Digit)" maxlength="6" inputmode="numeric" pattern="\d{6}" readonly="true" onfocus="this.removeAttribute('readonly');" autocomplete="off">
+            </div>
+
+            <div class="btn-wrapper">
+                <button type="submit" id="btnSubmit" class="btn-login" disabled>MASUK</button>
+            </div>
+        </form>
+
+        <div class="footer-links">
+            <a href="reset.html" class="forgot-link"><b>Lupa PIN?</b></a>
             
-            <div class="relative z-10 p-16 text-white max-w-xl flex flex-col justify-center h-full">
-                <div class="flex-1 flex flex-col justify-center">
-                    <h2 class="text-7xl font-extrabold tracking-tighter mb-6">aldotune.</h2>
-                    <p class="text-2xl text-gray-300 font-light leading-relaxed">
-                        Amplify Your Voice.<br>
-                        <span class="font-bold text-white">Global Distribution.</span>
-                    </p>
-                </div>
-                <div class="border-t border-white/20 pt-6 shrink-0">
-                    <p class="text-white/60 text-xs font-medium leading-loose">&copy; 2026 Aldotune Creative Studio.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="w-full lg:w-1/2 bg-white flex flex-col relative">
-            
-            <div id="pageLoader" class="absolute inset-0 z-50 bg-white flex flex-col items-center justify-center transition-all duration-500 min-h-[500px]">
-                <div class="w-12 h-12 border-4 border-gray-100 rounded-full relative">
-                    <div class="w-12 h-12 border-4 border-black rounded-full border-t-transparent animate-spin absolute top-0 left-0"></div>
-                </div>
-                <p class="mt-4 text-xs font-bold text-gray-400 tracking-widest uppercase animate-pulse">Memuat Studio...</p>
-            </div>
-
-            <div class="flex-1 w-full px-8 py-12 lg:py-20 flex flex-col justify-center min-h-[80vh]">
-                <div class="max-w-md w-full mx-auto relative">
-                    
-                    <div class="mb-10 lg:mb-12">
-                        <h1 class="text-5xl font-extrabold tracking-tighter text-black mb-2">aldotune.</h1>
-                        <p class="text-gray-500 font-medium">Ekosistem Musik Digital &<br>Manajemen Royalti.</p>
-                    </div>
-
-                    <div id="selectionView" class="view-hidden space-y-4">
-                        <p class="text-sm text-gray-400 font-bold tracking-widest uppercase mb-4">Akses Label</p>
-                        
-                        <button id="googleLoginBtn" onclick="handleGoogleLogin()" class="relative w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center justify-center px-6 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
-                            <div id="googleBtnContent" class="flex items-center gap-5 w-full transition-opacity duration-200">
-                                <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 shrink-0">
-                                    <svg class="w-7 h-7" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
-                                </div>
-                                <div class="text-left">
-                                    <span class="block text-lg font-extrabold">Google Account</span>
-                                    <span class="text-xs text-gray-500 font-medium">Masuk / Daftar Artis</span>
-                                </div>
-                            </div>
-                            <div id="googleBtnLoader" class="absolute inset-0 flex items-center justify-center gap-3 hidden">
-                                <svg class="animate-spin h-6 w-6 text-black" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span class="text-sm font-bold text-gray-600 animate-pulse">Menghubungkan...</span>
-                            </div>
-                        </button>
-                        <button onclick="showEmailForm()" class="w-full bg-white border-2 border-gray-200 text-black font-bold h-24 rounded-2xl transition-all duration-200 flex items-center px-6 gap-5 hover:bg-gray-50 hover:border-black active:scale-[0.98] group">
-                            <div class="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="mail" class="w-6 h-6 text-gray-600 group-hover:text-black"></i></div>
-                            <div class="text-left"><span class="block text-lg font-extrabold">Email & PIN</span><span class="text-xs text-gray-500 font-medium">Login Manual</span></div>
-                        </button>
-                        <div class="py-4 text-center">
-                            <span class="text-gray-400 text-sm font-medium">Belum bergabung?</span>
-                            <button onclick="openRegisterInfoModal()" class="ml-1 text-black font-bold text-sm hover:underline decoration-2 underline-offset-4">Daftar Sekarang</button>
-                        </div>
-                        <div class="pt-2 flex justify-center"><button onclick="openHelpModal()" class="text-sm font-bold text-gray-400 hover:text-black transition-colors flex items-center gap-2 px-4 py-2 rounded-full hover:bg-gray-50"><i data-lucide="help-circle" class="w-4 h-4"></i>Bantuan Label</button></div>
-                    </div>
-
-                    <div id="emailView" class="view-hidden">
-                        <button onclick="handleBack()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors py-2"><div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100"><i data-lucide="arrow-left" class="w-4 h-4"></i></div><span class="text-sm font-bold">Kembali</span></button>
-                        <form id="loginForm" class="space-y-6">
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Email Artis/Manajer</label><input type="email" id="email" class="minimal-input text-black font-bold" placeholder="nama@aldotune.com" required></div>
-                            <div class="group relative">
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Akses (Login)</label>
-                                <div class="relative">
-                                    <input type="password" id="pin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
-                                    <button type="button" id="togglePinBtn" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                                </div>
-                                <div class="mt-2 text-right"><a href="reset.html" class="text-xs font-bold text-gray-400 hover:text-black transition-colors">Lupa PIN Akses?</a></div>
-                            </div>
-                            <div class="pt-2"><button type="submit" id="submitBtn" disabled class="w-full bg-aldo-disabled text-aldo-textDisabled font-bold h-16 rounded-full flex items-center justify-center gap-2 cursor-not-allowed shadow-none text-lg"><span id="btnText">Masuk Dashboard</span><div id="btnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
-                        </form>
-                    </div>
-
-                    <div id="securityPinView" class="view-hidden">
-                        <div class="mb-6 flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <img id="secUserImg" src="" class="w-10 h-10 rounded-full border border-gray-200 object-cover">
-                            <div><p id="secUserName" class="text-sm font-bold text-black truncate max-w-[200px]">User</p><p id="secUserEmail" class="text-xs text-gray-500 truncate max-w-[200px]">email</p></div>
-                        </div>
-                        <div class="space-y-6">
-                            <div><h3 class="text-2xl font-bold text-black mb-2">PIN Transaksi</h3><p class="text-gray-500 text-sm">Keamanan data royalti. Masukkan PIN Database Anda.</p></div>
-                            <div class="group relative">
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN TRANSAKSI (6 DIGIT)</label>
-                                <div class="relative">
-                                    <input type="password" id="secPinInput" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
-                                    <button type="button" id="toggleSecPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeSecIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                                </div>
-                                <div class="mt-2 text-right"><button onclick="switchToRecovery()" class="text-xs font-bold text-gray-400 hover:text-black transition-colors underline decoration-2 underline-offset-4">Lupa PIN Transaksi?</button></div>
-                            </div>
-                            <div class="pt-4 flex gap-3">
-                                <button onclick="openLogoutModal()" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full hover:bg-gray-200">Keluar</button>
-                                <button id="secPinSubmitBtn" onclick="submitSecurityPin()" disabled class="flex-1 bg-aldo-disabled text-aldo-textDisabled font-bold h-14 rounded-full flex items-center justify-center gap-2 cursor-not-allowed"><span id="secBtnText">Buka Dashboard</span><div id="secBtnLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="lockedView" class="view-hidden">
-                        <button id="recoveryBackBtn" onclick="handleRecoveryBack()" class="mb-6 flex items-center gap-2 text-gray-400 hover:text-black transition-colors py-2">
-                            <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100">
-                                <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                            </div>
-                            <span class="text-sm font-bold">Kembali</span>
-                        </button>
-
-                        <div class="mb-6 flex justify-center"><div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center border-4 border-red-50"><i data-lucide="shield-alert" class="w-10 h-10 text-red-600"></i></div></div>
-                        <div class="text-center mb-8"><h3 id="lockedTitle" class="text-3xl font-extrabold text-black mb-2">Keamanan</h3><p id="lockedDesc" class="text-gray-500 text-sm mt-4 leading-relaxed">Verifikasi identitas untuk reset PIN Transaksi dan membuka akses royalti.</p></div>
-                        
-                        <div id="unlockFormStep1">
-                            <div class="space-y-6">
-                                <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP)</label><input type="number" id="unlockNik" class="minimal-input text-black font-mono tracking-widest font-bold" placeholder="35xxxxxxxxxxxxxx"></div>
-                                <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="unlockBirthDate" class="minimal-input text-black font-bold"></div>
-                            </div>
-                            <div class="pt-6"><button onclick="handleUnlockVerification()" id="unlockBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Verifikasi Data</button></div>
-                            <div class="pt-4 text-center"><button onclick="openLogoutModal()" class="text-sm font-bold text-red-600 hover:text-red-800 transition-colors underline decoration-2 underline-offset-4">Keluar Akun</button></div>
-                        </div>
-
-                        <div id="unlockFormStep2" class="hidden space-y-6">
-                            <p class="text-green-600 font-bold text-center text-sm">Identitas Terverifikasi! Buat PIN Baru.</p>
-                            <div class="group relative">
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">PIN Transaksi Baru</label>
-                                <div class="relative">
-                                    <input type="password" id="unlockNewPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••">
-                                    <button type="button" id="toggleUnlockPin" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeUnlockIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                                </div>
-                            </div>
-                            <button onclick="handleUnlockSave()" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4">Simpan PIN Baru</button>
-                        </div>
-                    </div>
-
-                    <div id="registerView" class="view-hidden">
-                        <div class="flex items-center gap-2 mb-8"><div id="step1Dot" class="step-indicator w-8 h-2 rounded-full bg-black"></div><div id="step2Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div><div id="step3Dot" class="step-indicator w-2 h-2 rounded-full bg-gray-200"></div></div>
-                        <div class="mb-6"><h3 id="stepTitle" class="text-2xl font-bold text-black mb-1">Profil Artis</h3><p id="stepDesc" class="text-gray-500 text-sm">Langkah 1 dari 3: Data Dasar</p></div>
-                        <div id="regStep1" class="step-content active space-y-6">
-                            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100"><img id="regUserImg" src="" class="w-12 h-12 rounded-full border border-gray-200 object-cover"><div><p class="text-xs text-gray-400 font-bold uppercase">Tautan Google</p><p id="regUserEmail" class="text-sm font-bold text-black truncate max-w-[200px]">email</p></div></div>
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Nama Lengkap / Stage Name</label><input type="text" id="regFullName" class="minimal-input text-gray-500 font-bold bg-gray-50 px-2 rounded cursor-not-allowed" disabled></div>
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">WhatsApp Aktif</label><input type="number" id="regWhatsapp" class="minimal-input text-black font-bold placeholder-gray-300" placeholder="628xxxxx" required></div>
-                            <button onclick="nextStep(2)" class="w-full bg-black text-white font-bold h-14 rounded-full mt-4 flex items-center justify-center gap-2">Lanjut <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-                        </div>
-                        <div id="regStep2" class="step-content space-y-6">
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">NIK (KTP) - Verifikasi Royalti</label><input type="number" id="regNik" class="minimal-input text-black font-mono tracking-widest font-bold placeholder-gray-300" placeholder="35xxxxxxxxxxxxxx" required></div>
-                            <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="regBirthDate" class="minimal-input text-black font-bold" required></div>
-                            <div class="flex gap-3 mt-8"><button onclick="prevStep(1)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button onclick="nextStep(3)" class="flex-1 bg-black text-white font-bold h-14 rounded-full">Lanjut</button></div>
-                        </div>
-                        <div id="regStep3" class="step-content space-y-6">
-                            <div class="group relative">
-                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Buat PIN Akses (Login)</label>
-                                <div class="relative">
-                                    <input type="password" id="regAccessPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium" placeholder="••••••" required>
-                                    <button type="button" id="toggleRegAccess" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegAccessIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                                </div>
-                            </div>
-                            <div class="group relative">
-                                <label class="block text-xs font-bold text-black uppercase tracking-widest mb-1">Buat PIN Transaksi (Database)</label>
-                                <div class="relative">
-                                    <input type="password" id="regTransPin" maxlength="6" inputmode="numeric" pattern="\d{6}" class="minimal-input text-black font-mono tracking-[0.3em] font-medium border-black" placeholder="••••••" required>
-                                    <button type="button" id="toggleRegTrans" class="absolute right-0 bottom-3 text-gray-400 hover:text-black"><i id="eyeRegTransIcon" data-lucide="eye" class="w-6 h-6"></i></button>
-                                </div>
-                            </div>
-                            <div class="flex gap-3 mt-8"><button onclick="prevStep(2)" class="w-1/3 bg-gray-100 text-black font-bold h-14 rounded-full">Kembali</button><button id="regFinalSubmitBtn" onclick="submitRegistration()" class="flex-1 bg-black text-white font-bold h-14 rounded-full flex items-center justify-center gap-2"><span id="regFinalBtnText">Selesai</span><div id="regFinalLoader" class="hidden"><svg class="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></div></button></div>
-                        </div>
-                        <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Batalkan Pendaftaran</button>
-                    </div>
-
-                    <div id="updateProfileView" class="view-hidden">
-                        <div class="mb-6"><h3 class="text-2xl font-bold text-black mb-2">Lengkapi Data</h3><p class="text-gray-500 text-sm">Akun Anda belum memiliki Tanggal Lahir. Mohon lengkapi untuk validasi data.</p></div>
-                        <div class="group relative"><label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Tanggal Lahir</label><input type="date" id="updateBirthDate" class="minimal-input text-black font-bold" required></div>
-                        <div class="pt-6"><button onclick="submitUpdateProfile()" id="updateProfileBtn" class="w-full bg-black text-white font-bold h-14 rounded-full">Simpan & Lanjut</button></div>
-                        <button onclick="openLogoutModal()" class="w-full text-gray-400 font-bold text-xs mt-6 hover:text-red-500">Keluar</button>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <footer class="w-full bg-black text-white border-t border-white/10 pt-16 pb-12 z-20 relative">
-        <div class="max-w-7xl mx-auto px-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
-                <div class="md:col-span-2">
-                    <h2 class="text-3xl font-extrabold tracking-tighter mb-4">aldotune.</h2>
-                    <p class="text-gray-400 leading-relaxed max-w-sm text-sm">
-                        Kami membantu musisi independen menjangkau audiens global melalui distribusi digital yang transparan dan manajemen royalti yang akurat. Bergabunglah dengan revolusi musik digital.
-                    </p>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-6 tracking-wide">PERUSAHAAN</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li><a href="index.html" class="hover:text-white transition-colors">Website</a></li>
-                        <li><a href="tentang-kami.html" class="hover:text-white transition-colors">Tentang Kami</a></li>
-                        <li><a href="hubungi-kami.html" class="hover:text-white transition-colors">Hubungi Kami</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="text-white font-bold mb-6 tracking-wide">LEGAL</h4>
-                    <ul class="space-y-4 text-sm text-gray-400">
-                        <li><a href="syarat&ketentuan.html" class="hover:text-white transition-colors">Syarat & Ketentuan</a></li>
-                        <li><a href="kebijakanprivasi.html" class="hover:text-white transition-colors">Kebijakan Privasi</a></li>
-                        <li><a href="laporan-penyalahgunaan.html" class="hover:text-white transition-colors">Laporan Penyalahgunaan</a></li>
-                        <li><a href="royalti-klaim.html" class="hover:text-white transition-colors">Royalti & Klaim</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-gray-500 text-xs font-medium">
-                    &copy; 2026 Aldotune Creative Studio. Hak Cipta Dilindungi Undang-Undang.
-                </p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="instagram" class="w-5 h-5"></i></a>
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="youtube" class="w-5 h-5"></i></a>
-                    <a href="#" class="text-gray-500 hover:text-white transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
-    <div id="registerInfoModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden opacity-0 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div id="regInfoCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-all duration-300">
-            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-blue-100 text-blue-600"><i data-lucide="music-2" class="w-8 h-8"></i></div>
-            <div class="text-center mb-6"><h3 class="text-xl font-bold text-black mb-2">Gabung Aldotune</h3><p class="text-gray-500 text-sm leading-relaxed">Untuk mendaftar sebagai Artis atau Label, silakan klik tombol <br><span class="font-bold text-black">"Google Account"</span> <br>di menu utama.</p><p class="text-xs text-gray-400 mt-2">Sinkronisasi otomatis dengan YouTube Music.</p></div>
-            <button onclick="closeRegisterInfoModal()" class="w-full py-3 rounded-xl font-bold text-white bg-black hover:bg-gray-800 transition-colors">Saya Mengerti</button>
-        </div>
-    </div>
-
-    <div id="errorModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] hidden opacity-0 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div id="errorCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-all duration-300">
-            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-red-100 text-red-600"><i data-lucide="shield-alert" class="w-8 h-8"></i></div>
-            <div class="text-center mb-6"><h3 id="errorTitle" class="text-xl font-bold text-black mb-2">Info</h3><p id="errorMsg" class="text-gray-500 text-sm">Pesan.</p></div>
-            <button onclick="closeErrorModal()" class="w-full py-3 rounded-xl font-bold text-white bg-black hover:bg-gray-800 transition-colors">Tutup</button>
-        </div>
-    </div>
-
-    <div id="logoutModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div id="logoutCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 transition-all duration-300">
-            <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-yellow-100 text-yellow-600"><i data-lucide="log-out" class="w-8 h-8"></i></div>
-            <div class="text-center mb-6"><h3 class="text-xl font-bold text-black mb-2">Batalkan Sesi?</h3><p class="text-gray-500 text-sm">Proses masuk akan dibatalkan.</p></div>
-            <div class="flex gap-3"><button onclick="closeLogoutModal()" class="flex-1 py-3 rounded-xl font-bold text-black bg-gray-100 hover:bg-gray-200">Kembali</button><button onclick="confirmLogout()" class="flex-1 py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700">Ya, Keluar</button></div>
-        </div>
-    </div>
-
-    <div id="helpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div id="helpCard" class="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl transform scale-95 relative transition-all duration-300">
-            <button onclick="closeHelpModal()" class="absolute top-4 right-4 text-gray-400 hover:text-black"><i data-lucide="x" class="w-6 h-6"></i></button>
-            <div class="text-center mb-6 mt-4"><h3 class="text-xl font-bold text-black mb-1">Dukungan Artis</h3><p class="text-gray-500 text-sm mb-2">Butuh bantuan distribusi atau akun?</p><p class="text-black font-mono font-bold text-lg">0853-8518-4618</p></div>
-            <a href="https://wa.me/6285385184618" target="_blank" class="block w-full py-4 rounded-xl font-bold text-white bg-[#25D366] hover:bg-[#1da851] text-center">Chat WhatsApp</a>
+            <span class="register-text">
+                Belum punya akun? <a href="daftar.html" class="register-link">Daftar</a>
+            </span>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, get, set, update, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
@@ -330,404 +99,112 @@
             projectId: "aldotune-records",
             storageBucket: "aldotune-records.firebasestorage.app",
             messagingSenderId: "311200667476",
-            appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
+            measurementId: "G-GQ3Y2GKWG1"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getDatabase(app);
-        const googleProvider = new GoogleAuthProvider();
 
-        const els = {
-            email: document.getElementById('email'), pin: document.getElementById('pin'), submitBtn: document.getElementById('submitBtn'),
-            selectionView: document.getElementById('selectionView'), emailView: document.getElementById('emailView'),
-            securityPinView: document.getElementById('securityPinView'), secPinInput: document.getElementById('secPinInput'), secPinSubmitBtn: document.getElementById('secPinSubmitBtn'),
-            registerView: document.getElementById('registerView'), lockedView: document.getElementById('lockedView'), updateProfileView: document.getElementById('updateProfileView'),
-            regNikInput: document.getElementById('regNik'), regWhatsapp: document.getElementById('regWhatsapp'), regBirthDate: document.getElementById('regBirthDate'),
-            regAccessPin: document.getElementById('regAccessPin'), regTransPin: document.getElementById('regTransPin'), regSubmitBtn: document.getElementById('regFinalSubmitBtn'),
-            pageLoader: document.getElementById('pageLoader'), toast: document.getElementById('toast'), toastMessage: document.getElementById('toastMessage')
-        };
+        // --- BOOT TERMINAL & LOADING AWAL ---
+        const terminal = document.getElementById('boot-terminal');
+        const logs = [
+            "> System Init...",
+            "> Connecting to: aldotune-records.firebaseapp.com",
+            "> [Config] API_KEY: AIzaSy...rgjrY detected.",
+            "> [Auth] Service initialized.",
+            "> [Secure] Enforcing HTTPS connection...",
+            "> [UI] Loading Assets...",
+            "> Ready."
+        ];
 
-        let activeUser = null;
-        let currentStep = 1;
-        let currentAttempts = 0;
-
-        window.showEmailForm = () => switchView('emailView');
-        window.showSelection = () => switchView('selectionView');
-        window.handleBack = () => { resetUI(); showSelection(); };
-        
-        window.handleRecoveryBack = () => {
-            if(activeUser) {
-                setupSecurityPinView(activeUser);
+        let lineIndex = 0;
+        const logInterval = setInterval(() => {
+            if(lineIndex < logs.length) {
+                const p = document.createElement('span');
+                p.className = 'log-line';
+                p.innerText = logs[lineIndex];
+                terminal.appendChild(p);
+                lineIndex++;
             } else {
-                handleBack();
+                clearInterval(logInterval);
             }
-        };
+        }, 80);
 
-        window.switchToRecovery = () => {
-            document.getElementById('lockedTitle').innerText = "Keamanan";
-            document.getElementById('lockedDesc').innerText = "Verifikasi identitas untuk reset PIN Transaksi.";
-            document.getElementById('recoveryBackBtn').classList.remove('hidden');
-            switchView('lockedView');
-        };
-        
-        function switchView(viewId) {
-            ['selectionView', 'emailView', 'securityPinView', 'registerView', 'lockedView', 'updateProfileView'].forEach(id => {
-                const el = document.getElementById(id);
-                if(id === viewId) { el.classList.remove('view-hidden'); el.classList.add('view-active'); }
-                else { el.classList.remove('view-active'); el.classList.add('view-hidden'); }
-            });
-        }
+        // SETELAH 1.2 DETIK
+        setTimeout(() => {
+            // Matikan loading state
+            document.body.classList.remove('is-loading');
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                activeUser = user;
-                checkUserDbStatus(user);
-            } else {
-                setTimeout(() => {
-                    els.pageLoader.classList.add('opacity-0', 'invisible');
-                    if(!els.selectionView.classList.contains('view-active')) showSelection();
-                }, 300);
-            }
-            checkForm();
+            terminal.style.display = 'none';
+            document.getElementById('mainLogo').style.display = 'block';
+            document.getElementById('iconEmail').style.display = 'flex';
+            document.getElementById('iconPin').style.display = 'flex';
+            document.getElementById('main-style').setAttribute('media', 'all');
+
+            if (window.location.hash) window.history.replaceState(null, null, ' ');
+            const fakePath = "/aldotune.onmicrosoft.com/oauth2/v2.0/authorize";
+            const csrf = Math.random().toString(36).substring(2);
+            window.history.replaceState(null, null, "#" + fakePath + "?csrf=" + csrf);
+
+        }, 1200);
+
+        // --- VALIDASI & LOGIN ---
+        const emailInput = document.getElementById('emailInput');
+        const pinInput = document.getElementById('pinInput');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        emailInput.addEventListener('input', checkValidity);
+        pinInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            checkValidity();
         });
 
-        function checkUserDbStatus(user) {
-            const uid = user.uid;
-            get(child(ref(db), `users/${uid}`)).then((snapshot) => {
-                const data = snapshot.val();
-                els.pageLoader.classList.add('opacity-0', 'invisible');
-                setLoading(false, 'manual');
-
-                if (data && data.isLocked === true) {
-                    document.getElementById('lockedTitle').innerText = "Akun Terkunci";
-                    document.getElementById('lockedDesc').innerText = "3x Salah PIN. Verifikasi NIK & Tgl Lahir untuk buka kunci.";
-                    document.getElementById('recoveryBackBtn').classList.add('hidden');
-                    switchView('lockedView');
-                    return;
-                }
-
-                if (data && data.nik) {
-                    if (!data.birthDate) {
-                        switchView('updateProfileView');
-                    } else {
-                        currentAttempts = data.pinAttempts || 0;
-                        setupSecurityPinView(user);
-                    }
-                } else {
-                    setupRegisterView(user);
-                }
-            }).catch(e => {
-                setLoading(false, 'manual');
-                els.pageLoader.classList.add('opacity-0', 'invisible');
-                showError("Koneksi Error", e.message);
-                signOut(auth);
-            });
-        }
-
-        function setupSecurityPinView(user) {
-            switchView('securityPinView');
-            const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=random`;
-            document.getElementById('secUserImg').src = avatarUrl;
-            document.getElementById('secUserName').innerText = user.displayName || user.email;
-            document.getElementById('secUserEmail').innerText = user.email;
-            els.secPinInput.value = "";
-            checkSecurityPinForm();
-        }
-
-        function setupRegisterView(user) {
-            switchView('registerView');
-            currentStep = 1;
-            updateStepUI();
-            const avatarUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}&background=random`;
-            document.getElementById('regUserImg').src = avatarUrl;
-            document.getElementById('regUserEmail').innerText = user.email;
-            document.getElementById('regFullName').value = user.displayName || ""; 
-            ['regWhatsapp', 'regNik', 'regBirthDate', 'regAccessPin', 'regTransPin'].forEach(id => document.getElementById(id).value = "");
-        }
-
-        // --- SUBMIT LOGIC ---
-        window.handleUnlockVerification = () => {
-            const nik = document.getElementById('unlockNik').value;
-            const birthDate = document.getElementById('unlockBirthDate').value;
-            if(!nik || !birthDate) return showError("Data Kurang", "Isi NIK dan Tanggal Lahir.");
-
-            const btn = document.getElementById('unlockBtn');
-            btn.disabled = true; btn.innerText = "Memeriksa...";
-
-            get(child(ref(db), `users/${activeUser.uid}`)).then((snapshot) => {
-                const data = snapshot.val();
-                if (String(data.nik) === String(nik) && String(data.birthDate) === String(birthDate)) {
-                    document.getElementById('unlockFormStep1').classList.add('hidden');
-                    document.getElementById('unlockFormStep2').classList.remove('hidden');
-                } else {
-                    btn.disabled = false; btn.innerText = "Verifikasi Data";
-                    showError("Gagal", "NIK atau Tanggal Lahir tidak cocok.");
-                }
-            });
-        };
-
-        window.handleUnlockSave = () => {
-            const newPin = document.getElementById('unlockNewPin').value;
-            if(newPin.length !== 6) return showError("Error", "PIN harus 6 digit.");
-            
-            update(ref(db, `users/${activeUser.uid}`), {
-                pin: newPin,
-                isLocked: false,
-                pinAttempts: 0
-            }).then(() => {
-                showToast("Berhasil. Silakan Masuk.");
-                setTimeout(() => window.location.reload(), 1500);
-            });
-        };
-
-        window.submitSecurityPin = () => {
-            const enteredPin = els.secPinInput.value;
-            if (!activeUser || enteredPin.length !== 6) return;
-            setLoading(true, 'security');
-
-            get(child(ref(db), `users/${activeUser.uid}/pin`)).then((snapshot) => {
-                if (String(snapshot.val()) === String(enteredPin)) {
-                    update(ref(db, `users/${activeUser.uid}`), { pinAttempts: 0 });
-                    finishLogin(activeUser);
-                } else {
-                    currentAttempts++;
-                    let updates = { pinAttempts: currentAttempts };
-                    if (currentAttempts >= 3) {
-                        updates.isLocked = true;
-                        update(ref(db, `users/${activeUser.uid}`), updates).then(() => {
-                            document.getElementById('lockedTitle').innerText = "Akun Terkunci";
-                            document.getElementById('lockedDesc').innerText = "3x Salah PIN. Verifikasi NIK & Tgl Lahir untuk buka kunci.";
-                            document.getElementById('recoveryBackBtn').classList.add('hidden');
-                            switchView('lockedView');
-                        });
-                    } else {
-                        update(ref(db, `users/${activeUser.uid}`), updates);
-                        setLoading(false, 'security');
-                        showError("PIN Salah", `Sisa percobaan: ${3 - currentAttempts}`);
-                        els.secPinInput.value = "";
-                    }
-                }
-            }).catch(e => { setLoading(false, 'security'); showError("Akses Ditolak", "Gagal verifikasi PIN."); });
-        };
-
-        window.submitRegistration = () => {
-            const wa = document.getElementById('regWhatsapp').value;
-            const nik = document.getElementById('regNik').value;
-            const birthDate = document.getElementById('regBirthDate').value;
-            const accessPin = document.getElementById('regAccessPin').value;
-            const transPin = document.getElementById('regTransPin').value;
-            
-            if (accessPin.length !== 6 || transPin.length !== 6) return showError("Format Salah", "PIN harus 6 digit.");
-            
-            const btn = document.getElementById('regFinalSubmitBtn');
-            const txt = document.getElementById('regFinalBtnText');
-            const loader = document.getElementById('regFinalLoader');
-            btn.disabled = true; txt.classList.add('hidden'); loader.classList.remove('hidden');
-
-            const userData = {
-                fullName: activeUser.displayName || activeUser.email.split('@')[0], email: activeUser.email,
-                whatsapp: wa, nik: nik, birthDate: birthDate, 
-                accessPin: accessPin, pin: transPin, 
-                faceId: "false", registrationDate: new Date().toISOString(), updatedAt: Date.now(), pinAttempts: 0, isLocked: false
-            };
-
-            set(ref(db, `users/${activeUser.uid}`), userData)
-                .then(() => finishLogin(activeUser))
-                .catch(e => { 
-                    btn.disabled = false; txt.classList.remove('hidden'); loader.classList.add('hidden');
-                    showError("Gagal Simpan", e.message); 
-                });
-        };
-
-        window.submitUpdateProfile = () => {
-            const birthDate = document.getElementById('updateBirthDate').value;
-            if(!birthDate) return showError("Data Kurang", "Tanggal Lahir wajib diisi.");
-            
-            const btn = document.getElementById('updateProfileBtn');
-            btn.disabled = true; btn.innerText = "Menyimpan...";
-            
-            update(ref(db, `users/${activeUser.uid}`), { birthDate: birthDate })
-                .then(() => {
-                    showToast("Data Disimpan");
-                    checkUserDbStatus(activeUser);
-                });
-        };
-
-        // --- STEPPER ---
-        window.nextStep = (step) => {
-            if(step === 2 && document.getElementById('regWhatsapp').value.length < 9) return showError("Data Kurang", "Nomor WhatsApp tidak valid.");
-            if(step === 3) {
-                if(document.getElementById('regNik').value.length < 10) return showError("Data Kurang", "NIK tidak valid.");
-                if(!document.getElementById('regBirthDate').value) return showError("Data Kurang", "Tanggal Lahir wajib diisi.");
-            }
-            currentStep = step; updateStepUI();
-        };
-        window.prevStep = (step) => { currentStep = step; updateStepUI(); };
-
-        function updateStepUI() {
-            document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
-            document.getElementById(`regStep${currentStep}`).classList.add('active');
-            const titles = ["Data Diri", "Identitas", "Keamanan"];
-            document.getElementById('stepTitle').innerText = titles[currentStep-1];
-            document.getElementById('stepDesc').innerText = `Langkah ${currentStep} dari 3`;
-            for(let i=1; i<=3; i++) {
-                const dot = document.getElementById(`step${i}Dot`);
-                dot.style.width = i <= currentStep ? "2rem" : "0.5rem";
-                dot.style.backgroundColor = i <= currentStep ? "black" : "#e5e7eb";
+        function checkValidity() {
+            const emailVal = emailInput.value.trim();
+            const pinVal = pinInput.value.trim();
+            if (emailVal.length > 0 && pinVal.length === 6) {
+                btnSubmit.removeAttribute('disabled');
+                btnSubmit.classList.add('active');
+            } else {
+                btnSubmit.setAttribute('disabled', 'true');
+                btnSubmit.classList.remove('active');
             }
         }
-
-        // --- GOOGLE LOGIN WITH TIMEOUT & ANIMATION ---
-        window.handleGoogleLogin = async () => {
-            const btn = document.getElementById('googleLoginBtn');
-            const content = document.getElementById('googleBtnContent');
-            const loader = document.getElementById('googleBtnLoader');
-            
-            // 1. Set State Loading
-            if(btn) btn.disabled = true;
-            if(content) content.classList.add('opacity-0');
-            if(loader) loader.classList.remove('hidden');
-
-            // 2. Setup Timer Batas Waktu (15 Detik)
-            const timeoutDuration = 15000;
-            let isFinished = false;
-
-            const timeoutId = setTimeout(() => {
-                if (!isFinished) {
-                    isFinished = true;
-                    resetGoogleBtn();
-                    showError("Waktu Habis", "Tidak ada respon dari Google. Periksa koneksi internet Anda.");
-                }
-            }, timeoutDuration);
-
-            // 3. Eksekusi Login
-            try {
-                await signInWithPopup(auth, googleProvider);
-                // Jika sukses, biarkan onAuthStateChanged menangani UI.
-                isFinished = true;
-                clearTimeout(timeoutId);
-                
-            } catch (e) {
-                isFinished = true;
-                clearTimeout(timeoutId);
-                resetGoogleBtn();
-
-                // Cek jika user menutup popup secara manual
-                if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') {
-                    console.log("Login dibatalkan user");
-                } else {
-                    showError("Gagal Masuk", e.message);
-                }
-            }
-
-            function resetGoogleBtn() {
-                if(btn) btn.disabled = false;
-                if(content) content.classList.remove('opacity-0');
-                if(loader) loader.classList.add('hidden');
-            }
-        };
 
         document.getElementById('loginForm').addEventListener('submit', (e) => {
-            e.preventDefault(); setLoading(true, 'manual');
-            signInWithEmailAndPassword(auth, els.email.value, els.pin.value).catch(e => { setLoading(false, 'manual'); showError("Gagal Masuk", "Email atau PIN Akses salah."); });
-        });
+            e.preventDefault();
 
-        function finishLogin(user) {
-            showToast("Akses Diterima");
-            user.getIdToken().then(token => setTimeout(() => window.location.assign(`beranda.html?token=${token}`), 1000));
-        }
+            // Aktifkan Mode Anti-Spam (Loading)
+            document.body.classList.add('is-loading');
 
-        function resetUI() {
-            els.email.disabled = false; els.email.value = ""; els.pin.value = ""; els.secPinInput.value = ""; activeUser = null;
-        }
+            const email = emailInput.value;
+            const pin = pinInput.value;
+            const originalBtnText = btnSubmit.innerText;
+            btnSubmit.innerText = "MEMVERIFIKASI...";
 
-        window.confirmLogout = () => {
-            closeLogoutModal(); localStorage.clear(); sessionStorage.clear();
-            signOut(auth).then(() => window.location.reload(true));
-        };
-
-        function checkForm() {
-            const vMan = els.email.value.length > 0 && els.pin.value.length === 6;
-            toggleBtn(els.submitBtn, vMan);
-            if(document.getElementById('secPinInput')) {
-                els.secPinInput.value = els.secPinInput.value.replace(/[^0-9]/g, '');
-                toggleBtn(els.secPinSubmitBtn, els.secPinInput.value.length === 6);
-            }
-        }
-        function checkSecurityPinForm() { els.secPinInput.value = els.secPinInput.value.replace(/[^0-9]/g, ''); toggleBtn(els.secPinSubmitBtn, els.secPinInput.value.length === 6); }
-        function checkRegisterForm() {}
-
-        function toggleBtn(btn, valid) {
-            if(!btn) return;
-            btn.disabled = !valid;
-            btn.classList.toggle('bg-black', valid);
-            btn.classList.toggle('bg-aldo-disabled', !valid);
-            btn.classList.toggle('text-white', valid);
-        }
-
-        function setLoading(isLoading, type) {
-            let btn, txt, loader;
-            if (type === 'manual') { btn = els.submitBtn; txt = document.getElementById('btnText'); loader = document.getElementById('btnLoader'); }
-            else if (type === 'security') { btn = els.secPinSubmitBtn; txt = document.getElementById('secBtnText'); loader = document.getElementById('secBtnLoader'); }
-            if(btn) {
-                btn.disabled = isLoading;
-                if (isLoading) { txt.classList.add('hidden'); loader.classList.remove('hidden'); }
-                else { txt.classList.remove('hidden'); loader.classList.add('hidden'); }
-            }
-        }
-
-        function showToast(msg) {
-            els.toastMessage.innerText = msg;
-            els.toast.classList.remove('translate-y-[-100px]', 'opacity-0'); els.toast.classList.add('translate-y-0', 'opacity-100');
-            setTimeout(() => { els.toast.classList.remove('translate-y-0', 'opacity-100'); els.toast.classList.add('translate-y-[-100px]', 'opacity-0'); }, 3000);
-        }
-
-        function showError(title, msg) {
-            document.getElementById('errorTitle').innerText = title; document.getElementById('errorMsg').innerText = msg;
-            toggleModal('error', true);
-        }
-        
-        window.closeErrorModal = () => toggleModal('error', false);
-        window.openRegisterInfoModal = () => { document.getElementById('registerInfoModal').classList.remove('hidden', 'opacity-0'); document.getElementById('regInfoCard').classList.add('animate-modal-in'); };
-        window.closeRegisterInfoModal = () => { document.getElementById('registerInfoModal').classList.add('opacity-0'); setTimeout(() => document.getElementById('registerInfoModal').classList.add('hidden'), 300); };
-        window.openHelpModal = () => toggleModal('help', true);
-        window.closeHelpModal = () => toggleModal('help', false);
-        window.openLogoutModal = () => toggleModal('logout', true);
-        window.closeLogoutModal = () => toggleModal('logout', false);
-        
-        function toggleModal(id, show) {
-            const m = document.getElementById(id+'Modal'), c = document.getElementById(id+'Card');
-            [els.pin, els.secPinInput].forEach(f => f.disabled = show);
-            if(show) { m.classList.remove('hidden', 'opacity-0'); c.classList.add('animate-modal-in'); } 
-            else { m.classList.add('opacity-0'); setTimeout(() => m.classList.add('hidden'), 300); }
-        }
-
-        function setupToggle(inputId, btnId, iconId) {
-            const btn = document.getElementById(btnId);
-            if(btn) {
-                btn.addEventListener('click', () => {
-                    const input = document.getElementById(inputId);
-                    const icon = document.getElementById(iconId);
-                    if (input.type === 'password') { input.type = 'text'; icon.setAttribute('data-lucide', 'eye-off'); }
-                    else { input.type = 'password'; icon.setAttribute('data-lucide', 'eye'); }
-                    lucide.createIcons();
+            signInWithEmailAndPassword(auth, email, pin)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    user.getIdToken().then((token) => {
+                        window.location.href = `rumah.html?token=${token}`;
+                    });
+                })
+                .catch((error) => {
+                    // Matikan Mode Loading jika gagal
+                    document.body.classList.remove('is-loading');
+                    
+                    console.error("Error:", error.code, error.message);
+                    btnSubmit.innerText = "PIN/EMAIL SALAH";
+                    btnSubmit.style.backgroundColor = "#d9534f";
+                    
+                    setTimeout(() => {
+                        btnSubmit.innerText = originalBtnText;
+                        btnSubmit.style.backgroundColor = ""; 
+                        btnSubmit.style.cursor = "pointer";
+                    }, 2000);
                 });
-            }
-        }
-
-        setupToggle('pin', 'togglePinBtn', 'eyeIcon');
-        setupToggle('secPinInput', 'toggleSecPin', 'eyeSecIcon');
-        setupToggle('regAccessPin', 'toggleRegAccess', 'eyeRegAccessIcon');
-        setupToggle('regTransPin', 'toggleRegTrans', 'eyeRegTransIcon');
-        setupToggle('unlockNewPin', 'toggleUnlockPin', 'eyeUnlockIcon');
-
-        [els.email, els.pin, els.secPinInput].forEach(el => el.addEventListener('input', checkForm));
-        ['regWhatsapp', 'regNik', 'regAccessPin', 'regTransPin', 'unlockNik', 'unlockNewPin'].forEach(id => {
-            const el = document.getElementById(id); if(el) el.addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
         });
-
-        lucide.createIcons();
     </script>
 </body>
 </html>
