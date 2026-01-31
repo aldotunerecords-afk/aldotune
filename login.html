@@ -245,10 +245,10 @@
                     document.body.classList.remove('is-loading');
                     btnSubmit.innerText = "MASUK";
                     
-                    let errorMsg = "Terjadi kesalahan sistem.";
-                    if (error.code === 'auth/wrong-password') errorMsg = "PIN Salah!";
-                    else if (error.code === 'auth/user-not-found') errorMsg = "Email tidak terdaftar.";
-                    else if (error.code === 'auth/invalid-email') errorMsg = "Email tidak valid.";
+                    let errorMsg = "Data Tidak Ditemukan.";
+                    if (error.code === 'auth/wrong-password') errorMsg = "Data Tidak Ditemukan.";
+                    else if (error.code === 'auth/user-not-found') errorMsg = "Data Tidak Ditemukan.";
+                    else if (error.code === 'auth/invalid-email') errorMsg = "Data Tidak Ditemukan.";
                     else if (error.code === 'auth/too-many-requests') errorMsg = "Terlalu banyak percobaan. Coba lagi nanti.";
                     
                     alert(errorMsg); 
