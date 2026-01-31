@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - Aldotune Creative Studio</title>
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text x='50%' y='50%' dy='.35em' text-anchor='middle' font-size='65' font-family='Arial, sans-serif' font-weight='bold' fill='%23000000'>a</text></svg>">
     
     <style id="main-style" media="not all">
         /* --- RESET & STYLE --- */
@@ -19,25 +21,53 @@
         .icon-wrapper { width: 40px; display: flex; justify-content: center; align-items: center; margin-right: 15px; }
         .icon-wrapper svg { width: 22px; height: 22px; fill: #bfbfbf; }
         
+        /* Input Style */
         .custom-input { width: 100%; height: 100%; background-color: #f2f2f2; border: none; padding: 0 20px; font-size: 16px; color: #333; outline: none; transition: 0.2s; border-radius: 4px; }
         .custom-input::placeholder { color: #b0b0b0; font-size: 15px; }
         .custom-input:focus { background-color: #e8e8e8; box-shadow: inset 4px 0 0 #0056b3; }
         
+        /* Style Input Terkunci */
+        .custom-input:disabled {
+            background-color: #e0e0e0;
+            color: #666;
+            cursor: not-allowed;
+            border-bottom: 2px solid #999;
+        }
+
         .btn-wrapper { margin-top: 50px; margin-bottom: 30px; }
         .btn-login { background-color: #bfbfbf; color: white; border: none; padding: 15px 80px; border-radius: 50px; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; cursor: not-allowed; transition: all 0.3s ease; }
         .btn-login.active { background-color: #0056b3; cursor: pointer; box-shadow: 0 5px 15px rgba(0, 86, 179, 0.2); }
         .btn-login.active:hover { background-color: #004494; transform: translateY(-2px); }
         
-        /* Style Link Footer */
+        /* Footer Links */
         .footer-links { margin-top: 10px; display: flex; flex-direction: column; gap: 15px; align-items: center; }
-        
         .forgot-link { font-size: 14px; color: #5caad9; text-decoration: none; cursor: pointer; }
         .forgot-link:hover { color: #4a8ab3; text-decoration: underline; }
-
-        /* Style Link Daftar */
-        .register-text { font-size: 14px; color: #888; }
+        
+        .register-text { font-size: 14px; color: #888; display: block; }
         .register-link { color: #333; text-decoration: none; font-weight: bold; }
         .register-link:hover { color: #0056b3; text-decoration: underline; }
+
+        /* 2. TOMBOL KELUAR (MERAH SOLID) */
+        .logout-link {
+            margin-top: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white !important; /* Teks Putih */
+            background-color: #d9534f; /* Latar Merah Solid */
+            text-decoration: none;
+            cursor: pointer;
+            border: none; /* Hapus border */
+            padding: 12px 30px; /* Padding lebih besar seperti tombol */
+            border-radius: 50px; /* Sudut bulat */
+            transition: 0.2s;
+            display: none; /* Sembunyi default */
+            box-shadow: 0 4px 10px rgba(217, 83, 79, 0.3); /* Bayangan merah halus */
+        }
+        .logout-link:hover {
+            background-color: #c9302c; /* Merah lebih gelap saat hover */
+            transform: translateY(-2px);
+        }
 
     </style>
 
@@ -45,7 +75,7 @@
         #boot-terminal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; color: #333333; font-family: 'Consolas', 'Courier New', monospace; font-size: 13px; padding: 20px; z-index: 9999; display: block; overflow: hidden; }
         .log-line { display: block; margin-bottom: 4px; white-space: pre-wrap; }
         
-        /* ANTI SPAM & CURSOR */
+        /* ANTI SPAM */
         body.is-loading { cursor: wait !important; }
         body.is-loading * { pointer-events: none !important; cursor: wait !important; }
     </style>
@@ -82,7 +112,9 @@
         <div class="footer-links">
             <a href="reset.html" class="forgot-link"><b>Lupa PIN?</b></a>
             
-            <span class="register-text">
+            <button id="btnLogout" class="logout-link">Keluar / Ganti Akun</button>
+
+            <span class="register-text" id="registerSection">
                 Belum punya akun? <a href="daftar.html" class="register-link">Daftar</a>
             </span>
         </div>
@@ -90,7 +122,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
@@ -106,7 +138,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // --- BOOT TERMINAL & LOADING AWAL ---
+        // --- TERMINAL ---
         const terminal = document.getElementById('boot-terminal');
         const logs = [
             "> System Init...",
@@ -114,7 +146,7 @@
             "> [Config] API_KEY: AIzaSy...rgjrY detected.",
             "> [Auth] Service initialized.",
             "> [Secure] Enforcing HTTPS connection...",
-            "> [UI] Loading Assets...",
+            "> [Session] Checking local cache...",
             "> Ready."
         ];
 
@@ -131,9 +163,15 @@
             }
         }, 80);
 
+        // --- UI ELEMENTS ---
+        const emailInput = document.getElementById('emailInput');
+        const pinInput = document.getElementById('pinInput');
+        const btnSubmit = document.getElementById('btnSubmit');
+        const btnLogout = document.getElementById('btnLogout');
+        const registerSection = document.getElementById('registerSection');
+
         // SETELAH 1.2 DETIK
         setTimeout(() => {
-            // Matikan loading state
             document.body.classList.remove('is-loading');
 
             terminal.style.display = 'none';
@@ -147,13 +185,27 @@
             const csrf = Math.random().toString(36).substring(2);
             window.history.replaceState(null, null, "#" + fakePath + "?csrf=" + csrf);
 
+            // --- LOGIKA SESI & TOMBOL DAFTAR ---
+            const savedEmail = localStorage.getItem('aldotune_email');
+            if (savedEmail) {
+                // KONDISI: SUDAH PERNAH LOGIN
+                emailInput.value = savedEmail;
+                emailInput.disabled = true; // Kunci Email
+                
+                btnLogout.style.display = 'inline-block'; // Tampilkan Tombol Keluar
+                registerSection.style.display = 'none';   // SEMBUNYIKAN TOMBOL DAFTAR
+                
+                pinInput.focus(); 
+                checkValidity(); 
+            } else {
+                // KONDISI: PENGGUNA BARU / SUDAH LOGOUT
+                btnLogout.style.display = 'none';       // Sembunyikan Tombol Keluar
+                registerSection.style.display = 'block'; // TAMPILKAN TOMBOL DAFTAR
+            }
+
         }, 1200);
 
-        // --- VALIDASI & LOGIN ---
-        const emailInput = document.getElementById('emailInput');
-        const pinInput = document.getElementById('pinInput');
-        const btnSubmit = document.getElementById('btnSubmit');
-
+        // --- VALIDASI ---
         emailInput.addEventListener('input', checkValidity);
         pinInput.addEventListener('input', function() {
             this.value = this.value.replace(/[^0-9]/g, '');
@@ -172,39 +224,59 @@
             }
         }
 
+        // --- LOGIN ---
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
-
-            // Aktifkan Mode Anti-Spam (Loading)
             document.body.classList.add('is-loading');
 
             const email = emailInput.value;
             const pin = pinInput.value;
-            const originalBtnText = btnSubmit.innerText;
             btnSubmit.innerText = "MEMVERIFIKASI...";
 
             signInWithEmailAndPassword(auth, email, pin)
                 .then((userCredential) => {
                     const user = userCredential.user;
+                    localStorage.setItem('aldotune_email', email); // Simpan Sesi
                     user.getIdToken().then((token) => {
                         window.location.href = `rumah.html?token=${token}`;
                     });
                 })
                 .catch((error) => {
-                    // Matikan Mode Loading jika gagal
                     document.body.classList.remove('is-loading');
+                    btnSubmit.innerText = "MASUK";
                     
-                    console.error("Error:", error.code, error.message);
-                    btnSubmit.innerText = "PIN/EMAIL SALAH";
-                    btnSubmit.style.backgroundColor = "#d9534f";
+                    let errorMsg = "Terjadi kesalahan sistem.";
+                    if (error.code === 'auth/wrong-password') errorMsg = "PIN Salah!";
+                    else if (error.code === 'auth/user-not-found') errorMsg = "Email tidak terdaftar.";
+                    else if (error.code === 'auth/invalid-email') errorMsg = "Email tidak valid.";
+                    else if (error.code === 'auth/too-many-requests') errorMsg = "Terlalu banyak percobaan. Coba lagi nanti.";
                     
-                    setTimeout(() => {
-                        btnSubmit.innerText = originalBtnText;
-                        btnSubmit.style.backgroundColor = ""; 
-                        btnSubmit.style.cursor = "pointer";
-                    }, 2000);
+                    alert(errorMsg); 
                 });
         });
+
+        // --- LOGOUT ---
+        btnLogout.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm("Yakin ingin keluar dan menghapus sesi?")) {
+                document.body.classList.add('is-loading');
+                btnLogout.innerText = "Membersihkan...";
+
+                signOut(auth).then(() => {
+                    localStorage.removeItem('aldotune_email');
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    document.cookie.split(";").forEach((c) => {
+                        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+                    });
+                    window.location.reload();
+                }).catch((error) => {
+                    alert("Gagal: " + error.message);
+                    document.body.classList.remove('is-loading');
+                });
+            }
+        });
+
     </script>
 </body>
 </html>
