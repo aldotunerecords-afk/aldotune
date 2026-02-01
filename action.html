@@ -16,13 +16,24 @@
         
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #888; text-transform: uppercase; }
-        .custom-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.3s; outline: none; }
+        
+        /* Input PIN Style */
+        .custom-input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            font-size: 24px; 
+            letter-spacing: 10px; 
+            text-align: center; 
+            transition: 0.3s; 
+            outline: none; 
+        }
         .custom-input:focus { border-color: #0056b3; background-color: #f9f9f9; }
         
         .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
         .btn-primary { background-color: #0056b3; color: white; }
         .btn-primary:hover { background-color: #004494; }
-        .btn-disabled { background-color: #ccc; cursor: not-allowed; }
         
         #loader { display: block; margin: 20px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -41,26 +52,32 @@
 
         <div id="reset-state" class="hidden">
             <h2>Buat PIN Baru</h2>
-            <p>Silakan masukkan PIN baru untuk akun Anda.</p>
+            <p>Masukkan 6 digit angka untuk PIN baru Anda.</p>
             <form id="reset-form">
                 <div class="input-group">
-                    <label>PIN BARU</label>
-                    <input type="password" id="new-password" class="custom-input" placeholder="Minimal 6 karakter" required>
+                    <label>PIN BARU (6 DIGIT)</label>
+                    <input type="password" 
+                           id="new-password" 
+                           class="custom-input" 
+                           placeholder="000000" 
+                           inputmode="numeric" 
+                           pattern="[0-9]*" 
+                           maxlength="6" 
+                           required>
                 </div>
                 <button type="submit" class="btn btn-primary">SIMPAN PIN</button>
             </form>
         </div>
 
         <div id="verify-state" class="hidden">
-            <h2 id="verify-title">Verifikasi Email</h2>
-            <p id="verify-msg">Sedang memverifikasi email Anda...</p>
-            <a href="index.html" id="btn-done" class="btn btn-primary hidden" style="text-decoration: none; display: inline-block;">Masuk ke Akun</a>
+            <h2>Email Terverifikasi</h2>
+            <p>Email Anda berhasil diverifikasi. Mengalihkan ke halaman login...</p>
         </div>
 
         <div id="error-state" class="hidden">
             <h2 style="color: #d93025;">Terjadi Kesalahan</h2>
             <p id="error-msg">Link kadaluarsa atau sudah pernah digunakan.</p>
-            <a href="index.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Minta Link Baru</a>
+            <a href="index.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Kembali ke Beranda</a>
         </div>
     </div>
 
@@ -69,7 +86,7 @@
         import { getAuth, confirmPasswordReset, verifyPasswordResetCode, applyActionCode } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY", // Menggunakan config Anda
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
             authDomain: "aldotune-records.firebaseapp.com",
             projectId: "aldotune-records",
             storageBucket: "aldotune-records.firebasestorage.app",
@@ -80,7 +97,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Ambil parameter dari URL (mode dan oobCode)
         const urlParams = new URLSearchParams(window.location.search);
         const mode = urlParams.get('mode');
         const actionCode = urlParams.get('oobCode');
@@ -90,7 +106,7 @@
         const verifyState = document.getElementById('verify-state');
         const errorState = document.getElementById('error-state');
 
-        // Router sederhana berdasarkan mode
+        // Router
         switch (mode) {
             case 'resetPassword':
                 handleResetPassword();
@@ -99,52 +115,52 @@
                 handleVerifyEmail();
                 break;
             default:
-                showError("Aksi tidak dikenali atau link tidak valid.");
+                showError("Aksi tidak valid.");
         }
 
-        // --- FUNGSI RESET PASSWORD ---
+        // --- RESET PASSWORD ---
         function handleResetPassword() {
-            // Cek apakah kode valid
             verifyPasswordResetCode(auth, actionCode)
-                .then((email) => {
+                .then(() => {
                     loadingState.classList.add('hidden');
                     resetState.classList.remove('hidden');
                 })
-                .catch((error) => {
-                    showError("Link reset PIN sudah kadaluarsa atau tidak valid.");
-                });
+                .catch(() => showError("Link reset PIN kadaluarsa."));
         }
 
         document.getElementById('reset-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const newPassword = document.getElementById('new-password').value;
             
+            // Validasi tambahan untuk memastikan tepat 6 digit
+            if (newPassword.length !== 6 || isNaN(newPassword)) {
+                alert("PIN harus berupa 6 digit angka.");
+                return;
+            }
+
             loadingState.classList.remove('hidden');
             resetState.classList.add('hidden');
 
             confirmPasswordReset(auth, actionCode, newPassword)
                 .then(() => {
-                    alert("PIN Berhasil diperbarui! Silakan masuk kembali.");
-                    window.location.href = "index.html";
+                    alert("PIN Berhasil diperbarui!");
+                    window.location.href = "index.html"; // Arahkan ke index
                 })
-                .catch((error) => {
-                    showError("Gagal memperbarui PIN. Silakan coba lagi.");
-                });
+                .catch(() => showError("Gagal memperbarui PIN."));
         });
 
-        // --- FUNGSI VERIFIKASI EMAIL ---
+        // --- VERIFY EMAIL ---
         function handleVerifyEmail() {
             applyActionCode(auth, actionCode)
                 .then(() => {
                     loadingState.classList.add('hidden');
                     verifyState.classList.remove('hidden');
-                    document.getElementById('verify-title').innerText = "Email Terverifikasi!";
-                    document.getElementById('verify-msg').innerText = "Terima kasih, email Anda telah berhasil diverifikasi. Sekarang Anda bisa mengakses semua fitur.";
-                    document.getElementById('btn-done').classList.remove('hidden');
+                    // Tunggu 2 detik lalu arahkan ke index
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 2000);
                 })
-                .catch((error) => {
-                    showError("Gagal memverifikasi email. Link mungkin sudah tidak berlaku.");
-                });
+                .catch(() => showError("Gagal verifikasi email."));
         }
 
         function showError(msg) {
