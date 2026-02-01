@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Keamanan - Aldotune</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text x='50%' y='50%' dy='.35em' text-anchor='middle' font-size='65' font-family='Arial, sans-serif' font-weight='bold' fill='%23000000'>a</text></svg>">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #333; }
+        .container { width: 100%; max-width: 400px; padding: 30px; text-align: center; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .logo-img { max-width: 180px; margin-bottom: 25px; }
+        h2 { font-size: 20px; margin-bottom: 15px; color: #222; }
+        p { font-size: 14px; color: #666; margin-bottom: 25px; line-height: 1.6; }
+        
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #888; text-transform: uppercase; }
+        .custom-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.3s; outline: none; }
+        .custom-input:focus { border-color: #0056b3; background-color: #f9f9f9; }
+        
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
+        .btn-primary { background-color: #0056b3; color: white; }
+        .btn-primary:hover { background-color: #004494; }
+        .btn-disabled { background-color: #ccc; cursor: not-allowed; }
+        
+        #loader { display: block; margin: 20px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <img src="acss.png" alt="Aldotune Logo" class="logo-img">
+        
+        <div id="loading-state">
+            <div id="loader"></div>
+            <p>Memproses permintaan Anda...</p>
+        </div>
+
+        <div id="reset-state" class="hidden">
+            <h2>Buat PIN Baru</h2>
+            <p>Silakan masukkan PIN baru untuk akun Anda.</p>
+            <form id="reset-form">
+                <div class="input-group">
+                    <label>PIN BARU</label>
+                    <input type="password" id="new-password" class="custom-input" placeholder="Minimal 6 karakter" required>
+                </div>
+                <button type="submit" class="btn btn-primary">SIMPAN PIN</button>
+            </form>
+        </div>
+
+        <div id="verify-state" class="hidden">
+            <h2 id="verify-title">Verifikasi Email</h2>
+            <p id="verify-msg">Sedang memverifikasi email Anda...</p>
+            <a href="index.html" id="btn-done" class="btn btn-primary hidden" style="text-decoration: none; display: inline-block;">Masuk ke Akun</a>
+        </div>
+
+        <div id="error-state" class="hidden">
+            <h2 style="color: #d93025;">Terjadi Kesalahan</h2>
+            <p id="error-msg">Link kadaluarsa atau sudah pernah digunakan.</p>
+            <a href="index.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Minta Link Baru</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, confirmPasswordReset, verifyPasswordResetCode, applyActionCode } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY", // Menggunakan config Anda
+            authDomain: "aldotune-records.firebaseapp.com",
+            projectId: "aldotune-records",
+            storageBucket: "aldotune-records.firebasestorage.app",
+            messagingSenderId: "311200667476",
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Ambil parameter dari URL (mode dan oobCode)
+        const urlParams = new URLSearchParams(window.location.search);
+        const mode = urlParams.get('mode');
+        const actionCode = urlParams.get('oobCode');
+
+        const loadingState = document.getElementById('loading-state');
+        const resetState = document.getElementById('reset-state');
+        const verifyState = document.getElementById('verify-state');
+        const errorState = document.getElementById('error-state');
+
+        // Router sederhana berdasarkan mode
+        switch (mode) {
+            case 'resetPassword':
+                handleResetPassword();
+                break;
+            case 'verifyEmail':
+                handleVerifyEmail();
+                break;
+            default:
+                showError("Aksi tidak dikenali atau link tidak valid.");
+        }
+
+        // --- FUNGSI RESET PASSWORD ---
+        function handleResetPassword() {
+            // Cek apakah kode valid
+            verifyPasswordResetCode(auth, actionCode)
+                .then((email) => {
+                    loadingState.classList.add('hidden');
+                    resetState.classList.remove('hidden');
+                })
+                .catch((error) => {
+                    showError("Link reset PIN sudah kadaluarsa atau tidak valid.");
+                });
+        }
+
+        document.getElementById('reset-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            
+            loadingState.classList.remove('hidden');
+            resetState.classList.add('hidden');
+
+            confirmPasswordReset(auth, actionCode, newPassword)
+                .then(() => {
+                    alert("PIN Berhasil diperbarui! Silakan masuk kembali.");
+                    window.location.href = "index.html";
+                })
+                .catch((error) => {
+                    showError("Gagal memperbarui PIN. Silakan coba lagi.");
+                });
+        });
+
+        // --- FUNGSI VERIFIKASI EMAIL ---
+        function handleVerifyEmail() {
+            applyActionCode(auth, actionCode)
+                .then(() => {
+                    loadingState.classList.add('hidden');
+                    verifyState.classList.remove('hidden');
+                    document.getElementById('verify-title').innerText = "Email Terverifikasi!";
+                    document.getElementById('verify-msg').innerText = "Terima kasih, email Anda telah berhasil diverifikasi. Sekarang Anda bisa mengakses semua fitur.";
+                    document.getElementById('btn-done').classList.remove('hidden');
+                })
+                .catch((error) => {
+                    showError("Gagal memverifikasi email. Link mungkin sudah tidak berlaku.");
+                });
+        }
+
+        function showError(msg) {
+            loadingState.classList.add('hidden');
+            resetState.classList.add('hidden');
+            verifyState.classList.add('hidden');
+            errorState.classList.remove('hidden');
+            document.getElementById('error-msg').innerText = msg;
+        }
+    </script>
+</body>
+</html>
