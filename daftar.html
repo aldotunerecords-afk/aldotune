@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Akun - Aldotune</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #ffffff; padding: 40px 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; text-align: center; }
+        .logo-img { max-width: 180px; margin-bottom: 20px; }
+        h2 { margin-bottom: 10px; color: #333; font-size: 22px; }
+        p.subtitle { color: #888; margin-bottom: 30px; font-size: 14px; }
+        
+        form { text-align: left; }
+        label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .custom-input, .iti { width: 100%; margin-bottom: 18px; }
+        .custom-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; transition: 0.2s; }
+        .custom-input:focus { border-color: #0056b3; box-shadow: 0 0 0 3px rgba(0,86,179,0.1); }
+        
+        /* Checkbox & Alerts */
+        .checkbox-group { display: flex; align-items: center; margin-bottom: 15px; gap: 8px; }
+        .checkbox-group input { width: 16px; height: 16px; cursor: pointer; }
+        .checkbox-group label { text-transform: none; font-size: 13px; color: #333; margin-bottom: 0; cursor: pointer; }
+
+        .info-alert { background-color: #e3f2fd; color: #0d47a1; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-bottom: 18px; display: none; border: 1px solid #bbdefb; }
+        .warning-alert { background-color: #fff3e0; color: #e65100; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-bottom: 18px; display: none; border: 1px solid #ffe0b2; }
+
+        .pin-field { letter-spacing: 10px; text-align: center; font-weight: bold; font-size: 20px; }
+        .btn-regis { width: 100%; padding: 15px; background-color: #0056b3; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
+        .btn-regis:hover { background-color: #004494; transform: translateY(-1px); }
+        .btn-regis:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
+
+        .link { margin-top: 25px; display: block; color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 600; text-align: center; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="acss.png" alt="Aldotune" class="logo-img">
+    <h2>Registrasi Anggota</h2>
+    <p class="subtitle">Daftarkan karya Anda di Aldotune Creative Studio.</p>
+
+    <form id="regisForm">
+        <label>Nama Lengkap</label>
+        <input type="text" id="fullName" class="custom-input" placeholder="Sesuai Identitas" required>
+
+        <div class="checkbox-group">
+            <input type="checkbox" id="noKtp">
+            <label for="noKtp">Saya belum memiliki KTP / NIK</label>
+        </div>
+
+        <div id="infoRoyalti" class="info-alert">
+            <strong>Pemberitahuan:</strong> Wajib memperbarui NIK di kemudian hari untuk keperluan verifikasi pembayaran royalti dan hak cipta.
+        </div>
+
+        <div id="nikWrapper">
+            <label>Nomor Induk Kependudukan (16 Digit)</label>
+            <input type="number" id="nik" class="custom-input" placeholder="Masukkan 16 digit angka">
+        </div>
+
+        <label>Nomor WhatsApp</label>
+        <input type="tel" id="whatsapp" class="custom-input" required>
+
+        <label>Tanggal Lahir</label>
+        <input type="date" id="birthDate" class="custom-input" required>
+
+        <div id="underageWarning" class="warning-alert">
+            <strong>Pendaftaran Terbatas:</strong> Karena Anda berusia di bawah 17 tahun, pendaftaran wajib dipastikan berada dalam pengawasan manajemen orang tua. Silakan melakukan pendaftaran manual melalui Tim Aldotune atau datang langsung ke studio.
+        </div>
+
+        <label>Email Perusahaan</label>
+        <input type="email" id="email" class="custom-input" placeholder="email@aldotune.com" required>
+
+        <label>PIN Keamanan (6 Digit)</label>
+        <input type="password" id="pin" class="custom-input pin-field" placeholder="******" maxlength="6" inputmode="numeric" required>
+
+        <button type="submit" id="btnSubmit" class="btn-regis">BUAT AKUN SEKARANG</button>
+    </form>
+
+    <a href="index.html" class="link">Sudah memiliki akun? Masuk</a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+        authDomain: "aldotune-records.firebaseapp.com",
+        databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "aldotune-records",
+        storageBucket: "aldotune-records.firebasestorage.app",
+        messagingSenderId: "311200667476",
+        appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const birthInput = document.getElementById('birthDate');
+    const warningBox = document.getElementById('underageWarning');
+    const btnSubmit = document.getElementById('btnSubmit');
+
+    // --- VALIDASI LANGSUNG SAAT PILIH TANGGAL ---
+    birthInput.addEventListener('change', function() {
+        const today = new Date();
+        const birthDate = new Date(this.value);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { age--; }
+
+        if (age < 17) {
+            warningBox.style.display = 'block';
+            btnSubmit.disabled = true; // Langsung kunci tombol daftar
+        } else {
+            warningBox.style.display = 'none';
+            btnSubmit.disabled = false; // Buka kunci jika cukup umur
+        }
+    });
+
+    const noKtpCheckbox = document.getElementById('noKtp');
+    noKtpCheckbox.addEventListener('change', function() {
+        if(this.checked) {
+            document.getElementById('nikWrapper').classList.add('hidden');
+            document.getElementById('infoRoyalti').style.display = 'block';
+        } else {
+            document.getElementById('nikWrapper').classList.remove('hidden');
+            document.getElementById('infoRoyalti').style.display = 'none';
+        }
+    });
+
+    const phoneInput = document.querySelector("#whatsapp");
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "auto",
+        geoIpLookup: success => fetch("https://ipapi.co/json").then(res => res.json()).then(data => success(data.country_code)).catch(() => success("ID")),
+        preferredCountries: ["id", "sg", "my"],
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+
+    document.getElementById('regisForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('email').value;
+        const pin = document.getElementById('pin').value;
+        const fullName = document.getElementById('fullName').value.toLowerCase();
+        const nikValue = document.getElementById('nik').value;
+        const isNoKtp = noKtpCheckbox.checked;
+        const fullWhatsapp = iti.getNumber();
+
+        if(!isNoKtp && nikValue.length !== 16) { alert("NIK harus 16 digit!"); return; }
+        if(pin.length !== 6) { alert("PIN harus 6 digit angka!"); return; }
+        if(!iti.isValidNumber()) { alert("Nomor WhatsApp tidak valid!"); return; }
+
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = "MEMPROSES...";
+
+        createUserWithEmailAndPassword(auth, email, pin)
+            .then((userCredential) => {
+                const userId = userCredential.user.uid;
+                const now = new Date();
+                set(ref(db, 'users/' + userId), {
+                    fullName: fullName,
+                    nik: isNoKtp ? "" : nikValue,
+                    email: email,
+                    whatsapp: fullWhatsapp,
+                    birthDate: birthInput.value,
+                    pin: pin,
+                    pinAttempts: 0,
+                    isLocked: false,
+                    faceId: "false",
+                    saldo: 0,
+                    registrationDate: now.toISOString(),
+                    updatedAt: now.getTime()
+                }).then(() => {
+                    sendEmailVerification(userCredential.user);
+                    alert("Akun Dibuat! Silakan verifikasi email Anda.");
+                    window.location.href = "index.html";
+                });
+            })
+            .catch((error) => {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "BUAT AKUN SEKARANG";
+                alert("Gagal: " + error.message);
+            });
+    });
+</script>
+</body>
+</html>
