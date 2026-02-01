@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Input - Aldotune Database</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f4f7f6; padding: 40px 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 500px; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h2 { margin-bottom: 5px; color: #333; }
+        p.subtitle { color: #888; margin-bottom: 25px; font-size: 14px; }
+        
+        label { display: block; font-size: 11px; font-weight: bold; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        .custom-input, .iti { width: 100%; margin-bottom: 15px; }
+        .custom-input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+        .custom-input:focus { border-color: #0056b3; }
+
+        .section-title { background: #eee; padding: 8px; font-size: 12px; font-weight: bold; margin-bottom: 15px; border-radius: 5px; text-align: center; }
+        
+        .btn-save { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; margin-top: 10px; }
+        .btn-save:hover { background-color: #218838; }
+
+        /* Tombol Kembali */
+        .btn-back { display: block; width: 100%; padding: 12px; background-color: #f8f9fa; color: #333; border: 1px solid #ddd; border-radius: 50px; font-weight: 600; text-decoration: none; text-align: center; font-size: 14px; margin-top: 20px; transition: 0.2s; }
+        .btn-back:hover { background-color: #e2e6ea; }
+
+        /* Modal Konfirmasi PIN */
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 12px; text-align: center; width: 90%; max-width: 350px; }
+        .pin-confirm { letter-spacing: 10px; text-align: center; font-size: 24px; font-weight: bold; }
+        
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="container hidden" id="mainApp">
+    <h2>Team Database Input</h2>
+    <p class="subtitle">Khusus Tim Aldotune (Role Admin)</p>
+
+    <form id="dbForm">
+        <label>User ID (Dari Firebase Console)</label>
+        <input type="text" id="targetUid" class="custom-input" placeholder="Paste UID di sini..." required autocomplete="off">
+
+        <div class="section-title">DATA PROFIL</div>
+
+        <label>Nama Lengkap</label>
+        <input type="text" id="fullName" class="custom-input" placeholder="Nama Lengkap" required>
+
+        <label>Nomor Induk Kependudukan (NIK)</label>
+        <input type="number" id="nik" class="custom-input" placeholder="16 Digit NIK">
+
+        <label>WhatsApp</label>
+        <input type="tel" id="whatsapp" class="custom-input" required>
+
+        <label>Tanggal Lahir</label>
+        <input type="date" id="birthDate" class="custom-input" required>
+
+        <label>Email Akun</label>
+        <input type="email" id="email" class="custom-input" placeholder="email@user.com" required>
+
+        <button type="button" onclick="openConfirm()" class="btn-save">SIMPAN KE DATABASE</button>
+    </form>
+
+    <a href="rumah.html" class="btn-back">← Kembali ke Dashboard</a>
+</div>
+
+<div id="pinModal" class="modal">
+    <div class="modal-content">
+        <h3>Konfirmasi Tim</h3>
+        <p style="font-size: 13px; margin-bottom: 15px;">Masukkan PIN Anda untuk memvalidasi data ini.</p>
+        <input type="password" id="adminPinInput" class="custom-input pin-confirm" maxlength="6" placeholder="******" inputmode="numeric">
+        <button onclick="processSave()" class="btn-save" style="background: #0056b3;">KONFIRMASI</button>
+        <button onclick="closeConfirm()" style="background:none; border:none; color:red; margin-top:15px; cursor:pointer; font-weight:bold;">BATAL</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+        authDomain: "aldotune-records.firebaseapp.com",
+        databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "aldotune-records",
+        appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentAdminData = null;
+
+    // 1. Cek Otorisasi Role Admin (j: "a")
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            get(ref(db, 'users/' + user.uid)).then((snapshot) => {
+                const data = snapshot.val();
+                if (data && data.j === "a") { 
+                    currentAdminData = data;
+                    document.getElementById('mainApp').classList.remove('hidden');
+                } else {
+                    alert("Akses Ditolak! Halaman ini hanya untuk Tim Admin.");
+                    window.location.href = "rumah.html";
+                }
+            });
+        } else {
+            window.location.href = "index.html";
+        }
+    });
+
+    const phoneInput = document.querySelector("#whatsapp");
+    const iti = window.intlTelInput(phoneInput, {
+        initialCountry: "id",
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+
+    window.openConfirm = () => {
+        const uid = document.getElementById('targetUid').value;
+        if(!uid || uid.length < 10) return alert("Harap masukkan UID Target yang valid dari Firebase!");
+        document.getElementById('pinModal').style.display = 'flex';
+    };
+
+    window.closeConfirm = () => { 
+        document.getElementById('pinModal').style.display = 'none';
+        document.getElementById('adminPinInput').value = "";
+    };
+
+    // 2. Simpan Data ke Database
+    window.processSave = () => {
+        const inputPin = document.getElementById('adminPinInput').value;
+        
+        if (inputPin !== currentAdminData.pin) {
+            alert("PIN Admin Salah! Verifikasi gagal.");
+            return;
+        }
+
+        const targetUid = document.getElementById('targetUid').value;
+        const now = new Date();
+
+        const dataUpdate = {
+            fullName: document.getElementById('fullName').value.toLowerCase(),
+            nik: document.getElementById('nik').value || "",
+            email: document.getElementById('email').value,
+            whatsapp: iti.getNumber(),
+            birthDate: document.getElementById('birthDate').value,
+            j: "ua", 
+            faceId: "false",
+            isLocked: false,
+            pinAttempts: 0,
+            saldo: 0,
+            registrationDate: now.toISOString(),
+            updatedAt: now.getTime()
+        };
+
+        set(ref(db, 'users/' + targetUid), dataUpdate)
+            .then(() => {
+                alert("Data berhasil disimpan ke database!");
+                location.reload();
+            })
+            .catch((err) => alert("Gagal menyimpan data: " + err.message));
+    };
+</script>
+</body>
+</html>
