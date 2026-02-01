@@ -30,12 +30,16 @@
         .info-alert { background-color: #e3f2fd; color: #0d47a1; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-bottom: 18px; display: none; border: 1px solid #bbdefb; }
         .warning-alert { background-color: #fff3e0; color: #e65100; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-bottom: 18px; display: none; border: 1px solid #ffe0b2; }
 
+        /* PIN Appearance */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .pin-field { letter-spacing: 10px; text-align: center; font-weight: bold; font-size: 20px; }
+        
         .btn-regis { width: 100%; padding: 15px; background-color: #0056b3; color: white; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; transition: 0.3s; }
         .btn-regis:hover { background-color: #004494; transform: translateY(-1px); }
         .btn-regis:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.6; }
 
         .link { margin-top: 25px; display: block; color: #0056b3; text-decoration: none; font-size: 14px; font-weight: 600; text-align: center; }
+        .iti--allow-dropdown { width: 100% !important; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -46,9 +50,9 @@
     <h2>Registrasi Anggota</h2>
     <p class="subtitle">Daftarkan karya Anda di Aldotune Creative Studio.</p>
 
-    <form id="regisForm">
+    <form id="regisForm" autocomplete="off">
         <label>Nama Lengkap</label>
-        <input type="text" id="fullName" class="custom-input" placeholder="Sesuai Identitas" required>
+        <input type="text" id="fullName" class="custom-input" placeholder="Sesuai Identitas" required autocomplete="off">
 
         <div class="checkbox-group">
             <input type="checkbox" id="noKtp">
@@ -56,29 +60,32 @@
         </div>
 
         <div id="infoRoyalti" class="info-alert">
-            <strong>Pemberitahuan:</strong> Wajib memperbarui NIK di kemudian hari untuk keperluan verifikasi pembayaran royalti dan hak cipta.
+            <strong>Pemberitahuan:</strong> Akun dapat dibuat tanpa NIK, namun Anda wajib memperbarui data identitas di kemudian hari untuk keperluan verifikasi pembayaran royalti dan pendaftaran hak cipta karya.
         </div>
 
         <div id="nikWrapper">
             <label>Nomor Induk Kependudukan (16 Digit)</label>
-            <input type="number" id="nik" class="custom-input" placeholder="Masukkan 16 digit angka">
+            <input type="number" id="nik" class="custom-input" placeholder="Wajib 16 digit angka" autocomplete="off">
         </div>
 
         <label>Nomor WhatsApp</label>
-        <input type="tel" id="whatsapp" class="custom-input" required>
+        <input type="tel" id="whatsapp" class="custom-input" required autocomplete="off">
 
         <label>Tanggal Lahir</label>
-        <input type="date" id="birthDate" class="custom-input" required>
+        <input type="date" id="birthDate" class="custom-input" required autocomplete="off">
 
         <div id="underageWarning" class="warning-alert">
             <strong>Pendaftaran Terbatas:</strong> Karena Anda berusia di bawah 17 tahun, pendaftaran wajib dipastikan berada dalam pengawasan manajemen orang tua. Silakan melakukan pendaftaran manual melalui Tim Aldotune atau datang langsung ke studio.
         </div>
 
         <label>Email Perusahaan</label>
-        <input type="email" id="email" class="custom-input" placeholder="email@aldotune.com" required>
+        <input type="email" id="email" class="custom-input" placeholder="email@aldotune.com" 
+               required readonly onfocus="this.removeAttribute('readonly');" autocomplete="off">
 
         <label>PIN Keamanan (6 Digit)</label>
-        <input type="password" id="pin" class="custom-input pin-field" placeholder="******" maxlength="6" inputmode="numeric" required>
+        <input type="password" id="pin" class="custom-input pin-field" placeholder="******" 
+               maxlength="6" inputmode="numeric" required readonly 
+               onfocus="this.removeAttribute('readonly');" autocomplete="new-password">
 
         <button type="submit" id="btnSubmit" class="btn-regis">BUAT AKUN SEKARANG</button>
     </form>
@@ -109,8 +116,9 @@
     const birthInput = document.getElementById('birthDate');
     const warningBox = document.getElementById('underageWarning');
     const btnSubmit = document.getElementById('btnSubmit');
+    const noKtpCheckbox = document.getElementById('noKtp');
 
-    // --- VALIDASI LANGSUNG SAAT PILIH TANGGAL ---
+    // Validasi Umur Langsung
     birthInput.addEventListener('change', function() {
         const today = new Date();
         const birthDate = new Date(this.value);
@@ -120,24 +128,26 @@
 
         if (age < 17) {
             warningBox.style.display = 'block';
-            btnSubmit.disabled = true; // Langsung kunci tombol daftar
+            btnSubmit.disabled = true;
         } else {
             warningBox.style.display = 'none';
-            btnSubmit.disabled = false; // Buka kunci jika cukup umur
+            btnSubmit.disabled = false;
         }
     });
 
-    const noKtpCheckbox = document.getElementById('noKtp');
+    // Kontrol Checkbox NIK
     noKtpCheckbox.addEventListener('change', function() {
         if(this.checked) {
             document.getElementById('nikWrapper').classList.add('hidden');
             document.getElementById('infoRoyalti').style.display = 'block';
+            document.getElementById('nik').value = "";
         } else {
             document.getElementById('nikWrapper').classList.remove('hidden');
             document.getElementById('infoRoyalti').style.display = 'none';
         }
     });
 
+    // WhatsApp + Bendera + Deteksi IP
     const phoneInput = document.querySelector("#whatsapp");
     const iti = window.intlTelInput(phoneInput, {
         initialCountry: "auto",
@@ -146,6 +156,7 @@
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
     });
 
+    // Proses Submit
     document.getElementById('regisForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const email = document.getElementById('email').value;
@@ -155,12 +166,12 @@
         const isNoKtp = noKtpCheckbox.checked;
         const fullWhatsapp = iti.getNumber();
 
-        if(!isNoKtp && nikValue.length !== 16) { alert("NIK harus 16 digit!"); return; }
+        if(!isNoKtp && nikValue.length !== 16) { alert("Nomor Induk Kependudukan harus 16 digit!"); return; }
         if(pin.length !== 6) { alert("PIN harus 6 digit angka!"); return; }
         if(!iti.isValidNumber()) { alert("Nomor WhatsApp tidak valid!"); return; }
 
         btnSubmit.disabled = true;
-        btnSubmit.innerText = "MEMPROSES...";
+        btnSubmit.innerText = "MENDAFTARKAN...";
 
         createUserWithEmailAndPassword(auth, email, pin)
             .then((userCredential) => {
@@ -181,14 +192,14 @@
                     updatedAt: now.getTime()
                 }).then(() => {
                     sendEmailVerification(userCredential.user);
-                    alert("Akun Dibuat! Silakan verifikasi email Anda.");
+                    alert("Akun Aldotune Berhasil Dibuat! Silakan verifikasi email Anda sebelum masuk.");
                     window.location.href = "index.html";
                 });
             })
             .catch((error) => {
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "BUAT AKUN SEKARANG";
-                alert("Gagal: " + error.message);
+                alert("Gagal mendaftar: " + error.message);
             });
     });
 </script>
