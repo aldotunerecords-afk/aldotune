@@ -28,6 +28,7 @@
             white-space: nowrap; 
         }
 
+        /* HEADER SIDEBAR */
         .brand-logo-container {
             height: 50px;
             padding: 0 24px;
@@ -315,20 +316,26 @@
         const db = getDatabase(app);
 
         // --- TIMER SESI 15 MENIT ---
-        const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 Menit
+        const SESSION_TIMEOUT = 15 * 60 * 1000; 
         let sessionTimer;
+
+        // Fungsi Keluar Aman (Logout Firebase -> Redirect Index)
+        function secureLogout() {
+            signOut(auth).then(() => {
+                window.location.href = "index.html";
+            });
+        }
 
         function startSessionTimer() {
             sessionTimer = setTimeout(() => {
-                // Saat waktu habis, lempar ke index (login)
-                window.location.href = "index.html";
+                secureLogout(); // Waktu habis = Logout paksa
             }, SESSION_TIMEOUT);
         }
 
         // --- AUTH & DATA ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Token valid -> Mulai Timer
+                // Token Valid -> Mulai Timer
                 startSessionTimer();
 
                 const userRef = ref(db, 'users/' + user.uid);
@@ -344,7 +351,7 @@
                             finalName = user.email.split('@')[0];
                         }
 
-                        // KHUSUS ADMIN (j: 'a')
+                        // ADMIN ONLY MENU
                         if (userData.j === 'a') {
                             const menuTim = document.getElementById('menuTim');
                             if(menuTim) menuTim.style.display = 'flex';
@@ -357,12 +364,12 @@
                     document.getElementById('displayName').innerText = user.email.split('@')[0];
                 });
             } else {
-                // Jika tidak ada user (akses ilegal), tendang ke index
+                // Tidak ada sesi -> Tendang ke index
                 window.location.href = "index.html";
             }
         });
 
-        // --- UI LOGIC ---
+        // --- MENU LOGIC ---
         const btnMenuToggle = document.getElementById('btnMenuToggle');
         const btnCloseSidebar = document.getElementById('btnCloseSidebar'); 
         const sidebar = document.getElementById('sidebar');
@@ -403,10 +410,11 @@
             logoutMenu.style.display = 'none';
         });
 
-        // --- LOGOUT LOGIC (Tanpa signOut) ---
+        // Tombol Keluar -> Logout Firebase -> Index
         document.getElementById('btnLogout').addEventListener('click', () => {
-            // Langsung arahkan ke index.html, biarkan index menangani logika ganti akun/kunci
-            window.location.href = "index.html";
+            if (confirm("Yakin ingin keluar?")) {
+                secureLogout();
+            }
         });
     </script>
 </body>
