@@ -28,7 +28,6 @@
             white-space: nowrap; 
         }
 
-        /* HEADER SIDEBAR */
         .brand-logo-container {
             height: 50px;
             padding: 0 24px;
@@ -40,7 +39,6 @@
 
         .aldotune-logo { max-width: 130px; max-height: 40px; object-fit: contain; display: block; transition: opacity 0.2s; }
         
-        /* MINI LOGO */
         .mini-logo {
             display: none; width: 40px; height: 40px; background: transparent; color: #000;
             font-family: Arial, sans-serif; font-weight: 900; font-size: 40px;
@@ -48,7 +46,6 @@
             line-height: 1; padding-bottom: 5px;
         }
 
-        /* Tombol Close (X) */
         .close-sidebar-btn {
             background: none; border: none; cursor: pointer; padding: 5px;
             display: flex; align-items: center; justify-content: center;
@@ -57,7 +54,6 @@
         .close-sidebar-btn:hover { background: #f0f0f0; }
         .close-sidebar-btn svg { width: 20px; height: 20px; fill: #666; }
 
-        /* CREATE BUTTON */
         .create-btn-wrapper { padding: 0 24px 16px 24px; transition: 0.3s; }
         .btn-create {
             width: 100%; background-color: #1890ff; color: white; border: none; padding: 12px;
@@ -67,9 +63,7 @@
         }
         .btn-create:hover { background-color: #40a9ff; }
 
-        /* MENU LIST */
         .menu-list { list-style: none; flex-grow: 1; padding-top: 8px; overflow-y: auto; overflow-x: hidden; }
-        
         .menu-list::-webkit-scrollbar { width: 4px; }
         .menu-list::-webkit-scrollbar-thumb { background-color: #ccc; border-radius: 4px; }
         .menu-list::-webkit-scrollbar-track { background-color: transparent; }
@@ -90,7 +84,7 @@
 
         .sidebar-footer { padding: 24px; font-size: 11px; color: #aaa; border-top: 1px solid #f0f0f0; overflow: hidden; }
 
-        /* --- 3. DESKTOP COLLAPSED MODE (DEFAULT) --- */
+        /* --- 3. DESKTOP COLLAPSED MODE --- */
         @media (min-width: 769px) {
             body.sidebar-collapsed .sidebar { width: 80px; }
             body.sidebar-collapsed .aldotune-logo { display: none; }
@@ -126,7 +120,6 @@
 
         .page-title { font-size: 18px; font-weight: 600; color: #222; }
 
-        /* User Profile */
         .user-profile { display: flex; align-items: center; text-align: right; gap: 12px; cursor: pointer; }
         .user-details h4 { font-size: 14px; font-weight: 600; color: #333; margin: 0; text-transform: capitalize; }
         .avatar-icon { width: 36px; height: 36px; fill: #999; flex-shrink: 0; }
@@ -148,25 +141,19 @@
         .dropdown-item:hover svg { fill: #333; }
         .dropdown-divider { height: 1px; background-color: #e0e0e0; margin: 6px 0; }
 
-        /* Hero Banner (UPDATED: Hitam Polos, Tanpa SVG Mic) */
+        /* Hero Banner */
         .hero-banner {
-            margin: 0; 
-            background: radial-gradient(circle at 30% 50%, #2b2b2b 0%, #1a1a1a 60%, #000000 100%); /* Hitam elegan */
-            min-height: 280px; 
-            display: flex; flex-direction: column; justify-content: center; 
-            padding: 40px 60px;
-            color: white; 
-            position: relative; 
-            overflow: hidden;
+            margin: 0; background: radial-gradient(circle at 30% 50%, #2b2b2b 0%, #1a1a1a 60%, #000000 100%);
+            min-height: 280px; display: flex; flex-direction: column; justify-content: center; padding: 40px 60px;
+            color: white; position: relative; overflow: hidden;
         }
-        
         .hero-title { font-size: 56px; font-weight: 500; margin-bottom: 10px; line-height: 1.1; }
         .hero-subtitle { font-size: 28px; font-weight: 400; opacity: 0.9; }
         .content-area { background: #f6f6f6; flex-grow: 1; min-height: 200px; }
 
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 90; backdrop-filter: blur(2px); transition: opacity 0.3s; }
 
-        /* --- 6. MOBILE & TABLET STYLE --- */
+        /* --- 5. MOBILE STYLE --- */
         @media (max-width: 768px) {
             .sidebar { 
                 position: fixed; top: 0; left: 0; height: 100%; width: 280px; 
@@ -327,16 +314,28 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // --- TIMER SESI 15 MENIT ---
+        const SESSION_TIMEOUT = 15 * 60 * 1000; // 15 Menit
+        let sessionTimer;
+
+        function startSessionTimer() {
+            sessionTimer = setTimeout(() => {
+                // Saat waktu habis, lempar ke index (login)
+                window.location.href = "index.html";
+            }, SESSION_TIMEOUT);
+        }
+
         // --- AUTH & DATA ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                // Token valid -> Mulai Timer
+                startSessionTimer();
+
                 const userRef = ref(db, 'users/' + user.uid);
                 get(userRef).then((snapshot) => {
                     let finalName = "Pengguna"; 
                     if (snapshot.exists()) {
                         const userData = snapshot.val();
-                        
-                        // SET NAMA
                         if (userData.fullName) {
                             const words = userData.fullName.trim().split(/\s+/);
                             if (words.length >= 2) finalName = words[0] + " " + words[1];
@@ -345,8 +344,7 @@
                             finalName = user.email.split('@')[0];
                         }
 
-                        // CEK ROLE UTK MENU TIM
-                        // Jika j = 'a' (Admin), tampilkan menu tim
+                        // KHUSUS ADMIN (j: 'a')
                         if (userData.j === 'a') {
                             const menuTim = document.getElementById('menuTim');
                             if(menuTim) menuTim.style.display = 'flex';
@@ -359,11 +357,12 @@
                     document.getElementById('displayName').innerText = user.email.split('@')[0];
                 });
             } else {
+                // Jika tidak ada user (akses ilegal), tendang ke index
                 window.location.href = "index.html";
             }
         });
 
-        // --- MENU LOGIC ---
+        // --- UI LOGIC ---
         const btnMenuToggle = document.getElementById('btnMenuToggle');
         const btnCloseSidebar = document.getElementById('btnCloseSidebar'); 
         const sidebar = document.getElementById('sidebar');
@@ -392,7 +391,6 @@
             sidebarOverlay.classList.remove('active');
         });
 
-        // --- USER MENU ---
         const userMenuBtn = document.getElementById('userMenuBtn');
         const logoutMenu = document.getElementById('logoutMenu');
 
@@ -405,13 +403,10 @@
             logoutMenu.style.display = 'none';
         });
 
+        // --- LOGOUT LOGIC (Tanpa signOut) ---
         document.getElementById('btnLogout').addEventListener('click', () => {
-            if (confirm("Yakin ingin keluar?")) {
-                signOut(auth).then(() => {
-                    localStorage.removeItem('aldotune_email');
-                    window.location.href = "index.html";
-                });
-            }
+            // Langsung arahkan ke index.html, biarkan index menangani logika ganti akun/kunci
+            window.location.href = "index.html";
         });
     </script>
 </body>
