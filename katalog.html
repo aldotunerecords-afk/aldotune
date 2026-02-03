@@ -71,6 +71,7 @@
         .st-live { background: #e6fffa; color: #00bfa5; border: 1px solid #b2f5ea; }
         .st-pending { background: #fffbe6; color: #faad14; border: 1px solid #ffe58f; }
         .st-process { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
+        .st-revisi { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
         .st-reject { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
         .st-draft { background: #f5f5f5; color: #8c8c8c; border: 1px solid #d9d9d9; }
         .st-deleted { background: #333; color: #fff; border: 1px solid #000; }
@@ -223,7 +224,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // VARIABEL GLOBAL
         let allReleasesData = []; 
 
         setTimeout(() => { signOut(auth).then(() => window.location.href = "index.html"); }, 15 * 60 * 1000);
@@ -235,6 +235,7 @@
             if (s === 'terkirim' || s === 'live') { color = 'st-live'; storeCount = 17; }
             else if (s === 'di review' || s === 'pending') { color = 'st-pending'; }
             else if (s === 'proses') { color = 'st-process'; }
+            else if (s === 'revisi') { color = 'st-revisi'; }
             else if (s === 'di tolak' || s === 'rejected') { color = 'st-reject'; }
             else if (s === 'hapus' || s === 'deleted') { color = 'st-deleted'; }
             return { color, storeCount, text: statusText || 'Draft' };
@@ -247,6 +248,7 @@
             if (s === 'terkirim' || s === 'live') { color = '#52c41a'; bg = '#f6ffed'; border = '#b7eb8f'; }
             else if (s === 'di review' || s === 'pending') { color = '#faad14'; bg = '#fffbe6'; border = '#ffe58f'; }
             else if (s === 'proses') { color = '#1890ff'; bg = '#e6f7ff'; border = '#91d5ff'; }
+            else if (s === 'revisi') { color = '#722ed1'; bg = '#f9f0ff'; border = '#d3adf7'; }
             else if (s === 'di tolak') { color = '#f5222d'; bg = '#fff1f0'; border = '#ffa39e'; }
             else if (s === 'hapus') { color = '#fff'; bg = '#333'; border = '#000'; }
             return `<span style="color:${color}; background:${bg}; border:1px solid ${border}; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; text-transform:uppercase;">${statusText}</span>`;
@@ -277,8 +279,6 @@
                     }
                     if (trackCount === 0 && item.trackCount) trackCount = item.trackCount;
 
-                    // PENTING: Link Detail Rilis
-                    // Kita asumsikan 'item.key' adalah Release ID dari Firebase (disimpan saat fetch)
                     const releaseId = item.id; 
 
                     const rowHtml = `
@@ -327,11 +327,11 @@
             }
         }
 
-        // --- SEARCH ENGINE (Optimized) ---
+        // --- SEARCH ENGINE ---
         let searchTimeout;
         const performSearch = (keyword) => {
             const loader = document.getElementById('tableLoader');
-            if(loader) loader.style.display = 'flex'; // Nyalakan Loader
+            if(loader) loader.style.display = 'flex'; 
 
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
@@ -353,7 +353,7 @@
                 } catch (err) {
                     console.error("Search Error:", err);
                 } finally {
-                    if(loader) loader.style.display = 'none'; // Matikan Loader
+                    if(loader) loader.style.display = 'none'; 
                 }
             }, 500);
         };
@@ -435,7 +435,7 @@
 
         window.closeModal = function() { document.getElementById('infoModal').style.display = 'none'; };
 
-        // --- AUTH & DATA LOAD ---
+        // --- AUTH & DATA LOAD (FIXED LOGIC) ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(db, 'users/' + user.uid);
@@ -449,24 +449,28 @@
                     }
                     document.getElementById('headerUserName').innerText = finalName;
 
-                    let releasesPath;
-                    if (role === 'a') {
-                        releasesPath = ref(db, 'releases');
-                    } else {
-                        releasesPath = ref(db, 'users/' + user.uid + '/releases');
-                    }
+                    // LOGIC PERBAIKAN: Ambil SELALU dari 'releases' (Pusat)
+                    const releasesPath = ref(db, 'releases');
 
                     get(releasesPath).then((releaseSnap) => {
-                        // Matikan loader awal setelah data diambil
                         document.getElementById('tableLoader').style.display = 'none';
 
                         if (releaseSnap.exists()) {
                             const releases = releaseSnap.val();
-                            // KONVERSI KE ARRAY DAN SIMPAN ID (KEY)
-                            allReleasesData = Object.keys(releases).map(key => {
+                            
+                            // 1. Konversi ke Array
+                            let dataArray = Object.keys(releases).map(key => {
                                 return { id: key, ...releases[key] };
                             });
-                            
+
+                            // 2. FILTER BERDASARKAN ROLE
+                            if (role !== 'a') {
+                                // Jika BUKAN admin, filter hanya data miliknya
+                                dataArray = dataArray.filter(item => item.userId === user.uid);
+                            }
+
+                            // 3. Simpan dan Tampilkan
+                            allReleasesData = dataArray;
                             renderTable(allReleasesData);
                         } else {
                             allReleasesData = [];
