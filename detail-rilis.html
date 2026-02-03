@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Rilis - Aldotune</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text x='50%' y='50%' dy='.35em' text-anchor='middle' font-size='65' font-family='Arial, sans-serif' font-weight='bold' fill='%23000000'>a</text></svg>">
+
+    <style>
+        /* --- 1. RESET & BASIC --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: #f9f9f9; color: #333; font-size: 13px; padding-bottom: 50px; }
+        a { text-decoration: none; color: #1890ff; cursor: pointer; }
+
+        /* --- 2. HEADER --- */
+        .top-header {
+            height: 60px; background: #fff; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; color: #555; transition: 0.2s; }
+        .btn-back:hover { background: #f0f0f0; }
+        .btn-back svg { width: 24px; height: 24px; fill: currentColor; }
+        .page-title { font-size: 16px; font-weight: 600; color: #222; }
+        .avatar-icon { width: 32px; height: 32px; fill: #999; }
+
+        /* --- 3. CONTAINER --- */
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        /* --- 4. TITLE & ACTIONS --- */
+        .release-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .release-title-section { flex-grow: 1; }
+        .main-title { font-size: 26px; font-weight: 400; color: #222; margin-bottom: 4px; }
+        .sub-artist { font-size: 14px; color: #666; text-transform: uppercase; font-weight: 600; }
+        
+        .header-actions { 
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end;
+        }
+        
+        .action-btn { 
+            padding: 8px 16px; border-radius: 4px; font-weight: 600; 
+            font-size: 12px; cursor: pointer; border: none; transition: 0.2s; 
+            display: none; white-space: nowrap;
+        }
+        
+        .btn-admin-status { background: #1890ff; color: white; }
+        .btn-admin-status:hover { background: #096dd9; }
+        
+        .btn-admin-download { background: #52c41a; color: white; display: flex; align-items: center; gap: 5px; } 
+        .btn-admin-download:hover { background: #389e0d; }
+
+        .btn-admin-delete { background: #ff4d4f; color: white; }
+        .btn-admin-delete:hover { background: #cf1322; }
+        
+        .btn-user-takedown { background: #333; color: white; }
+        .btn-user-takedown:hover { background: #000; }
+
+        .btn-edit-meta { background: #fff; border: 1px solid #1890ff; color: #1890ff; }
+        .btn-edit-meta:hover { background: #e6f7ff; }
+
+        /* --- 5. STATUS BAR --- */
+        .status-bar {
+            background: #f0f0f0; border-radius: 4px; padding: 12px 20px; margin-bottom: 25px;
+            display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 500; color: #444;
+        }
+        .status-icon { width: 20px; height: 20px; fill: #444; }
+        
+        /* --- 6. INFO GRID --- */
+        .info-grid { display: flex; gap: 30px; margin-bottom: 30px; flex-wrap: wrap; }
+        .cover-wrapper { 
+            position: relative; width: 160px; height: 160px; flex-shrink: 0; 
+            border-radius: 4px; overflow: hidden; 
+        }
+        .cover-img { width: 100%; height: 100%; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        .btn-update-cover {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.95); padding: 6px 14px; border-radius: 20px;
+            font-size: 11px; font-weight: 700; color: #1890ff; border: none; cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: none; 
+            align-items: center; gap: 4px; white-space: nowrap; z-index: 20;
+        }
+        .btn-update-cover:hover { background: white; color: #096dd9; transform: translateX(-50%) scale(1.05); }
+
+        .data-columns { display: flex; gap: 40px; flex-grow: 1; justify-content: space-between; flex-wrap: wrap; }
+        .data-col { display: flex; flex-direction: column; gap: 8px; min-width: 200px; }
+        .data-row { display: grid; grid-template-columns: 120px 1fr; font-size: 13px; }
+        .label-text { font-weight: 600; color: #222; }
+        .value-text { color: #555; }
+
+        /* --- 7. TABS & TABLE --- */
+        .tabs-container { border-bottom: 1px solid #ddd; margin-bottom: 20px; display: flex; gap: 20px; }
+        .tab-item { padding: 10px 5px; cursor: pointer; color: #1890ff; font-weight: 500; position: relative; display: flex; align-items: center; gap: 6px; }
+        .tab-item.active { border-bottom: 2px solid #ddd; color: #444; border: 1px solid #ddd; border-bottom: 1px solid #fff; border-radius: 4px 4px 0 0; margin-bottom: -1px; padding: 10px 15px; background: #fff; }
+        .badge-count { background: #999; color: white; padding: 1px 8px; border-radius: 10px; font-size: 11px; }
+        .tab-item.active .badge-count { background: #555; }
+
+        .table-wrapper { background: #fff; border-top: 1px solid #eee; }
+        .track-table { width: 100%; border-collapse: collapse; }
+        .track-table th { text-align: left; padding: 12px 10px; font-weight: 700; color: #333; border-bottom: 1px solid #eee; font-size: 12px; }
+        .track-table td { padding: 15px 10px; border-bottom: 1px solid #f5f5f5; vertical-align: top; color: #555; font-size: 13px; }
+        .icon-music { width: 18px; height: 18px; fill: #444; }
+        
+        .btn-play-pause {
+            background: none; border: none; cursor: pointer; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; transition: background 0.2s;
+        }
+        .btn-play-pause:hover { background: #f0f0f0; }
+        .btn-play-pause svg { width: 24px; height: 24px; fill: #555; }
+        .btn-play-pause.playing svg { fill: #1890ff; }
+
+        /* Button Edit Track */
+        .btn-edit-track {
+            background: none; border: none; cursor: pointer; color: #999; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+        }
+        .btn-edit-track:hover { color: #1890ff; background: #e6f7ff; }
+        .btn-edit-track svg { width: 16px; height: 16px; fill: currentColor; }
+
+        /* --- 8. MODALS --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 85%; max-width: 900px; border-radius: 8px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; max-height: 80vh; display: flex; flex-direction: column; }
+        .modal-box.small { max-width: 400px; height: auto; overflow: visible; } 
+        .modal-box.medium { max-width: 600px; }
+
+        .modal-header { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .close-modal { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; line-height: 1; }
+        
+        .modal-grid { overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding-bottom: 10px; }
+        .grid-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border: 1px solid #eee; border-radius: 6px; font-size: 13px; color: #333; background: #fcfcfc; }
+        .empty-modal { text-align: center; padding: 40px; color: #999; font-size: 14px; grid-column: 1 / -1; }
+
+        /* FORM EDIT */
+        .edit-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; padding: 5px; max-height: 60vh; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: span 2; }
+        .form-label { font-size: 11px; font-weight: 600; color: #666; }
+        .form-input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+        .form-input:focus { border-color: #1890ff; outline: none; }
+
+        /* DOWNLOAD LIST */
+        .download-list { display: flex; flex-direction: column; gap: 10px; max-height: 300px; overflow-y: auto; }
+        .download-item { display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid #eee; border-radius: 6px; background: #fff; }
+        .download-info { display: flex; align-items: center; gap: 10px; }
+        .dl-icon-type { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; background: #f0f0f0; border-radius: 4px; color: #555; font-size: 10px; font-weight: bold; }
+        .btn-dl-action { background: #f6f6f6; border: 1px solid #ddd; color: #333; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .btn-dl-action:hover { background: #e6f7ff; color: #1890ff; border-color: #1890ff; }
+
+        /* Progress Bar */
+        .progress-container { width: 100%; height: 6px; background: #eee; border-radius: 3px; margin-top: 15px; overflow: hidden; display: none; }
+        .progress-bar { height: 100%; background: #1890ff; width: 0%; transition: width 0.3s; }
+        .progress-text { font-size: 11px; text-align: center; margin-top: 5px; color: #666; display: none; }
+
+        /* Update Cover Elements */
+        .cover-preview-container {
+            width: 200px; height: 200px; background: #eee; margin: 0 auto 15px auto;
+            border-radius: 8px; overflow: hidden; border: 2px dashed #ccc;
+            display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer;
+        }
+        .cover-preview-img { width: 100%; height: 100%; object-fit: cover; display: none; }
+        .upload-placeholder { text-align: center; color: #999; font-size: 12px; padding: 10px; }
+        .btn-upload { width: 100%; background: #1890ff; color: white; border: none; padding: 12px; border-radius: 4px; font-weight: 600; cursor: pointer; margin-top: 10px; opacity: 0.5; pointer-events: none; }
+        .btn-upload.active { opacity: 1; pointer-events: all; }
+
+        .status-select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 15px; }
+        .btn-save-status { width: 100%; background: #1890ff; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: 600; cursor: pointer; }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 200; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1890ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .delete-loader { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:300; display:none; justify-content:center; align-items:center; flex-direction:column; color:white; }
+
+        @media (max-width: 768px) {
+            .release-header-flex { flex-direction: column; gap: 15px; }
+            .header-actions { width: 100%; justify-content: flex-start; }
+            .info-grid { flex-direction: column; }
+            .data-columns { flex-direction: column; gap: 20px; }
+            .modal-grid { grid-template-columns: 1fr; }
+            .edit-form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
+            .track-table th:nth-child(5), .track-table td:nth-child(5), 
+            .track-table th:nth-child(6), .track-table td:nth-child(6),
+            .track-table th:nth-child(7), .track-table td:nth-child(7),
+            .track-table th:nth-child(10), .track-table td:nth-child(10) { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="pageLoader" class="loading-overlay"><div class="spinner"></div><div>Memuat Detail Rilis...</div></div>
+    <div id="deleteLoader" class="delete-loader"><div class="spinner" style="border-top-color: white; border-color: rgba(255,255,255,0.3);"></div><div id="deleteText">Memproses...</div></div>
+    
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header"><span id="modalTitle">Info</span><button class="close-modal" onclick="closeModal('infoModal')">×</button></div>
+            <div class="modal-grid" id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="downloadModal" class="modal-overlay">
+        <div class="modal-box small">
+            <div class="modal-header"><span>Download Assets</span><button class="close-modal" onclick="closeModal('downloadModal')">×</button></div>
+            <div id="downloadList" class="download-list"></div>
+            <div id="dlProgressContainer" class="progress-container"><div id="dlProgressBar" class="progress-bar"></div></div>
+            <div id="dlProgressText" class="progress-text">Mengunduh 0%...</div>
+        </div>
+    </div>
+
+    <div id="coverModal" class="modal-overlay">
+        <div class="modal-box small">
+            <div class="modal-header"><span>Perbarui Sampul</span><button class="close-modal" onclick="closeModal('coverModal')">×</button></div>
+            <div style="text-align: center;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;">Wajib: <b>3000x3000px</b>, Format <b>JPG</b>.</p>
+                <input type="file" id="coverInput" accept="image/jpeg" style="display: none;" onchange="validateCover()">
+                <div class="cover-preview-container" onclick="document.getElementById('coverInput').click()">
+                    <div id="uploadPlaceholder" class="upload-placeholder"><svg viewBox="0 0 24 24" width="30" height="30" fill="#ccc"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg><br>Klik untuk pilih gambar</div>
+                    <img id="previewImg" class="cover-preview-img">
+                </div>
+                <div id="progressContainer" class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
+                <div id="progressText" class="progress-text">Mengupload 0%...</div>
+                <button id="btnUploadCover" class="btn-upload" onclick="uploadCover()">UPDATE & KIRIM</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="metadataModal" class="modal-overlay">
+        <div class="modal-box medium">
+            <div class="modal-header"><span>Edit Metadata</span><button class="close-modal" onclick="closeModal('metadataModal')">×</button></div>
+            <div class="edit-form-grid">
+                <div class="form-group full"><label class="form-label">Judul Rilis</label><input type="text" id="editTitle" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Versi (ex: Remix)</label><input type="text" id="editVersion" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Artis Utama</label><input type="text" id="editArtist" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Label</label><input type="text" id="editLabel" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Genre</label><input type="text" id="editGenre" class="form-input"></div>
+                <div class="form-group"><label class="form-label">UPC (Jangan ubah jika sudah rilis)</label><input type="text" id="editUPC" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Catalog Number</label><input type="text" id="editCat" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Tahun Produksi</label><input type="number" id="editYear" class="form-input"></div>
+                <div class="form-group"><label class="form-label">P-Line</label><input type="text" id="editPline" class="form-input"></div>
+                <div class="form-group"><label class="form-label">C-Line</label><input type="text" id="editCline" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Explicit?</label><select id="editExplicit" class="form-input"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="btn-save-status" onclick="saveMetadata()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trackModal" class="modal-overlay">
+        <div class="modal-box medium">
+            <div class="modal-header"><span>Edit Track</span><button class="close-modal" onclick="closeModal('trackModal')">×</button></div>
+            <div class="edit-form-grid">
+                <div class="form-group full"><label class="form-label">Judul Lagu</label><input type="text" id="trackTitle" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Versi (ex: Radio Edit)</label><input type="text" id="trackVersion" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Artis</label><input type="text" id="trackArtist" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Penulis (Authors)</label><input type="text" id="trackAuthors" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Komposer</label><input type="text" id="trackComposers" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Genre</label><input type="text" id="trackGenre" class="form-input"></div>
+                <div class="form-group"><label class="form-label">ISRC</label><input type="text" id="trackISRC" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Explicit?</label><select id="trackExplicit" class="form-input"><option value="No">No</option><option value="Yes">Yes</option></select></div>
+                <div class="form-group full" style="border-top:1px solid #eee; padding-top:10px; margin-top:5px;">
+                    <label class="form-label">Ganti File Audio (Opsional - MP3/WAV)</label>
+                    <input type="file" id="trackAudioFile" accept="audio/*" class="form-input">
+                </div>
+            </div>
+            <div id="trackProgressContainer" class="progress-container"><div id="trackProgressBar" class="progress-bar"></div></div>
+            <div id="trackProgressText" class="progress-text">Mengupload Audio...</div>
+            <div style="margin-top: 15px;"><button class="btn-save-status" onclick="saveTrack()">Simpan Perubahan</button></div>
+        </div>
+    </div>
+
+    <div id="statusModal" class="modal-overlay">
+        <div class="modal-box small">
+            <div class="modal-header"><span>Ubah Status Rilis</span><button class="close-modal" onclick="closeModal('statusModal')">×</button></div>
+            <div>
+                <label style="font-size:12px; color:#666; margin-bottom:5px; display:block;">Pilih Status Baru:</label>
+                <select id="statusSelect" class="status-select">
+                    <option value="Live">Live (Terkirim)</option>
+                    <option value="Pending">Pending (Di Review)</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Revisi">Revisi</option>
+                    <option value="Rejected">Rejected (Ditolak)</option>
+                    <option value="Takedown">Takedown</option>
+                </select>
+                <button class="btn-save-status" onclick="saveStatusChange()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="top-header">
+        <div class="header-left">
+            <a href="katalog.html" class="btn-back">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </a>
+            <div class="page-title">Katalog > Detail</div>
+        </div>
+        <svg class="avatar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+    </header>
+
+    <div class="main-container">
+        
+        <div class="release-header-flex">
+            <div class="release-title-section">
+                <h1 class="main-title" id="displayTitle">Memuat...</h1>
+                <div class="sub-artist" id="displayArtist">...</div>
+            </div>
+            <div class="header-actions" id="actionButtons"></div>
+        </div>
+
+        <div class="status-bar">
+            <svg class="status-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            <span id="displayStatus">Draft</span>
+        </div>
+
+        <div class="info-grid">
+            <div class="cover-wrapper">
+                <img src="https://via.placeholder.com/160" id="displayCover" class="cover-img" alt="Cover">
+                <button id="btnTriggerUpdate" class="btn-update-cover" onclick="openCoverModal()">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#1890ff"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+                    PERBARUI
+                </button>
+            </div>
+
+            <div class="data-columns">
+                <div class="data-col">
+                    <div class="data-row"><span class="label-text">Label</span> <span class="value-text" id="metaLabel">-</span></div>
+                    <div class="data-row"><span class="label-text">UPC</span> <span class="value-text" id="metaUPC">-</span></div>
+                    <div class="data-row"><span class="label-text">© line</span> <span class="value-text" id="metaCline">-</span></div>
+                    <div class="data-row"><span class="label-text">℗ line</span> <span class="value-text" id="metaPline">-</span></div>
+                    <div class="data-row"><span class="label-text">Tahun Produksi</span> <span class="value-text" id="metaYear">-</span></div>
+                    <div class="data-row"><span class="label-text">Nomor Katalog</span> <span class="value-text" id="metaCat">-</span></div>
+                    <div class="data-row"><span class="label-text">Genre #1</span> <span class="value-text" id="metaGenre">-</span></div>
+                    <div class="data-row"><span class="label-text">Lirik Eksplisit</span> <span class="value-text" id="metaExplicit">No</span></div>
+                    <div class="data-row"><span class="label-text">Duration</span> <span class="value-text" id="metaDuration">--:--</span></div>
+                </div>
+                <div class="data-col">
+                    <div class="data-row"><span class="label-text">Tanggal Pembuatan</span> <span class="value-text" id="metaCreated">-</span></div>
+                    <div class="data-row"><span class="label-text">Tanggal Rilis</span> <span class="value-text" id="metaRelease">-</span></div>
+                </div>
+                <div class="data-col">
+                    <div class="data-row"><span class="label-text">Tipe Distribusi</span> <span class="value-text">Digital</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tab-item active">Lagu <span class="badge-count" id="countTracks">0</span></div>
+            <div class="tab-item" id="tabStores" onclick="triggerStoreModal()">Stores <span class="badge-count" id="countStores">0</span></div>
+            <div class="tab-item" onclick="openTerritoryModal()">Teritori <span class="badge-count">240</span></div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;"></th>
+                        <th style="width: 40px;"></th>
+                        <th style="width: 40px;">Track #</th>
+                        <th>Track title</th>
+                        <th>Artist</th>
+                        <th>Authors</th>
+                        <th>Composers</th>
+                        <th>Duration</th>
+                        <th>Genre #1</th>
+                        <th>ISRC</th>
+                    </tr>
+                </thead>
+                <tbody id="tracklistBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, update, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getStorage, ref as sRef, deleteObject, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+            authDomain: "aldotune-records.firebaseapp.com",
+            databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "aldotune-records",
+            storageBucket: "aldotune-records.firebasestorage.app",
+            messagingSenderId: "311200667476",
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
+            measurementId: "G-GQ3Y2GKWG1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const storage = getStorage(app);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const releaseId = urlParams.get('id');
+        let currentReleaseData = null;
+        let dbPath = ""; 
+        let currentAudio = null;
+        let currentPlayBtn = null;
+        let selectedCoverFile = null;
+        let userRole = 'ua';
+        let selectedTrackIndex = null;
+
+        const iconPlay = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>`;
+        const iconPause = `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>`;
+
+        function formatDate(dateStr) {
+            if (!dateStr) return "-";
+            const date = new Date(Number(dateStr) || dateStr);
+            return isNaN(date.getTime()) ? dateStr : date.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        }
+
+        window.togglePlay = function(url, btnId) {
+            const btn = document.getElementById(btnId);
+            if (!url) { alert("Audio tidak tersedia."); return; }
+            if (currentAudio && currentAudio.src !== url) {
+                currentAudio.pause(); currentAudio.currentTime = 0;
+                if (currentPlayBtn) { currentPlayBtn.innerHTML = iconPlay; currentPlayBtn.classList.remove('playing'); }
+            }
+            if (!currentAudio || currentAudio.src !== url) {
+                currentAudio = new Audio(url);
+                currentAudio.onended = () => { btn.innerHTML = iconPlay; btn.classList.remove('playing'); };
+            }
+            if (currentAudio.paused) {
+                currentAudio.play(); btn.innerHTML = iconPause; btn.classList.add('playing'); currentPlayBtn = btn;
+            } else {
+                currentAudio.pause(); btn.innerHTML = iconPlay; btn.classList.remove('playing');
+            }
+        };
+
+        // --- COVER ---
+        window.openCoverModal = function() {
+            document.getElementById('coverModal').style.display = 'flex';
+            document.getElementById('coverInput').value = '';
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            document.getElementById('btnUploadCover').classList.remove('active');
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('progressText').style.display = 'none';
+            selectedCoverFile = null;
+        };
+
+        window.validateCover = function() {
+            const input = document.getElementById('coverInput');
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.type !== 'image/jpeg' && file.type !== 'image/jpg') { alert("Format harus JPG!"); return; }
+                const img = new Image();
+                img.src = URL.createObjectURL(file);
+                img.onload = function() {
+                    if (this.width === 3000 && this.height === 3000) {
+                        document.getElementById('previewImg').src = this.src;
+                        document.getElementById('previewImg').style.display = 'block';
+                        document.getElementById('uploadPlaceholder').style.display = 'none';
+                        document.getElementById('btnUploadCover').classList.add('active');
+                        selectedCoverFile = file;
+                    } else {
+                        alert("Wajib 3000x3000px!");
+                        input.value = '';
+                    }
+                };
+            }
+        };
+
+        window.uploadCover = function() {
+            if (!selectedCoverFile) return;
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            document.getElementById('progressContainer').style.display = 'block';
+            progressText.style.display = 'block';
+            document.getElementById('btnUploadCover').classList.remove('active');
+
+            if (currentReleaseData.coverUrl) {
+                try { deleteObject(sRef(storage, currentReleaseData.coverUrl)).catch(e => {}); } catch(e){}
+            }
+
+            const storagePath = `covers/${releaseId}_${Date.now()}.jpg`;
+            const uploadTask = uploadBytesResumable(sRef(storage, storagePath), selectedCoverFile);
+
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    progressBar.style.width = p + '%';
+                    progressText.innerText = `Mengupload ${Math.round(p)}%...`;
+                }, 
+                (error) => { alert("Gagal: " + error.message); }, 
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                        let updates = { coverUrl: url };
+                        // USER ONLY: UBAH STATUS KE PROSES
+                        if (userRole !== 'a') {
+                            updates.status = "Proses";
+                        }
+                        update(ref(db, dbPath), updates).then(() => {
+                            let msg = "Sampul diperbarui.";
+                            if(userRole !== 'a') msg += " Status berubah menjadi Proses.";
+                            alert(msg); location.reload();
+                        });
+                    });
+                }
+            );
+        };
+
+        // --- EDIT METADATA LOGIC ---
+        window.openMetadataModal = function() {
+            document.getElementById('editTitle').value = currentReleaseData.title || "";
+            document.getElementById('editVersion').value = currentReleaseData.version || "";
+            document.getElementById('editArtist').value = currentReleaseData.artist || "";
+            document.getElementById('editLabel').value = currentReleaseData.label || "";
+            document.getElementById('editGenre').value = currentReleaseData.genre || "";
+            document.getElementById('editUPC').value = currentReleaseData.upc || "";
+            document.getElementById('editCat').value = currentReleaseData.catNo || currentReleaseData.customId || "";
+            let year = "";
+            if (currentReleaseData.releaseDate) year = currentReleaseData.releaseDate.split('-')[0];
+            document.getElementById('editYear').value = year;
+            document.getElementById('editPline').value = currentReleaseData.pline || "";
+            document.getElementById('editCline').value = currentReleaseData.cline || "";
+            document.getElementById('editExplicit').value = currentReleaseData.explicit || "No";
+            document.getElementById('metadataModal').style.display = 'flex';
+        };
+
+        window.saveMetadata = function() {
+            const updates = {
+                title: document.getElementById('editTitle').value,
+                version: document.getElementById('editVersion').value,
+                artist: document.getElementById('editArtist').value,
+                label: document.getElementById('editLabel').value,
+                genre: document.getElementById('editGenre').value,
+                upc: document.getElementById('editUPC').value,
+                catNo: document.getElementById('editCat').value,
+                pline: document.getElementById('editPline').value,
+                cline: document.getElementById('editCline').value,
+                explicit: document.getElementById('editExplicit').value
+            };
+
+            // USER ONLY: UBAH STATUS KE PROSES
+            if (userRole !== 'a') {
+                updates.status = "Proses";
+            }
+
+            update(ref(db, dbPath), updates).then(() => {
+                let msg = "Metadata diperbarui.";
+                if(userRole !== 'a') msg += " Status berubah menjadi Proses.";
+                alert(msg); location.reload();
+            });
+        };
+
+        // --- EDIT TRACK LOGIC ---
+        window.openTrackModal = function(index) {
+            selectedTrackIndex = index;
+            // Get Track Data (convert obj to arr first to pick index)
+            let tracks = Array.isArray(currentReleaseData.tracks) ? currentReleaseData.tracks : Object.values(currentReleaseData.tracks);
+            const track = tracks[index];
+
+            document.getElementById('trackTitle').value = track.title || "";
+            document.getElementById('trackVersion').value = track.version || "";
+            document.getElementById('trackArtist').value = track.artist || "";
+            document.getElementById('trackAuthors').value = track.authors || "";
+            document.getElementById('trackComposers').value = track.composers || "";
+            document.getElementById('trackGenre').value = track.genre || "";
+            document.getElementById('trackISRC').value = track.isrc || "";
+            document.getElementById('trackExplicit').value = track.explicit || "No";
+            
+            // Reset Upload Fields
+            document.getElementById('trackAudioFile').value = '';
+            document.getElementById('trackProgressContainer').style.display = 'none';
+            document.getElementById('trackProgressText').style.display = 'none';
+
+            document.getElementById('trackModal').style.display = 'flex';
+        };
+
+        window.saveTrack = function() {
+            const audioInput = document.getElementById('trackAudioFile');
+            const newFile = audioInput.files[0];
+
+            let trackUpdates = {
+                title: document.getElementById('trackTitle').value,
+                version: document.getElementById('trackVersion').value,
+                artist: document.getElementById('trackArtist').value,
+                authors: document.getElementById('trackAuthors').value,
+                composers: document.getElementById('trackComposers').value,
+                genre: document.getElementById('trackGenre').value,
+                isrc: document.getElementById('trackISRC').value,
+                explicit: document.getElementById('trackExplicit').value
+            };
+
+            // Jika ada file audio baru
+            if (newFile) {
+                document.getElementById('trackProgressContainer').style.display = 'block';
+                document.getElementById('trackProgressText').style.display = 'block';
+
+                let tracks = Array.isArray(currentReleaseData.tracks) ? currentReleaseData.tracks : Object.values(currentReleaseData.tracks);
+                const oldTrack = tracks[selectedTrackIndex];
+
+                // Hapus Audio Lama
+                if (oldTrack.audioUrl) {
+                    try { deleteObject(sRef(storage, oldTrack.audioUrl)).catch(e=>{}); } catch(e){}
+                }
+
+                // Upload Audio Baru
+                const storagePath = `audio/${releaseId}_track${selectedTrackIndex}_${Date.now()}.mp3`;
+                const uploadTask = uploadBytesResumable(sRef(storage, storagePath), newFile);
+
+                uploadTask.on('state_changed',
+                    (snap) => {
+                        const p = (snap.bytesTransferred / snap.totalBytes) * 100;
+                        document.getElementById('trackProgressBar').style.width = p + '%';
+                        document.getElementById('trackProgressText').innerText = `Mengupload Audio ${Math.round(p)}%...`;
+                    },
+                    (err) => { alert("Upload Audio Gagal: " + err.message); },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                            trackUpdates.audioUrl = url;
+                            // Update Track Data in DB
+                            update(ref(db, `${dbPath}/tracks/${selectedTrackIndex}`), trackUpdates).then(() => {
+                                if (userRole !== 'a') update(ref(db, dbPath), { status: "Proses" });
+                                alert("Track diperbarui dengan audio baru!");
+                                location.reload();
+                            });
+                        });
+                    }
+                );
+            } else {
+                // Hanya update text
+                update(ref(db, `${dbPath}/tracks/${selectedTrackIndex}`), trackUpdates).then(() => {
+                    if (userRole !== 'a') update(ref(db, dbPath), { status: "Proses" });
+                    alert("Track Metadata diperbarui!");
+                    location.reload();
+                });
+            }
+        };
+
+        // --- DOWNLOAD ASSETS ---
+        window.openDownloadModal = function() {
+            const list = document.getElementById('downloadList');
+            list.innerHTML = '';
+            
+            if (currentReleaseData.coverUrl) {
+                const item = document.createElement('div');
+                item.className = 'download-item';
+                item.innerHTML = `<div class="download-info"><div class="dl-icon-type">JPG</div><span>Cover Art</span></div><button class="btn-dl-action" onclick="startDownload('${currentReleaseData.coverUrl}', 'Cover - ${currentReleaseData.title}.jpg')">Unduh</button>`;
+                list.appendChild(item);
+            }
+
+            if (currentReleaseData.tracks) {
+                let tracks = Array.isArray(currentReleaseData.tracks) ? currentReleaseData.tracks : Object.values(currentReleaseData.tracks);
+                tracks.forEach((track, index) => {
+                    if (track.audioUrl) {
+                        const item = document.createElement('div');
+                        item.className = 'download-item';
+                        const num = index + 1;
+                        item.innerHTML = `<div class="download-info"><div class="dl-icon-type">MP3</div><span>Track ${num}: ${track.title}</span></div><button class="btn-dl-action" onclick="startDownload('${track.audioUrl}', '${num}. ${track.title}.mp3')">Unduh</button>`;
+                        list.appendChild(item);
+                    }
+                });
+            }
+            
+            document.getElementById('dlProgressContainer').style.display = 'none';
+            document.getElementById('dlProgressText').style.display = 'none';
+            document.getElementById('downloadModal').style.display = 'flex';
+        };
+
+        window.startDownload = function(url, filename) {
+            const bar = document.getElementById('dlProgressBar');
+            const txt = document.getElementById('dlProgressText');
+            const cont = document.getElementById('dlProgressContainer');
+            
+            cont.style.display = 'block'; txt.style.display = 'block'; bar.style.width = '0%';
+            txt.innerText = 'Memulai unduhan...';
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.responseType = 'blob';
+            xhr.onprogress = function(e) { if (e.lengthComputable) { const p = Math.round((e.loaded / e.total) * 100); bar.style.width = p + '%'; txt.innerText = `Mengunduh ${p}%...`; } };
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    txt.innerText = 'Selesai!';
+                    const link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(this.response);
+                    link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+                    setTimeout(() => { cont.style.display = 'none'; txt.style.display = 'none'; }, 2000);
+                }
+            };
+            xhr.send();
+        };
+
+        // --- ACTIONS ---
+        window.openStatusModal = function() {
+            document.getElementById('statusSelect').value = currentReleaseData.status || "Draft";
+            document.getElementById('statusModal').style.display = 'flex';
+        };
+
+        window.saveStatusChange = function() {
+            const newStatus = document.getElementById('statusSelect').value;
+            if (newStatus && newStatus !== currentReleaseData.status) {
+                update(ref(db, dbPath), { status: newStatus }).then(() => { alert("Status diubah!"); location.reload(); });
+            }
+            closeModal('statusModal');
+        };
+
+        window.musicianTakedown = function() {
+            if (confirm("Yakin ajukan Takedown?")) {
+                update(ref(db, dbPath), { status: "Hapus" }).then(() => { alert("Takedown diajukan."); location.reload(); });
+            }
+        };
+
+        window.adminHardDelete = async function() {
+            if (!confirm("PERINGATAN: Hapus Permanen?")) return;
+            const loader = document.getElementById('deleteLoader');
+            loader.style.display = 'flex';
+            try {
+                if (currentReleaseData.coverUrl) { try { await deleteObject(sRef(storage, currentReleaseData.coverUrl)); } catch(e){} }
+                if (currentReleaseData.tracks) {
+                    let tracks = Array.isArray(currentReleaseData.tracks) ? currentReleaseData.tracks : Object.values(currentReleaseData.tracks);
+                    for (const t of tracks) { if (t.audioUrl) { try { await deleteObject(sRef(storage, t.audioUrl)); } catch(e){} } }
+                }
+                await remove(ref(db, dbPath));
+                alert("Dihapus permanen."); window.location.href = "katalog.html";
+            } catch (e) { alert("Error: " + e.message); loader.style.display = 'none'; }
+        };
+
+        function getModalStatusBadge(statusText) {
+            let color = '#8c8c8c'; let bg = '#f5f5f5'; let border = '#d9d9d9';
+            const s = (statusText || '').toLowerCase();
+            if (s === 'terkirim' || s === 'live') { color = '#52c41a'; bg = '#f6ffed'; border = '#b7eb8f'; }
+            else if (s === 'di review' || s === 'pending') { color = '#faad14'; bg = '#fffbe6'; border = '#ffe58f'; }
+            else if (s === 'proses') { color = '#1890ff'; bg = '#e6f7ff'; border = '#91d5ff'; }
+            else if (s === 'revisi') { color = '#722ed1'; bg = '#f9f0ff'; border = '#d3adf7'; }
+            else if (s === 'rejected' || s === 'ditolak') { color = '#f5222d'; bg = '#fff1f0'; border = '#ffa39e'; }
+            else if (s === 'hapus') { color = '#fff'; bg = '#333'; border = '#000'; }
+            return `<span style="color:${color}; background:${bg}; border:1px solid ${border}; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:700; text-transform:uppercase;">${statusText}</span>`;
+        }
+
+        window.triggerStoreModal = function() {
+            const count = parseInt(document.getElementById('countStores').innerText);
+            openStoreModal(currentReleaseData.status, count);
+        };
+
+        window.openStoreModal = function(releaseStatus, count) {
+            document.getElementById('modalTitle').innerText = `Toko & Platform (${count} DSP)`;
+            if (count === 0) {
+                document.getElementById('modalContent').innerHTML = `<div class="empty-modal"><br>Belum terdistribusi.<br>Status: <b>${releaseStatus}</b></div>`;
+            } else {
+                const badgeHTML = getModalStatusBadge(releaseStatus);
+                const stores = ["Spotify", "Apple Music", "iTunes", "YouTube Music", "YouTube Content ID", "TikTok", "Instagram / Facebook", "Resso", "Joox", "Deezer", "Amazon Music", "Tidal", "Napster", "Shazam", "Langit Musik", "Trebel", "Soundcloud"];
+                let htmlContent = '';
+                stores.forEach(store => { htmlContent += `<div class="grid-item"><span>${store}</span>${badgeHTML}</div>`; });
+                document.getElementById('modalContent').innerHTML = htmlContent;
+            }
+            document.getElementById('infoModal').style.display = 'flex';
+        };
+
+        window.openTerritoryModal = function() {
+            document.getElementById('modalTitle').innerText = "Wilayah Distribusi (240 Teritori)";
+            document.getElementById('modalContent').innerHTML = `<div class="grid-item"><b>Indonesia</b></div><div class="grid-item">Malaysia</div><div class="grid-item">Singapura</div><div class="grid-item">Thailand</div><div class="grid-item">Vietnam</div><div class="grid-item">Filipina</div><div class="grid-item">Jepang</div><div class="grid-item">Korea Selatan</div><div class="grid-item">Amerika Serikat</div><div class="grid-item">Inggris</div><div class="grid-item">Australia</div><div class="grid-item">Jerman</div><div class="grid-item">Prancis</div><div class="grid-item">Belanda</div><div class="grid-item" style="color:#999; justify-content:center;">+ 226 Lainnya</div>`;
+            document.getElementById('infoModal').style.display = 'flex';
+        };
+
+        window.closeModal = function(id) { document.getElementById(id).style.display = 'none'; };
+
+        // --- LOAD DATA ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                if (!releaseId) { window.location.href = 'katalog.html'; return; }
+                const userRef = ref(db, 'users/' + user.uid);
+                get(userRef).then(snapUser => {
+                    let role = 'ua';
+                    if (snapUser.exists() && snapUser.val().j) role = snapUser.val().j;
+                    userRole = role; // Global role
+                    
+                    dbPath = (role === 'a') ? `releases/${releaseId}` : `users/${user.uid}/releases/${releaseId}`;
+
+                    get(ref(db, dbPath)).then(snap => {
+                        document.getElementById('pageLoader').style.display = 'none';
+                        if (snap.exists()) {
+                            const data = snap.val();
+                            currentReleaseData = data;
+
+                            let displayTitleText = data.title || "-";
+                            if (data.version && data.version !== "-" && data.version.trim() !== "") {
+                                displayTitleText += ` (${data.version})`;
+                            }
+                            document.getElementById('displayTitle').innerText = displayTitleText;
+                            document.getElementById('displayArtist').innerText = data.artist || "-";
+                            document.getElementById('displayCover').src = data.coverUrl || "https://via.placeholder.com/160";
+                            document.getElementById('displayStatus').innerText = data.status || "Draft";
+                            
+                            const s = (data.status || '').toLowerCase();
+                            document.getElementById('countStores').innerText = (s==='live'||s==='terkirim') ? "17" : "0";
+
+                            // LOGIC: Edit berlaku untuk Admin (Selalu) atau User (jika status sesuai)
+                            const canEdit = (role === 'a') || ['draft', 'revisi', 'rejected', 'ditolak', 'live', 'terkirim'].includes(s);
+                            
+                            if (canEdit) {
+                                document.getElementById('btnTriggerUpdate').style.display = 'flex';
+                            } else {
+                                document.getElementById('btnTriggerUpdate').style.display = 'none';
+                            }
+
+                            document.getElementById('metaLabel').innerText = data.label || "-";
+                            document.getElementById('metaUPC').innerText = data.upc || "-";
+                            document.getElementById('metaCline').innerText = data.cline || "-";
+                            document.getElementById('metaPline').innerText = data.pline || "-";
+                            document.getElementById('metaYear').innerText = new Date().getFullYear();
+                            document.getElementById('metaCat').innerText = data.catNo || data.customId || "-";
+                            document.getElementById('metaGenre').innerText = data.genre || "-";
+                            document.getElementById('metaExplicit').innerText = data.explicit || "No";
+                            document.getElementById('metaDuration').innerText = data.duration || "--:--";
+                            document.getElementById('metaCreated').innerText = formatDate(data.createdAt);
+                            document.getElementById('metaRelease').innerText = formatDate(data.releaseDate);
+
+                            const actionContainer = document.getElementById('actionButtons');
+                            
+                            if (canEdit) {
+                                const btnEditMeta = document.createElement('button');
+                                btnEditMeta.className = 'action-btn btn-edit-meta';
+                                btnEditMeta.innerText = 'Ubah Metadata';
+                                btnEditMeta.onclick = window.openMetadataModal;
+                                btnEditMeta.style.display = 'block';
+                                actionContainer.appendChild(btnEditMeta);
+                            }
+
+                            if (role === 'a') {
+                                const btnStatus = document.createElement('button');
+                                btnStatus.className = 'action-btn btn-admin-status';
+                                btnStatus.innerText = 'Ubah Status';
+                                btnStatus.onclick = window.openStatusModal;
+                                btnStatus.style.display = 'block';
+                                
+                                const btnDownload = document.createElement('button');
+                                btnDownload.className = 'action-btn btn-admin-download';
+                                btnDownload.innerHTML = `<svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Assets`;
+                                btnDownload.onclick = window.openDownloadModal;
+                                btnDownload.style.display = 'flex';
+
+                                const btnDelete = document.createElement('button');
+                                btnDelete.className = 'action-btn btn-admin-delete';
+                                btnDelete.innerText = 'Takedown Final';
+                                btnDelete.onclick = window.adminHardDelete;
+                                btnDelete.style.display = 'block';
+                                
+                                actionContainer.appendChild(btnStatus);
+                                actionContainer.appendChild(btnDownload);
+                                actionContainer.appendChild(btnDelete);
+                            } else {
+                                if (data.status !== 'Hapus') {
+                                    const btnTakedown = document.createElement('button');
+                                    btnTakedown.className = 'action-btn btn-user-takedown';
+                                    btnTakedown.innerText = 'Ajukan Takedown';
+                                    btnTakedown.onclick = window.musicianTakedown;
+                                    btnTakedown.style.display = 'block';
+                                    actionContainer.appendChild(btnTakedown);
+                                }
+                            }
+
+                            const tbody = document.getElementById('tracklistBody');
+                            let tracks = [];
+                            if (data.tracks) {
+                                if (Array.isArray(data.tracks)) tracks = data.tracks;
+                                else tracks = Object.keys(data.tracks).map(k => data.tracks[k]);
+                            }
+                            document.getElementById('countTracks').innerText = tracks.length;
+
+                            if (tracks.length > 0) {
+                                tracks.forEach((track, index) => {
+                                    const btnId = `playBtn_${index}`;
+                                    let trackDisplay = track.title || "Track "+(index+1);
+                                    if (track.version && track.version.trim() !== "" && track.version !== "-") {
+                                        trackDisplay += ` <span style="color:#999; font-weight:normal;">(${track.version})</span>`;
+                                    }
+
+                                    let editBtnHTML = "";
+                                    if (canEdit) {
+                                        editBtnHTML = `<button class="btn-edit-track" onclick="openTrackModal(${index})"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button>`;
+                                    }
+
+                                    const tr = document.createElement('tr');
+                                    tr.innerHTML = `
+                                        <td>${editBtnHTML}</td>
+                                        <td><button id="${btnId}" class="btn-play-pause" onclick="togglePlay('${track.audioUrl}', '${btnId}')">${iconPlay}</button></td>
+                                        <td>${index + 1}</td>
+                                        <td style="font-weight:600; color:#1890ff;">${trackDisplay}</td>
+                                        <td>${track.artist || data.artist}</td>
+                                        <td>${track.authors || "-"}</td>
+                                        <td>${track.composers || "-"}</td>
+                                        <td>${track.duration || "--:--"}</td>
+                                        <td>${track.genre || data.genre}</td>
+                                        <td>${track.isrc || "-"}</td>
+                                    `;
+                                    tbody.appendChild(tr);
+                                });
+                            } else {
+                                tbody.innerHTML = `<tr><td colspan="11" style="text-align:center; padding:20px;">Tidak ada data lagu.</td></tr>`;
+                            }
+                        } else {
+                            alert("Data tidak ditemukan"); window.location.href = 'katalog.html';
+                        }
+                    });
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+</body>
+</html>
