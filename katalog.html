@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Katalog > Rilis - Aldotune</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text x='50%' y='50%' dy='.35em' text-anchor='middle' font-size='65' font-family='Arial, sans-serif' font-weight='bold' fill='%23000000'>a</text></svg>">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        /* --- 1. GLOBAL RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f6f6f6; display: flex; flex-direction: column; min-height: 100vh; color: #333; overflow: hidden; }
+        a { text-decoration: none; color: inherit; }
+
+        /* --- 2. HEADER --- */
+        .top-header {
+            height: 64px; background-color: #ffffff; display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+        }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .btn-back { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; transition: background 0.2s; color: #555; }
+        .btn-back:hover { background-color: #f0f0f0; }
+        .btn-back svg { width: 24px; height: 24px; fill: currentColor; }
+        .page-title { font-size: 18px; font-weight: 600; color: #222; }
+        
+        .user-info-right { text-align: right; font-size: 13px; color: #333; margin-right: 10px; font-weight: 600; }
+        .user-profile { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .avatar-icon { width: 32px; height: 32px; fill: #888; }
+
+        .logout-menu { position: absolute; top: 60px; right: 20px; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; display: none; z-index: 101; min-width: 200px; border: 1px solid #eee; }
+        .dropdown-item { display: flex; align-items: center; width: 100%; padding: 12px 20px; background: transparent; border: none; text-align: left; cursor: pointer; color: #555; font-size: 14px; transition: 0.2s; }
+        .dropdown-item:hover { background-color: #f9f9f9; color: #000; }
+        .dropdown-item svg { width: 18px; height: 18px; margin-right: 12px; fill: #777; }
+        .dropdown-divider { height: 1px; background-color: #eee; margin: 0; }
+
+        /* --- 3. MAIN CONTENT --- */
+        .main-wrapper { 
+            margin-top: 64px; flex-grow: 1; width: 100%; height: calc(100vh - 64px); 
+            overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 150px; 
+        }
+        .content-area { width: 100%; padding: 20px; }
+
+        /* --- 4. ACTION BAR --- */
+        .action-bar { display: flex; align-items: center; margin-bottom: 20px; gap: 8px; flex-wrap: wrap; }
+        .search-input { flex-grow: 1; max-width: 300px; padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; height: 36px; }
+        
+        /* Filter Dropdown */
+        .filter-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; height: 36px; background: white; cursor: pointer; }
+
+        .btn-action { padding: 0 15px; height: 36px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; border: 1px solid transparent; white-space: nowrap; }
+        .btn-white { background-color: white; color: #333; border-color: #ccc; }
+        .btn-white:hover { background-color: #f5f5f5; }
+        .spacer { flex-grow: 1; }
+
+        .result-count { font-size: 18px; color: #666; margin-bottom: 15px; font-weight: 400; }
+
+        /* --- 5. TABLE & CARD STYLE --- */
+        .table-container { 
+            background: white; border: 1px solid #e0e0e0; border-radius: 2px; 
+            overflow-x: auto; min-height: 300px; position: relative;
+        }
+        .custom-table { width: 100%; border-collapse: collapse; min-width: 1200px; } 
+        .custom-table th { text-align: left; font-size: 12px; font-weight: 700; color: #333; padding: 12px 10px; border-bottom: 2px solid #eee; white-space: nowrap; }
+        .custom-table td { padding: 12px 10px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; font-size: 13px; color: #555; }
+        .custom-table tr:hover { background-color: #f9fbfc; }
+
+        /* MOBILE CARD VIEW */
+        .card-view { display: none; flex-direction: column; gap: 15px; }
+        .release-card {
+            background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px;
+            display: flex; gap: 15px; align-items: flex-start; cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.1s;
+        }
+        .release-card:active { transform: scale(0.98); }
+        .card-cover { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; background: #eee; flex-shrink: 0; }
+        .card-info { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .card-title { font-size: 15px; font-weight: 700; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card-artist { font-size: 13px; color: #666; }
+        .card-meta { font-size: 11px; color: #999; display: flex; gap: 10px; margin-top: 5px; }
+        .card-status { align-self: flex-start; margin-bottom: 5px; }
+
+        .col-center { text-align: center; }
+        .icon-disc { width: 24px; height: 24px; fill: #555; background: #eee; border-radius: 50%; padding: 4px; }
+        
+        .status-badge-text { padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; white-space: nowrap; display: inline-block; }
+        .st-live { background: #e6fffa; color: #00bfa5; border: 1px solid #b2f5ea; }
+        .st-pending { background: #fffbe6; color: #faad14; border: 1px solid #ffe58f; }
+        .st-process { background: #e6f7ff; color: #1890ff; border: 1px solid #91d5ff; }
+        .st-revisi { background: #f9f0ff; color: #722ed1; border: 1px solid #d3adf7; }
+        .st-reject { background: #fff1f0; color: #f5222d; border: 1px solid #ffa39e; }
+        .st-draft { background: #f5f5f5; color: #8c8c8c; border: 1px solid #d9d9d9; }
+        .st-deleted { background: #333; color: #fff; border: 1px solid #000; }
+        .st-takedown { background: #000; color: #fff; }
+
+        .release-meta { display: flex; align-items: center; gap: 10px; cursor: pointer; transition: opacity 0.2s; }
+        .cover-thumb { width: 45px; height: 45px; object-fit: cover; border-radius: 3px; background: #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .meta-text { display: flex; flex-direction: column; }
+        .track-title { color: #2196f3; font-weight: 600; font-size: 13px; text-decoration: none; }
+        .track-artist { font-size: 12px; color: #777; margin-top: 2px; }
+
+        .store-badges { display: flex; flex-direction: column; gap: 4px; }
+        .badge-store { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #555; border: 1px solid #ddd; padding: 2px 6px; border-radius: 3px; width: fit-content; background: #fff; cursor: pointer; transition: 0.2s; }
+        .badge-store:hover { background-color: #e6f7ff; border-color: #1890ff; color: #1890ff; }
+        .badge-store svg { width: 12px; height: 12px; fill: currentColor; }
+
+        .cat-info { font-size: 11px; color: #888; display: block; line-height: 1.4; }
+        .cat-info b { color: #555; }
+
+        .access-cell { display: flex; align-items: center; justify-content: space-between; gap: 5px; max-width: 250px; }
+        .access-list { font-size: 11px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display:block; max-width: 180px; }
+        .btn-edit-access { background: none; border: none; cursor: pointer; color: #1890ff; padding: 4px; border-radius: 4px; }
+        .btn-edit-access svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .empty-state { display: none; text-align: center; padding: 50px; color: #888; }
+
+        /* --- 6. MODAL & LOADER --- */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 85%; max-width: 600px; border-radius: 8px; padding: 25px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; max-height: 80vh; display: flex; flex-direction: column; }
+        .modal-header { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .close-modal { background: none; border: none; font-size: 24px; color: #999; cursor: pointer; line-height: 1; }
+        .modal-grid { overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding-bottom: 10px; }
+        .grid-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border: 1px solid #eee; border-radius: 6px; font-size: 13px; color: #333; background: #fcfcfc; }
+        .empty-modal { text-align: center; padding: 40px; color: #999; font-size: 14px; grid-column: 1 / -1; }
+
+        /* AKSES MODAL STYLES */
+        .access-tags-container { 
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; border: 1px solid #eee; 
+            border-radius: 4px; margin-bottom: 15px; min-height: 50px; align-items: center;
+        }
+        .access-tag { 
+            background: #e6f7ff; color: #1890ff; padding: 4px 10px; border-radius: 20px; 
+            font-size: 12px; display: flex; align-items: center; gap: 6px; border: 1px solid #91d5ff; 
+        }
+        .access-tag-remove { 
+            cursor: pointer; color: #ff4d4f; font-weight: bold; line-height: 1; font-size: 14px; 
+        }
+        .access-tag-remove:hover { color: #cf1322; }
+        .no-access-text { color: #999; font-size: 13px; font-style: italic; width: 100%; text-align: center; }
+
+        .add-access-group { display: flex; gap: 10px; }
+        .modal-input { flex-grow: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 13px; }
+        .btn-add-access { background: #52c41a; color: white; border: none; padding: 0 20px; border-radius: 4px; cursor: pointer; font-weight: 600; }
+        
+        .btn-save { background: #1890ff; color: white; border: none; padding: 12px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; }
+        .btn-save:hover { background: #096dd9; }
+
+        .btn-clear-all { background: #fff; color: #d93025; border: 1px solid #d93025; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: 600; width: 100%; margin-top: 10px; }
+        .btn-clear-all:hover { background: #fff1f0; }
+
+        .modal-label { font-size: 12px; color: #666; margin-bottom: 5px; display: block; font-weight: 600; }
+
+        /* LOADING ANIMATION */
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1890ff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { font-size: 14px; color: #555; font-weight: 600; }
+
+        .table-loading { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 50; justify-content: center; align-items: center; flex-direction: column; }
+        .export-loading { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 300; justify-content: center; align-items: center; flex-direction: column; color: white; }
+        .export-loading .spinner { border-color: rgba(255,255,255,0.3); border-top-color: #fff; }
+        .export-loading .loading-text { color: white; }
+
+        @media (max-width: 768px) {
+            .top-header { padding: 0 15px; }
+            .action-bar { gap: 10px; }
+            .search-input { width: 100%; max-width: none; order: 1; }
+            .filter-select { width: 48%; order: 2; } /* Filter takes half width */
+            #btnExport { width: 48%; order: 3; } /* Export takes half width */
+            
+            .spacer { display: none; }
+            .modal-grid { grid-template-columns: 1fr; }
+            
+            /* SHOW CARDS, HIDE TABLE */
+            .table-container table { display: none; }
+            .table-container { background: transparent; border: none; box-shadow: none; min-height: auto; }
+            .card-view { display: flex; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="exportLoader" class="export-loading">
+        <div class="spinner"></div>
+        <div class="loading-text">Sedang membuat PDF...</div>
+    </div>
+
+    <div id="infoModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="modalTitle">Info</span>
+                <button class="close-modal" onclick="closeModal('infoModal')">×</button>
+            </div>
+            <div class="modal-grid" id="modalContent"></div>
+        </div>
+    </div>
+
+    <div id="accessModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span>Atur Hak Akses</span>
+                <button class="close-modal" onclick="closeModal('accessModal')">×</button>
+            </div>
+            <div style="padding-bottom: 20px;">
+                <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+                    User yang ada di daftar ini (termasuk Owner) akan memiliki akses.
+                </p>
+                
+                <label class="modal-label">Daftar Akses (Owner & Shared):</label>
+                <div id="accessTagsContainer" class="access-tags-container"></div>
+
+                <label class="modal-label">Tambah ID Baru:</label>
+                <div class="add-access-group">
+                    <input type="text" id="newAccessInput" class="modal-input" placeholder="Masukkan ID Musisi (UID)">
+                    <button class="btn-add-access" onclick="addAccessFromInput()">Tambah</button>
+                </div>
+                
+                <button class="btn-save" onclick="saveAccess()">Simpan & Terapkan</button>
+                <button class="btn-clear-all" onclick="removeAllAccess()">Hapus Semua Akses (Termasuk Owner)</button>
+            </div>
+        </div>
+    </div>
+
+    <header class="top-header">
+        <div class="header-left">
+            <a href="rumah.html" class="btn-back">
+                <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </a>
+            <div class="page-title">Katalog <span style="font-weight:400; color:#888;">› Rilis</span></div>
+        </div>
+
+        <div class="user-profile" id="userMenuBtn">
+            <div class="user-info-right" id="headerUserName">Memuat...</div>
+            <svg class="avatar-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+        </div>
+
+        <div class="logout-menu" id="logoutMenu">
+            <a href="profil.html" class="dropdown-item">Profil</a>
+            <a href="sandi.html" class="dropdown-item">Kata Sandi</a>
+            <a href="layanan.html" class="dropdown-item">Layanan tambahan</a>
+            <div class="dropdown-divider"></div>
+            <button id="btnLogout" class="dropdown-item" style="color: #d93025;">Keluar</button>
+        </div>
+    </header>
+
+    <main class="main-wrapper">
+        <div class="content-area">
+            
+            <div class="action-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Cari judul, artis, atau UPC...">
+                
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">Semua Status</option>
+                    <option value="Proses">Proses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Live">Live / Terkirim</option>
+                    <option value="Takedown">Takedown</option>
+                    <option value="Revisi">Revisi</option>
+                    <option value="Rejected">Rejected</option>
+                    <option value="Draft">Draft</option>
+                </select>
+
+                <div class="spacer"></div>
+                <button id="btnExport" class="btn-action btn-white">Ekspor</button>
+            </div>
+
+            <div class="result-count" id="resultCount">Memuat...</div>
+
+            <div class="table-container">
+                <div id="tableLoader" class="table-loading" style="display: flex;">
+                    <div class="spinner"></div>
+                    <div class="loading-text">Memuat Data...</div>
+                </div>
+
+                <table class="custom-table" id="releaseTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">Tipe</th>
+                            <th style="width: 80px; text-align: center;">Status</th>
+                            <th>Judul / Artis</th>
+                            <th>Akses</th> 
+                            <th>Label</th>
+                            <th>Tanggal Rilis</th>
+                            <th># track</th>
+                            <th>UPC / Catalog Number</th>
+                            <th>Toko terkirim</th>
+                        </tr>
+                    </thead>
+                    <tbody id="releaseTableBody"></tbody>
+                </table>
+
+                <div id="cardViewContainer" class="card-view"></div>
+                
+                <div id="emptyState" class="empty-state">
+                    <h3>Tidak ada data ditemukan</h3>
+                    <p>Coba kata kunci lain atau ubah filter.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+            authDomain: "aldotune-records.firebaseapp.com",
+            databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "aldotune-records",
+            storageBucket: "aldotune-records.firebasestorage.app",
+            messagingSenderId: "311200667476",
+            appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
+            measurementId: "G-GQ3Y2GKWG1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+
+        let allReleasesData = []; 
+        let globalRole = 'ua';
+        let currentEditReleaseId = null;
+        let tempAccessList = []; 
+
+        setTimeout(() => { signOut(auth).then(() => window.location.href = "index.html"); }, 15 * 60 * 1000);
+
+        function getStatusInfo(statusText) {
+            let color = 'st-draft'; let storeCount = 0;
+            const s = (statusText || 'Draft').toLowerCase();
+            if (s === 'terkirim' || s === 'live') { color = 'st-live'; storeCount = 17; }
+            else if (s === 'di review' || s === 'pending') { color = 'st-pending'; }
+            else if (s === 'proses') { color = 'st-process'; }
+            else if (s === 'revisi') { color = 'st-revisi'; }
+            else if (s === 'di tolak' || s === 'rejected') { color = 'st-reject'; }
+            else if (s === 'hapus' || s === 'deleted') { color = 'st-deleted'; }
+            else if (s === 'takedown') { color = 'st-takedown'; }
+            return { color, storeCount, text: statusText || 'Draft' };
+        }
+
+        function getModalStatusBadge(statusText) {
+            // ... (Kode badge modal sama seperti sebelumnya)
+            return `<span style="background:#eee; padding:2px 5px; border-radius:3px; font-size:11px;">${statusText}</span>`;
+        }
+
+        // --- MANAJEMEN AKSES (TAG SYSTEM) ---
+        
+        window.openAccessModal = function(id, ownerId, currentAccessStr) {
+            if (event) event.stopPropagation(); 
+            currentEditReleaseId = id;
+            document.getElementById('newAccessInput').value = ""; 
+
+            tempAccessList = [];
+            if (ownerId && ownerId !== "null" && ownerId !== "undefined") tempAccessList.push(ownerId);
+            if (currentAccessStr && currentAccessStr.trim() !== "") {
+                const others = currentAccessStr.split(',').map(s => s.trim()).filter(s => s !== "" && s !== ownerId);
+                tempAccessList = tempAccessList.concat(others);
+            }
+
+            renderAccessTags();
+            document.getElementById('accessModal').style.display = 'flex';
+        };
+
+        function renderAccessTags() {
+            const container = document.getElementById('accessTagsContainer');
+            container.innerHTML = '';
+            if (tempAccessList.length === 0) {
+                container.innerHTML = `<span class="no-access-text">Tidak ada akses (Kosong).</span>`;
+            } else {
+                tempAccessList.forEach((uid, index) => {
+                    const tag = document.createElement('div');
+                    tag.className = 'access-tag';
+                    const isOwner = index === 0 ? " (Owner)" : "";
+                    tag.innerHTML = `<span>${uid}${isOwner}</span><span class="access-tag-remove" onclick="removeAccessTag(${index})">×</span>`;
+                    container.appendChild(tag);
+                });
+            }
+        }
+
+        window.addAccessFromInput = function() {
+            const input = document.getElementById('newAccessInput');
+            const val = input.value.trim();
+            if (val) {
+                const newIds = val.split(',').map(s => s.trim()).filter(s => s !== "");
+                newIds.forEach(id => { if (!tempAccessList.includes(id)) tempAccessList.push(id); });
+                input.value = ""; renderAccessTags();
+            }
+        };
+
+        window.removeAccessTag = function(index) {
+            tempAccessList.splice(index, 1); renderAccessTags();
+        };
+
+        window.removeAllAccess = function() {
+            if(confirm("Yakin ingin menghapus SEMUA akses termasuk pemilik (Owner)?")) {
+                tempAccessList = []; renderAccessTags();
+            }
+        };
+
+        window.saveAccess = function() {
+            if (!currentEditReleaseId) return;
+            let newOwner = null; let newAccessList = "";
+            if (tempAccessList.length > 0) {
+                newOwner = tempAccessList[0]; 
+                if (tempAccessList.length > 1) newAccessList = tempAccessList.slice(1).join(', ');
+            }
+            const updates = { uploadedBy: newOwner, accessList: newAccessList };
+            update(ref(db, 'releases/' + currentEditReleaseId), updates).then(() => {
+                alert("Hak akses diperbarui!"); closeModal('accessModal'); location.reload(); 
+            });
+        };
+
+        // --- RENDER ---
+        function renderData(data) {
+            const tableBody = document.getElementById('releaseTableBody');
+            const cardContainer = document.getElementById('cardViewContainer');
+            const resultCount = document.getElementById('resultCount');
+            const emptyState = document.getElementById('emptyState');
+            
+            tableBody.innerHTML = '';
+            cardContainer.innerHTML = '';
+            
+            if (data && data.length > 0) {
+                resultCount.innerText = data.length + " Hasil Penemuan";
+                emptyState.style.display = 'none';
+
+                data.forEach(item => {
+                    const statusInfo = getStatusInfo(item.status);
+                    const identifier = item.upc ? `UPC : <b>${item.upc}</b>` : (item.isrc ? `ISRC : <b>${item.isrc}</b>` : `UPC : <b>-</b>`);
+                    const catNumber = item.catNo || item.customId || '-';
+                    const coverUrl = item.coverUrl || 'https://via.placeholder.com/80';
+
+                    let trackCount = 0;
+                    if (item.tracks) {
+                        if (Array.isArray(item.tracks)) trackCount = item.tracks.length;
+                        else if (typeof item.tracks === 'object') trackCount = Object.keys(item.tracks).length;
+                    }
+                    if (trackCount === 0 && item.trackCount) trackCount = item.trackCount;
+
+                    // ACCESS LOGIC
+                    let displayAccess = [];
+                    if (item.uploadedBy) displayAccess.push(item.uploadedBy);
+                    if (item.accessList) displayAccess.push(item.accessList);
+                    let accessHTML = `<span style="color:#999">-</span>`;
+                    if (displayAccess.length > 0) {
+                        const fullStr = displayAccess.join(', ');
+                        accessHTML = `<span class="access-list" title="${fullStr}">${fullStr}</span>`;
+                    }
+                    if (globalRole === 'a') {
+                        const safeAccess = (item.accessList || '').replace(/'/g, "\\'");
+                        const safeOwner = (item.uploadedBy || '').replace(/'/g, "\\'");
+                        accessHTML = `
+                            <div class="access-cell">
+                                ${accessHTML}
+                                <button class="btn-edit-access" onclick="openAccessModal('${item.id}', '${safeOwner}', '${safeAccess}')">
+                                    <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                                </button>
+                            </div>
+                        `;
+                    }
+
+                    // 1. RENDER TABLE ROW (Desktop)
+                    const rowHtml = `
+                        <tr onclick="window.location.href='detail-rilis.html?id=${item.id}'">
+                            <td class="col-center"><svg class="icon-disc" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zM12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></td>
+                            <td class="col-center"><span class="status-badge-text ${statusInfo.color}">${statusInfo.text}</span></td>
+                            <td>
+                                <div class="release-meta">
+                                    <img src="${coverUrl}" class="cover-thumb">
+                                    <div class="meta-text">
+                                        <span class="track-title">${item.title || "Tanpa Judul"}</span>
+                                        <span class="track-artist">${item.artist || "Unknown"}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${accessHTML}</td>
+                            <td>${item.label || 'AldoTune'}</td>
+                            <td>${item.releaseDate || '-'}</td>
+                            <td>${trackCount} Track</td>
+                            <td><span class="cat-info">${identifier}</span></td>
+                            <td>
+                                <div class="store-badges">
+                                    <div class="badge-store" onclick="event.stopPropagation(); openTerritoryModal()"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg> 240 Teritori</div>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', rowHtml);
+
+                    // 2. RENDER CARD (Mobile)
+                    const cardHtml = `
+                        <div class="release-card" onclick="window.location.href='detail-rilis.html?id=${item.id}'">
+                            <img src="${coverUrl}" class="card-cover">
+                            <div class="card-info">
+                                <div class="card-status"><span class="status-badge-text ${statusInfo.color}">${statusInfo.text}</span></div>
+                                <div class="card-title">${item.title || "Tanpa Judul"}</div>
+                                <div class="card-artist">${item.artist || "Unknown"}</div>
+                                <div class="card-meta">
+                                    <span>${trackCount} Tracks</span> • <span>${item.releaseDate || '-'}</span>
+                                </div>
+                                <div style="font-size:10px; color:#999; margin-top:2px;">${item.upc || item.isrc || '-'}</div>
+                            </div>
+                        </div>
+                    `;
+                    cardContainer.insertAdjacentHTML('beforeend', cardHtml);
+                });
+            } else {
+                resultCount.innerText = "0 Hasil Penemuan";
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // --- FILTER & SEARCH ---
+        let searchTimeout;
+        
+        const applyFilters = () => {
+            const loader = document.getElementById('tableLoader');
+            if(loader) loader.style.display = 'flex'; 
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                const keyword = document.getElementById('searchInput').value.toLowerCase();
+                const statusFilter = document.getElementById('statusFilter').value;
+
+                try {
+                    const filtered = allReleasesData.filter(item => {
+                        // 1. Text Search
+                        const title = (item.title || "").toString().toLowerCase();
+                        const artist = (item.artist || "").toString().toLowerCase();
+                        const upc = (item.upc || "").toString().toLowerCase();
+                        const matchesText = title.includes(keyword) || artist.includes(keyword) || upc.includes(keyword);
+
+                        // 2. Status Filter
+                        let matchesStatus = true;
+                        if (statusFilter !== 'all') {
+                            const s = (item.status || "Draft").toLowerCase();
+                            // Logic filter yang fleksibel (misal Live = Terkirim)
+                            if (statusFilter === 'Live' && (s === 'live' || s === 'terkirim')) matchesStatus = true;
+                            else if (statusFilter === 'Pending' && (s === 'pending' || s === 'di review')) matchesStatus = true;
+                            else if (statusFilter === 'Rejected' && (s === 'rejected' || s === 'ditolak' || s === 'di tolak')) matchesStatus = true;
+                            else matchesStatus = s === statusFilter.toLowerCase();
+                        }
+
+                        return matchesText && matchesStatus;
+                    });
+                    renderData(filtered);
+                } catch (err) {
+                    console.error("Filter Error:", err);
+                } finally {
+                    if(loader) loader.style.display = 'none'; 
+                }
+            }, 300);
+        };
+
+        document.getElementById('searchInput').addEventListener('input', applyFilters);
+        document.getElementById('statusFilter').addEventListener('change', applyFilters);
+
+        // --- EXPORT PDF ---
+        document.getElementById('btnExport').addEventListener('click', () => {
+            const exportLoader = document.getElementById('exportLoader');
+            if(exportLoader) exportLoader.style.display = 'flex';
+
+            setTimeout(() => {
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    doc.setFontSize(16); doc.text("Laporan Katalog Rilis - Aldotune", 14, 15);
+                    doc.setFontSize(10); doc.text("Tanggal: " + new Date().toLocaleDateString('id-ID'), 14, 22);
+
+                    const tableColumn = ["Judul Rilis", "Artis", "Label", "Status", "UPC", "Tanggal Rilis"];
+                    const tableRows = [];
+                    // Menggunakan data yang sedang difilter/tampil saat ini? (Disini ambil allReleasesData, bisa diubah)
+                    allReleasesData.forEach(item => {
+                        const releaseData = [
+                            item.title || "-", item.artist || "-", item.label || "AldoTune",
+                            item.status || "Draft", item.upc || "-", item.releaseDate || "-"
+                        ];
+                        tableRows.push(releaseData);
+                    });
+
+                    doc.autoTable({ head: [tableColumn], body: tableRows, startY: 30 });
+                    doc.save("Laporan_Katalog_Aldotune.pdf");
+                    alert("Ekspor PDF Berhasil!");
+                } catch (error) {
+                    alert("Gagal mengekspor PDF.");
+                } finally {
+                    if(exportLoader) exportLoader.style.display = 'none';
+                }
+            }, 1000);
+        });
+
+        // --- MODAL LOGIC (GLOBAL) ---
+        window.openStoreModal = function(releaseStatus, count) {
+            document.getElementById('modalTitle').innerText = `Toko & Platform (${count} DSP)`;
+            // (Isi modal sama seperti sebelumnya...)
+            if (count === 0) {
+                document.getElementById('modalContent').innerHTML = `<div class="empty-modal"><br>Belum terdistribusi.<br>Status: <b>${releaseStatus}</b></div>`;
+            } else {
+                // ... logic badge store ...
+                document.getElementById('modalContent').innerHTML = '...'; 
+            }
+            document.getElementById('infoModal').style.display = 'flex';
+        };
+
+        window.openTerritoryModal = function() {
+            document.getElementById('modalTitle').innerText = "Wilayah Distribusi";
+            document.getElementById('modalContent').innerHTML = `<div class="grid-item">Indonesia</div><div class="grid-item">Worldwide</div>`; 
+            document.getElementById('infoModal').style.display = 'flex';
+        };
+
+        window.closeModal = function(id) { document.getElementById(id || 'infoModal').style.display = 'none'; document.getElementById('accessModal').style.display = 'none'; };
+
+        // --- AUTH & DATA LOAD ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const userRef = ref(db, 'users/' + user.uid);
+                get(userRef).then((snapshot) => {
+                    let finalName = user.email;
+                    let role = "ua";
+                    if (snapshot.exists()) {
+                        const userData = snapshot.val();
+                        if (userData.fullName) finalName = userData.fullName;
+                        if (userData.j) role = userData.j;
+                    }
+                    globalRole = role; 
+                    document.getElementById('headerUserName').innerText = finalName;
+
+                    const releasesPath = ref(db, 'releases');
+
+                    get(releasesPath).then((releaseSnap) => {
+                        document.getElementById('tableLoader').style.display = 'none';
+
+                        if (releaseSnap.exists()) {
+                            const releases = releaseSnap.val();
+                            
+                            let dataArray = Object.keys(releases).map(key => {
+                                return { id: key, ...releases[key] };
+                            });
+
+                            // FILTER SESUAI ROLE & AKSES
+                            if (role !== 'a') {
+                                dataArray = dataArray.filter(item => {
+                                    const isOwner = item.uploadedBy === user.uid;
+                                    const hasAccess = item.accessList && item.accessList.includes(user.uid);
+                                    return isOwner || hasAccess;
+                                });
+                            }
+
+                            allReleasesData = dataArray;
+                            renderData(allReleasesData); // Render Table & Card
+                        } else {
+                            allReleasesData = [];
+                            renderData([]);
+                        }
+                    });
+                });
+            } else {
+                window.location.href = "index.html";
+            }
+        });
+
+        const userMenuBtn = document.getElementById('userMenuBtn');
+        const logoutMenu = document.getElementById('logoutMenu');
+        userMenuBtn.addEventListener('click', (e) => { e.stopPropagation(); logoutMenu.style.display = (logoutMenu.style.display === 'block') ? 'none' : 'block'; });
+        document.addEventListener('click', () => { logoutMenu.style.display = 'none'; });
+        document.getElementById('btnLogout').addEventListener('click', () => { if (confirm("Yakin ingin keluar?")) window.location.href = "index.html"; });
+    </script>
+</body>
+</html>
