@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Splash Screen</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: white;
+    }
+
+    #splash {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+
+    #splash img {
+      width: 90%;
+      max-width: 520px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+
+    .progress-container {
+      width: 70%;
+      max-width: 300px;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #00a83b;
+      transition: width 0.1s linear;
+    }
+
+    .progress-text {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    #content {
+      display: none;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash">
+    <img src="acss.png" alt="Logo Aplikasi">
+
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText">0%</div>
+  </div>
+
+  <!-- Konten utama -->
+  <div id="content">
+    <h1>Aplikasi Sedang Diperbarui</h1>
+    <p>Silahkan tunggu dan coba lagi setelah pembaruan selesai.</p>
+  </div>
+
+  <script>
+    const duration = 3000; // 3 detik
+    const interval = 50;  // update tiap 50ms
+    const steps = duration / interval;
+    let progress = 0;
+    let currentStep = 0;
+
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+
+    const timer = setInterval(() => {
+      currentStep++;
+      progress = Math.round((currentStep / steps) * 100);
+      progressBar.style.width = progress + "%";
+      progressText.textContent = progress + "%";
+
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        document.getElementById("splash").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      }
+    }, interval);
+  </script>
+
+</body>
+</html>
