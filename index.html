@@ -242,6 +242,11 @@
     const slogan = document.getElementById("slogan");
     const splash = document.getElementById("splash");
 
+    function isAldotuneApp() {
+      const ua = navigator.userAgent || "";
+      return /aldotune\.com/i.test(ua);
+    }
+
     function startSplash() {
       // Reset
       logo.classList.remove("logo-animate");
@@ -287,10 +292,14 @@
       shineOnce();
     }
 
-    window.addEventListener("load", () => {
-      startSplash();
-    });
+    // Delay khusus jika dari App WebView
+    const delay = isAldotuneApp() ? 1000 : 0;
 
+    setTimeout(() => {
+      startSplash();
+    }, delay);
+
+    // Jika user kembali ke tab, ulang splash (tanpa delay)
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         startSplash();
