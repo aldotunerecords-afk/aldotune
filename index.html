@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Splash Screen</title>
+  <title>Aldotune</title>
   <style>
     * { box-sizing: border-box; }
 
@@ -13,19 +13,26 @@
       width: 100%;
       height: 100%;
       font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ffffff, #eaf4ff);
+      background: linear-gradient(135deg, #ffffff, #f3f8ff);
     }
 
+    /* Splash Screen */
     #splash {
       position: fixed;
       inset: 0;
-      background: linear-gradient(135deg, #ffffff, #eaf4ff);
+      background: linear-gradient(135deg, #ffffff, #f3f8ff);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       z-index: 9999;
       overflow: hidden;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #splash.hide {
+      opacity: 0;
+      visibility: hidden;
     }
 
     .logo-wrapper {
@@ -101,6 +108,95 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* Onboarding */
+    #onboarding {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+    }
+
+    .onboard-logo {
+      width: 140px;
+      max-width: 60vw;
+      margin-bottom: 24px;
+      animation: fadeInDown 0.8s ease;
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 22px;
+      margin: 0;
+      color: #1f3a5f;
+    }
+
+    p {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #555;
+      max-width: 420px;
+      line-height: 1.6;
+    }
+
+    .actions {
+      margin-top: 32px;
+      width: 100%;
+      max-width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: #1f3a5f;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #16304d;
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #1f3a5f;
+      border: 2px solid #1f3a5f;
+    }
+
+    .btn-outline:hover {
+      background: #1f3a5f;
+      color: white;
+    }
+
+    .footer-text {
+      margin-top: 28px;
+      font-size: 12px;
+      color: #888;
+    }
   </style>
 </head>
 <body>
@@ -108,7 +204,7 @@
   <!-- Splash Screen -->
   <div id="splash">
     <div class="logo-wrapper">
-      <img id="logo" src="acss.png" alt="Logo Label">
+      <img id="logo" src="acss.png" alt="Logo Aldotune">
       <div class="shine" id="shine"></div>
     </div>
 
@@ -117,26 +213,48 @@
     </div>
   </div>
 
+  <!-- Onboarding -->
+  <div id="onboarding">
+    <img src="acss.png" alt="Logo Aldotune" class="onboard-logo">
+
+    <h1>Selamat datang di Aldotune</h1>
+    <p>
+      Platform kreatif untuk musisi dan label. Masuk ke akunmu atau buat akun baru untuk mulai berkarya.
+    </p>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="location.href='login.html'">
+        Masuk
+      </button>
+      <button class="btn btn-outline" onclick="location.href='register.html'">
+        Daftar
+      </button>
+    </div>
+
+    <div class="footer-text">
+      © Aldotune Creative Studio
+    </div>
+  </div>
+
   <script>
     const logo = document.getElementById("logo");
     const shine = document.getElementById("shine");
     const slogan = document.getElementById("slogan");
+    const splash = document.getElementById("splash");
 
-    function encrypt(text) {
-      return btoa(text.split('').reverse().join(''));
-    }
-
-    function generateToken() {
-      return "token_" + Math.random().toString(36).substr(2) + Date.now();
-    }
+    function isAldotuneApp() {
+  const ua = navigator.userAgent || "";
+  return /aldotune\.com/i.test(ua);
+}
 
     function startSplash() {
-      // Reset semua
+      // Reset
       logo.classList.remove("logo-animate");
       shine.classList.remove("run");
       slogan.classList.remove("show");
+      splash.classList.remove("hide");
 
-      // Force reflow supaya animasi bisa diulang
+      // Force reflow
       void logo.offsetWidth;
 
       // 1️⃣ Logo slide masuk
@@ -145,22 +263,15 @@
       // 2️⃣ Kilap 3x setelah logo masuk
       setTimeout(() => {
         runShine(3, () => {
-          // 3️⃣ Setelah kilap selesai, tampilkan slogan
+          // 3️⃣ Tampilkan slogan
           slogan.classList.add("show");
 
-          // 4️⃣ Tunggu sebentar lalu redirect
+          // 4️⃣ Fade out splash, tampilkan onboarding
           setTimeout(() => {
-            const rawToken = generateToken();
-            const encryptedToken = encrypt(rawToken);
-            const expiry = Date.now() + (3 * 60 * 1000);
-
-            sessionStorage.setItem("app_token", encryptedToken);
-            sessionStorage.setItem("app_token_expiry", expiry.toString());
-
-            window.location.href = "login.html?token=" + encodeURIComponent(rawToken);
-          }, 1800); // waktu slogan tampil
+            splash.classList.add("hide");
+          }, 1600);
         });
-      }, 1100); // tunggu slide selesai
+      }, 1100);
     }
 
     function runShine(times, callback) {
@@ -172,19 +283,23 @@
           shine.classList.remove("run");
           count++;
           if (count < times) {
-            setTimeout(shineOnce, 200); // jeda antar kilap
+            setTimeout(shineOnce, 200);
           } else if (callback) {
             callback();
           }
-        }, 850); // durasi 1 kilap
+        }, 850);
       };
       shineOnce();
     }
 
-    // Jalankan saat halaman dibuka
-    startSplash();
+    // Delay khusus jika dari App WebView
+    const delay = isAldotuneApp() ? 2500 : 0; // 2.5 detik jeda untuk animasi Lottie
 
-    // Jika user pindah tab lalu kembali, ulang dari awal
+    setTimeout(() => {
+      startSplash();
+    }, delay);
+
+    // Jika user pindah tab lalu kembali, ulang splash dari awal (tanpa delay)
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         startSplash();
