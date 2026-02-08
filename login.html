@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aldotune - Login & Daftar</title>
+
+  <!-- Firebase Legacy SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Intl-Tel-Input -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css">
+
+  <style>
+    :root { --primary: #00a83b; --bg: #f6f7fb; --text: #333; --danger: #dc3545; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: -apple-system, system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      display: flex; justify-content: center; overflow-x: hidden;
+    }
+
+    /* Splash Screen Overlay */
+    #splash-screen {
+      position: fixed; inset: 0; background: #fff; z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s ease;
+    }
+    #splash-screen img { width: 150px; margin-bottom: 20px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+    .app-container {
+      width: 100%; max-width: 420px; padding: 20px;
+      display: flex; flex-direction: column;
+    }
+
+    .logo { text-align: center; margin: 30px 0; }
+    .logo img { width: 130px; height: auto; }
+
+    .step-container { position: relative; width: 100%; min-height: 520px; }
+    .step {
+      position: absolute; top: 0; left: 0; width: 100%;
+      opacity: 0; visibility: hidden; pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateX(40px);
+    }
+    .step.active {
+      opacity: 1; visibility: visible; pointer-events: auto;
+      transform: translateX(0);
+    }
+
+    h3 { margin: 0 0 10px; font-size: 20px; }
+    p { font-size: 14px; color: #666; margin-bottom: 20px; }
+
+    .input-group { margin-bottom: 15px; text-align: left; }
+    .input-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #555; }
+    .input-group input, .input-group select {
+      width: 100%; padding: 14px; border-radius: 12px;
+      border: 1px solid #ddd; font-size: 15px; outline: none; background: #fff;
+    }
+    .input-group input:focus { border-color: var(--primary); }
+
+    .iti { width: 100%; }
+
+    .primary-button {
+      width: 100%; padding: 16px; border: none; border-radius: 14px;
+      background: var(--primary); color: white; font-size: 16px;
+      font-weight: 600; cursor: pointer; margin-top: 10px;
+    }
+
+    .outline-button {
+      width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 14px;
+      background: transparent; color: #777; font-size: 14px;
+      font-weight: 600; cursor: pointer; margin-top: 10px;
+    }
+
+    .otp-input { display: flex; gap: 8px; justify-content: center; margin: 20px 0; }
+    .otp-input input {
+      width: 45px; height: 55px; text-align: center; font-size: 20px;
+      font-weight: bold; border-radius: 10px; border: 1.5px solid #ddd;
+    }
+
+    .pin-display { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
+    .pin-dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #ddd; }
+    .pin-dot.filled { background: var(--primary); border-color: var(--primary); }
+
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .keypad button {
+      padding: 18px; font-size: 20px; font-weight: 600; border: none;
+      border-radius: 12px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .keypad button:active { background: #f0f0f0; }
+
+    .camera-box {
+      width: 200px; height: 200px; border-radius: 50%; 
+      overflow: hidden; margin: 0 auto 20px; border: 4px solid var(--primary);
+      background: #000; position: relative;
+    }
+    video { width: 100%; height: 100%; object-fit: cover; }
+
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; align-items: center; justify-content: center; z-index: 1000;
+    }
+    .modal { background: #fff; padding: 25px; border-radius: 20px; text-align: center; width: 80%; max-width: 300px; }
+    .spinner {
+      width: 30px; height: 30px; border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--primary); border-radius: 50%;
+      margin: 0 auto 10px; animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .success-icon { font-size: 50px; color: var(--primary); margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- Splash Screen Sementara -->
+  <div id="splash-screen">
+    <img src="acss.png" alt="Aldotune">
+    <div class="spinner"></div>
+    <p style="margin-top: 10px; font-weight: bold;">Mengecek Sesi...</p>
+  </div>
+
+  <div class="app-container">
+    <div class="logo"><img src="acss.png" alt="Aldotune"></div>
+
+    <div class="step-container">
+      
+      <!-- STEP 1: PHONE -->
+      <div id="step-phone" class="step">
+        <h3>Selamat Datang</h3>
+        <p>Masukkan nomor telepon untuk memulai.</p>
+        <div class="input-group">
+          <input type="tel" id="phone">
+        </div>
+        <button class="primary-button" onclick="handleSendOTP()">Lanjutkan</button>
+      </div>
+
+      <!-- STEP 2: OTP -->
+      <div id="step-otp" class="step">
+        <h3>Verifikasi Kode</h3>
+        <p>Kode OTP dikirim via SMS.</p>
+        <div class="otp-input" id="otpFields">
+          <input maxlength="1" type="number" inputmode="numeric">
+          <input maxlength="1" type="number" inputmode="numeric">
+          <input maxlength="1" type="number" inputmode="numeric">
+          <input maxlength="1" type="number" inputmode="numeric">
+          <input maxlength="1" type="number" inputmode="numeric">
+          <input maxlength="1" type="number" inputmode="numeric">
+        </div>
+        <button class="primary-button" onclick="handleVerifyOTP()">Verifikasi</button>
+        <div style="margin-top:20px; font-size:13px; color:#888; text-align: center;">
+          <span id="timerText">Kirim ulang dalam <b id="timer">60</b>s</span>
+          <a id="resendBtn" href="javascript:void(0)" style="display:none; color:var(--primary); font-weight:bold; text-decoration:none;" onclick="handleSendOTP()">Kirim Ulang OTP</a>
+        </div>
+        <button class="outline-button" style="color:var(--danger); border-color:var(--danger); margin-top:30px;" onclick="cancelProcess()">Batalkan Proses</button>
+      </div>
+
+      <!-- STEP 3: PIN -->
+      <div id="step-pin" class="step">
+        <h3 id="pinTitle">Masukkan PIN</h3>
+        <p id="pinSub">Silakan masukkan PIN Anda.</p>
+        <div class="pin-display" id="pinDots">
+          <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+          <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+        </div>
+        <div class="keypad">
+          <button onclick="pressKey('1')">1</button><button onclick="pressKey('2')">2</button><button onclick="pressKey('3')">3</button>
+          <button onclick="pressKey('4')">4</button><button onclick="pressKey('5')">5</button><button onclick="pressKey('6')">6</button>
+          <button onclick="pressKey('7')">7</button><button onclick="pressKey('8')">8</button><button onclick="pressKey('9')">9</button>
+          <div style="visibility:hidden"></div><button onclick="pressKey('0')">0</button>
+          <button style="background:#eee" onclick="deleteKey()">⌫</button>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="javascript:void(0)" id="forgotPinLink" style="color:var(--primary); font-size:14px; font-weight:600; text-decoration:none;" onclick="handleForgotPin()">Lupa PIN?</a>
+        </div>
+      </div>
+
+      <!-- STEP 3.1: RESET PIN NIK VERIF -->
+      <div id="step-reset-nik" class="step">
+        <h3>Verifikasi NIK</h3>
+        <p>Masukkan NIK Anda untuk mengatur ulang PIN.</p>
+        <div class="input-group">
+          <label>NOMOR NIK (KTP)</label>
+          <input type="number" id="reset-nik-input" placeholder="16 Digit NIK">
+        </div>
+        <button class="primary-button" onclick="verifyNikForReset()">Verifikasi NIK</button>
+        <button class="outline-button" onclick="navigate('step-pin')">Batal</button>
+      </div>
+
+      <!-- STEP 4: IDENTITAS -->
+      <div id="step-id" class="step">
+        <h3>Data Identitas</h3>
+        <p>Lengkapi data diri Anda sesuai KTP.</p>
+        <div class="input-group">
+          <label>NAMA LENGKAP</label>
+          <input type="text" id="reg-nama" placeholder="Contoh: Budi Santoso" oninput="liveSave()">
+        </div>
+        <div class="input-group">
+          <label>NOMOR NIK (KTP)</label>
+          <input type="number" id="reg-nik" placeholder="16 Digit NIK" oninput="liveSave()">
+        </div>
+        <button class="primary-button" onclick="saveIdentity()">Lanjutkan</button>
+      </div>
+
+      <!-- STEP 5: BANK -->
+      <div id="step-bank" class="step">
+        <div class="back-link" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-bottom:10px;" onclick="navigate('step-id')">← Identitas</div>
+        <h3>Data Rekening</h3>
+        <p>Untuk penarikan dana nantinya.</p>
+        <div class="input-group">
+          <label>PILIH BANK</label>
+          <select id="reg-bank" onchange="liveSave()">
+            <option value="BCA">BCA</option>
+            <option value="BNI">BNI</option>
+            <option value="BRI">BRI</option>
+            <option value="MANDIRI">MANDIRI</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>NOMOR REKENING</label>
+          <input type="number" id="reg-norek" placeholder="Masukkan No. Rekening" oninput="liveSave()">
+        </div>
+        <div class="input-group">
+          <label>NAMA PEMILIK REKENING</label>
+          <input type="text" id="reg-penerima" placeholder="Nama sesuai buku tabungan" oninput="liveSave()">
+        </div>
+        <button class="primary-button" onclick="saveBank()">Lanjutkan</button>
+      </div>
+
+      <!-- STEP 6: SELFIE -->
+      <div id="step-selfie" class="step">
+        <div class="back-link" style="color:var(--primary); cursor:pointer; font-weight:bold; margin-bottom:10px;" onclick="navigate('step-bank')">← Bank</div>
+        <h3>Verifikasi Wajah</h3>
+        <p>Ambil foto selfie untuk keamanan akun.</p>
+        <div class="camera-box">
+          <video id="video" autoplay playsinline></video>
+          <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+        <button class="primary-button" id="snapBtn" onclick="takeSelfie()">Ambil Foto</button>
+      </div>
+
+      <!-- STEP 7: BERHASIL -->
+      <div id="step-success" class="step">
+        <div class="success-icon">✔</div>
+        <h3 id="successTitle">Berhasil</h3>
+        <p id="successSub">Akun Anda telah aktif.</p>
+        <button class="primary-button" onclick="window.location.href='home.html'">Ke Halaman Utama</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="loader">
+    <div class="modal">
+      <div class="spinner"></div>
+      <div id="loadMsg">Memproses...</div>
+    </div>
+  </div>
+
+  <div id="recaptcha-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+      authDomain: "aldotune-records.firebaseapp.com",
+      databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "aldotune-records",
+      storageBucket: "aldotune-records.firebasestorage.app",
+      messagingSenderId: "311200667476",
+      appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let confirmationResult = null;
+    let isNewUser = false;
+    let isResettingPin = false;
+    let pin = "";
+    let confirmPin = "";
+    let tempUserData = JSON.parse(localStorage.getItem("registration_draft")) || {};
+    let timerInterval = null;
+
+    const phoneInput = document.querySelector("#phone");
+    const iti = window.intlTelInput(phoneInput, {
+      initialCountry: "id",
+      separateDialCode: true,
+      utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js"
+    });
+
+    window.onload = () => {
+      const splash = document.getElementById("splash-screen");
+      const activeSession = localStorage.getItem("aldotune_session");
+      const lastTab = localStorage.getItem("last_active_tab");
+
+      // Logika Penentuan Tab Awal
+      setTimeout(() => {
+          if(activeSession) {
+              tempUserData.phone = activeSession.split('_')[1];
+              isNewUser = false;
+              navigate('step-pin');
+          } else if(lastTab && !['step-phone', 'step-otp'].includes(lastTab)) {
+              loadDraftToUI();
+              navigate(lastTab);
+          } else {
+              navigate('step-phone');
+          }
+          
+          // Hilangkan Splash dengan Animasi
+          splash.style.opacity = "0";
+          setTimeout(() => splash.style.display = "none", 500);
+      }, 1200);
+    };
+
+    function navigate(id) {
+      if (id !== 'step-selfie' && streamMedia) {
+          streamMedia.getTracks().forEach(t => t.stop());
+      }
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      const target = document.getElementById(id);
+      if(target) target.classList.add('active');
+      localStorage.setItem("last_active_tab", id);
+      
+      if(id === 'step-pin') {
+          pin = "";
+          confirmPin = "";
+          updatePinDots();
+          if(!isNewUser && !isResettingPin) {
+              document.getElementById("pinTitle").innerText = "Masukkan PIN";
+              document.getElementById("pinSub").innerText = "Silakan masukkan PIN Anda.";
+              document.getElementById("forgotPinLink").style.display = "inline";
+          } else {
+              document.getElementById("pinTitle").innerText = "Buat PIN";
+              document.getElementById("pinSub").innerText = "Gunakan 6 digit angka rahasia.";
+              document.getElementById("forgotPinLink").style.display = "none";
+          }
+      }
+      if(id === 'step-otp') setupOtpAutoMove();
+      if(id === 'step-selfie') startCamera();
+    }
+
+    function showLoading(msg) {
+      document.getElementById("loadMsg").textContent = msg;
+      document.getElementById("loader").style.display = "flex";
+    }
+    function hideLoading() { document.getElementById("loader").style.display = "none"; }
+
+    function liveSave() {
+        tempUserData.nama = document.getElementById("reg-nama")?.value;
+        tempUserData.nik = document.getElementById("reg-nik")?.value;
+        tempUserData.bank = document.getElementById("reg-bank")?.value;
+        tempUserData.norek = document.getElementById("reg-norek")?.value;
+        tempUserData.penerima = document.getElementById("reg-penerima")?.value;
+        localStorage.setItem("registration_draft", JSON.stringify(tempUserData));
+    }
+
+    function loadDraftToUI() {
+        if(tempUserData.nama) document.getElementById("reg-nama").value = tempUserData.nama;
+        if(tempUserData.nik) document.getElementById("reg-nik").value = tempUserData.nik;
+        if(tempUserData.bank) document.getElementById("reg-bank").value = tempUserData.bank;
+        if(tempUserData.norek) document.getElementById("reg-norek").value = tempUserData.norek;
+        if(tempUserData.penerima) document.getElementById("reg-penerima").value = tempUserData.penerima;
+    }
+
+    function cancelProcess() {
+        if(confirm("Batalkan semua proses? Data akan dihapus.")) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    }
+
+    function handleSendOTP() {
+      if(!iti.isValidNumber()) return alert("Nomor tidak valid!");
+      const num = iti.getNumber();
+      showLoading("Mengirim OTP...");
+      if(!window.recaptchaVerifier) window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', { size: 'invisible' });
+      
+      auth.signInWithPhoneNumber(num, window.recaptchaVerifier)
+        .then(res => { confirmationResult = res; hideLoading(); navigate('step-otp'); startTimer(); })
+        .catch(err => { hideLoading(); alert("Error: " + err.message); });
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      let t = 60;
+      const display = document.getElementById("timer");
+      const text = document.getElementById("timerText");
+      const btn = document.getElementById("resendBtn");
+      text.style.display = "inline"; btn.style.display = "none";
+      timerInterval = setInterval(() => {
+        t--; display.textContent = t;
+        if(t <= 0) { clearInterval(timerInterval); text.style.display = "none"; btn.style.display = "inline"; }
+      }, 1000);
+    }
+
+    function setupOtpAutoMove() {
+      const inputs = document.querySelectorAll("#otpFields input");
+      inputs.forEach((inp, i) => {
+        inp.oninput = () => { if(inp.value && i < 5) inputs[i+1].focus(); };
+        inp.onkeydown = (e) => { if(e.key === "Backspace" && !inp.value && i > 0) inputs[i-1].focus(); };
+      });
+    }
+
+    function handleVerifyOTP() {
+      const code = Array.from(document.querySelectorAll("#otpFields input")).map(i => i.value).join("");
+      if(code.length < 6) return;
+      showLoading("Memverifikasi...");
+      confirmationResult.confirm(code)
+        .then(res => {
+          const phone = res.user.phoneNumber.replace("+", "");
+          tempUserData.phone = phone;
+          db.ref("users/" + phone).once("value").then(snap => {
+            hideLoading();
+            isNewUser = !snap.exists();
+            navigate('step-pin');
+          });
+        }).catch(() => { hideLoading(); alert("OTP Salah!"); });
+    }
+
+    function pressKey(n) {
+      if(pin.length < 6) {
+        pin += n;
+        updatePinDots();
+        if(pin.length === 6) setTimeout(processPin, 300);
+      }
+    }
+    function deleteKey() { pin = pin.slice(0, -1); updatePinDots(); }
+    function updatePinDots() {
+      const dots = document.querySelectorAll(".pin-dot");
+      dots.forEach((d, i) => d.classList.toggle("filled", i < pin.length));
+    }
+
+    function processPin() {
+      if(isNewUser || isResettingPin) {
+        if(!confirmPin) {
+          confirmPin = pin; pin = ""; updatePinDots();
+          document.getElementById("pinTitle").innerText = "Konfirmasi PIN";
+        } else {
+          if(pin === confirmPin) {
+            if(isResettingPin) updatePinInDatabase(pin);
+            else { tempUserData.pin = pin; liveSave(); navigate('step-id'); }
+          } else {
+            alert("PIN tidak cocok! Ulangi buat PIN.");
+            pin = ""; confirmPin = ""; updatePinDots();
+            document.getElementById("pinTitle").innerText = "Buat PIN";
+          }
+        }
+      } else {
+        showLoading("Mengecek PIN...");
+        db.ref("users/" + tempUserData.phone + "/pin").once("value").then(snap => {
+          hideLoading();
+          if(snap.val() === pin) loginFinalize();
+          else { alert("PIN Salah!"); pin = ""; updatePinDots(); }
+        });
+      }
+    }
+
+    function handleForgotPin() { navigate('step-reset-nik'); }
+
+    function verifyNikForReset() {
+        const inputNik = document.getElementById("reset-nik-input").value;
+        db.ref("users/" + tempUserData.phone + "/nik").once("value").then(snap => {
+            if(snap.val() === inputNik) { isResettingPin = true; navigate('step-pin'); }
+            else alert("NIK tidak sesuai!");
+        });
+    }
+
+    function updatePinInDatabase(newPin) {
+        showLoading("Menyimpan PIN...");
+        db.ref("users/" + tempUserData.phone + "/pin").set(newPin).then(() => {
+            hideLoading(); isResettingPin = false;
+            alert("PIN Baru disimpan!"); navigate('step-pin');
+        });
+    }
+
+    function loginFinalize() {
+        const hasSession = localStorage.getItem("aldotune_session");
+        localStorage.setItem("aldotune_session", "active_" + tempUserData.phone);
+        localStorage.removeItem("registration_draft");
+        localStorage.removeItem("last_active_tab");
+        if(hasSession) window.location.href = "home.html";
+        else navigate('step-success');
+    }
+
+    function saveIdentity() {
+      if(!tempUserData.nama || !tempUserData.nik || tempUserData.nik.length < 16) return alert("NIK harus 16 digit!");
+      navigate('step-bank');
+    }
+
+    function saveBank() {
+      if(!tempUserData.norek || !tempUserData.penerima) return alert("Data bank tidak lengkap!");
+      navigate('step-selfie');
+    }
+
+    let streamMedia = null;
+    async function startCamera() {
+      try {
+        streamMedia = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById("video").srcObject = streamMedia;
+      } catch (e) { alert("Izinkan kamera!"); }
+    }
+
+    function takeSelfie() {
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      tempUserData.selfie = canvas.toDataURL("image/jpeg");
+      if(streamMedia) streamMedia.getTracks().forEach(t => t.stop());
+      finishRegistration();
+    }
+
+    function finishRegistration() {
+      showLoading("Mendaftarkan...");
+      db.ref("users/" + tempUserData.phone).set({...tempUserData, createdAt: Date.now()})
+        .then(() => { hideLoading(); loginFinalize(); });
+    }
+  </script>
+</body>
+</html>
