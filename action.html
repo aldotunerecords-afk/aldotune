@@ -28,11 +28,11 @@
     p { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5; }
     label { display: block; font-size: 13px; font-weight: 600; color: #1f3a5f; margin-bottom: 5px; margin-top: 15px; }
     
-    /* Password Wrapper dengan Icon Mata */
     .password-wrapper { position: relative; width: 100%; }
     input { 
       width: 100%; padding: 12px; padding-right: 45px; border-radius: 10px; 
       border: 1px solid #ddd; font-size: 14px; outline: none; transition: 0.3s; 
+      letter-spacing: 2px;
     }
     input:focus { border-color: #1f3a5f; }
     
@@ -47,7 +47,6 @@
     }
     .error { background: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; display: block; }
     .success { background: #f0f7ff; color: #1f3a5f; border: 1px solid #dbeafe; display: block; }
-    .loading { color: #64748b; font-style: italic; text-align: center; }
 
     .actions { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
     .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; text-decoration: none; text-align: center; }
@@ -66,23 +65,23 @@
     <div class="card">
       
       <div id="resetArea" style="display: none;">
-        <h2>Password Baru</h2>
-        <p>Gunakan minimal 6 karakter. Contoh: <strong>Amir21</strong></p>
+        <h2>Kode Akses Baru</h2>
+        <p>Wajib 6 karakter. Contoh: <strong>Amir21</strong></p>
         
-        <label>Password Baru</label>
+        <label>Masukkan Kode Akses Baru</label>
         <div class="password-wrapper">
-          <input type="password" id="newPassword" placeholder="Contoh: Amir21">
+          <input type="password" id="newPassword" placeholder="Amir21" maxlength="6">
           <span class="toggle-password" id="eyeIcon">👁️</span>
         </div>
 
         <div class="actions">
-          <button class="btn btn-primary" id="btnUpdate">Simpan Password</button>
+          <button class="btn btn-primary" id="btnUpdate">Simpan Kode Akses</button>
         </div>
       </div>
 
       <div id="verifyArea" style="display: none;">
         <h2>Verifikasi Email</h2>
-        <p id="verifyStatus" class="loading">Memproses validasi akun...</p>
+        <p id="verifyStatus" style="text-align: center; font-style: italic; color: #64748b;">Memproses validasi akun...</p>
       </div>
 
       <div id="messageBox" class="status-msg"></div>
@@ -121,18 +120,17 @@
     const passInput = document.getElementById("newPassword");
     const eyeIcon = document.getElementById("eyeIcon");
 
-    // FITUR MATA (Lihat/Sembunyi Password)
+    // FITUR LIHAT KODE
     eyeIcon.onclick = () => {
       if (passInput.type === "password") {
         passInput.type = "text";
-        eyeIcon.innerText = "🙈"; // Ikon sembunyi
+        eyeIcon.innerText = "🙈";
       } else {
         passInput.type = "password";
-        eyeIcon.innerText = "👁️"; // Ikon lihat
+        eyeIcon.innerText = "👁️";
       }
     };
 
-    // PEMBERSIHAN TOTAL
     async function clearAllSessions() {
       try {
         await signOut(auth);
@@ -152,27 +150,28 @@
         verifyPasswordResetCode(auth, actionCode).then(() => {
           resetArea.style.display = "block";
         }).catch(() => {
-          showMessage("❌ <strong>Link Kadaluarsa:</strong> Link reset password sudah tidak aktif.", "error");
+          showMessage("❌ <strong>Link Kadaluarsa:</strong> Silakan minta link baru.", "error");
         });
 
         document.getElementById("btnUpdate").onclick = async () => {
           const newPass = passInput.value.trim();
           const btn = document.getElementById("btnUpdate");
           
-          if (newPass.length < 6) {
-            alert("Password terlalu pendek! Minimal 6 karakter (Contoh: Amir21)");
+          // Validasi ketat: Harus tepat 6 karakter
+          if (newPass.length !== 6) {
+            alert("Kode akses harus tepat 6 karakter!");
             return;
           }
 
-          btn.disabled = true; btn.innerText = "Memperbarui...";
+          btn.disabled = true; btn.innerText = "Menyimpan...";
           try {
             await confirmPasswordReset(auth, actionCode, newPass);
             await clearAllSessions();
             resetArea.style.display = "none";
-            showMessage("✅ <strong>Berhasil!</strong> Password telah diperbarui. Silakan login kembali dengan password baru Anda.", "success");
+            showMessage("✅ <strong>Berhasil!</strong> Kode akses diperbarui. Silakan login kembali.", "success");
           } catch (err) {
-            btn.disabled = false; btn.innerText = "Simpan Password";
-            showMessage("❌ <strong>Gagal:</strong> Terjadi kesalahan. Coba minta link baru.", "error");
+            btn.disabled = false; btn.innerText = "Simpan Kode Akses";
+            showMessage("❌ <strong>Gagal:</strong> Terjadi kesalahan sistem.", "error");
           }
         };
       }
@@ -182,10 +181,10 @@
         applyActionCode(auth, actionCode).then(async () => {
           await clearAllSessions();
           verifyArea.style.display = "none";
-          showMessage("✅ <strong>Email Terverifikasi!</strong> Sesi Anda telah dibersihkan. Silakan login kembali.", "success");
+          showMessage("✅ <strong>Email Terverifikasi!</strong> Silakan login kembali.", "success");
         }).catch(() => {
           verifyArea.style.display = "none";
-          showMessage("❌ <strong>Gagal:</strong> Link verifikasi tidak valid.", "error");
+          showMessage("❌ <strong>Gagal:</strong> Link tidak valid.", "error");
         });
       }
     }
