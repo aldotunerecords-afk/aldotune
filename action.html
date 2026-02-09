@@ -1,175 +1,174 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Keamanan - Aldotune</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><text x='50%' y='50%' dy='.35em' text-anchor='middle' font-size='65' font-family='Arial, sans-serif' font-weight='bold' fill='%23000000'>a</text></svg>">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Action Center - Aldotune</title>
+  <style>
+    /* Global Styles Aldotune */
+    * { box-sizing: border-box; }
+    html, body { 
+      margin: 0; padding: 0; width: 100%; height: 100%; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #ffffff, #f3f8ff); 
+      display: flex; align-items: center; justify-content: center; 
+      overflow: hidden;
+    }
+    .container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
+    .acss-logo { width: 100px; margin-bottom: 20px; cursor: pointer; }
     
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #333; }
-        .container { width: 100%; max-width: 400px; padding: 30px; text-align: center; border: 1px solid #eee; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .logo-img { max-width: 180px; margin-bottom: 25px; }
-        h2 { font-size: 20px; margin-bottom: 15px; color: #222; }
-        p { font-size: 14px; color: #666; margin-bottom: 25px; line-height: 1.6; }
-        
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px; color: #888; text-transform: uppercase; }
-        
-        /* Input PIN Style */
-        .custom-input { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            font-size: 24px; 
-            letter-spacing: 10px; 
-            text-align: center; 
-            transition: 0.3s; 
-            outline: none; 
-        }
-        .custom-input:focus { border-color: #0056b3; background-color: #f9f9f9; }
-        
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 50px; font-weight: bold; cursor: pointer; transition: 0.3s; font-size: 14px; }
-        .btn-primary { background-color: #0056b3; color: white; }
-        .btn-primary:hover { background-color: #004494; }
-        
-        #loader { display: block; margin: 20px auto; border: 3px solid #f3f3f3; border-top: 3px solid #0056b3; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .hidden { display: none !important; }
-    </style>
+    .card { 
+      background: white; padding: 30px; 
+      border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); 
+      animation: fadeIn 0.4s ease; text-align: left; 
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h2 { font-size: 20px; color: #1f3a5f; margin-bottom: 10px; text-align: center; margin-top: 0; }
+    p { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #1f3a5f; margin-bottom: 5px; margin-top: 15px; }
+    
+    input { 
+      width: 100%; padding: 12px; border-radius: 10px; 
+      border: 1px solid #ddd; font-size: 14px; outline: none; transition: 0.3s; 
+    }
+    input:focus { border-color: #1f3a5f; }
+    
+    /* Status Messages (Tab) */
+    .status-msg { 
+      margin-top: 20px; padding: 15px; border-radius: 12px; 
+      font-size: 13px; text-align: center; line-height: 1.5; display: none;
+    }
+    .error { background: #fff1f2; color: #e11d48; border: 1px solid #ffe4e6; display: block; }
+    .success { background: #f0f7ff; color: #1f3a5f; border: 1px solid #dbeafe; display: block; }
+    .loading { color: #64748b; font-style: italic; text-align: center; }
+
+    .actions { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
+    .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; text-decoration: none; text-align: center; }
+    .btn-primary { background: #1f3a5f; color: white; }
+    .btn-primary:disabled { opacity: 0.6; }
+    .btn-secondary { background: #f1f5f9; color: #475569; }
+
+    footer { margin-top: 25px; font-size: 11px; color: #94a3b8; text-align: center; }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <img src="acss.png" alt="Aldotune Logo" class="logo-img">
-        
-        <div id="loading-state">
-            <div id="loader"></div>
-            <p>Memproses permintaan Anda...</p>
-        </div>
+  <div class="container">
+    <img src="acss.png" alt="Aldotune Logo" class="acss-logo" onclick="location.href='login.html'">
 
-        <div id="reset-state" class="hidden">
-            <h2>Buat PIN Baru</h2>
-            <p>Masukkan 6 digit angka untuk PIN baru Anda.</p>
-            <form id="reset-form">
-                <div class="input-group">
-                    <label>PIN BARU (6 DIGIT)</label>
-                    <input type="password" 
-                           id="new-password" 
-                           class="custom-input" 
-                           placeholder="000000" 
-                           inputmode="numeric" 
-                           pattern="[0-9]*" 
-                           maxlength="6" 
-                           required>
-                </div>
-                <button type="submit" class="btn btn-primary">SIMPAN PIN</button>
-            </form>
+    <div class="card">
+      
+      <div id="resetArea" style="display: none;">
+        <h2>Password Baru</h2>
+        <p>Silakan buat password baru yang aman untuk akun Anda.</p>
+        <label>Password Baru</label>
+        <input type="password" id="newPassword" placeholder="Minimal 6 karakter" />
+        <div class="actions">
+          <button class="btn btn-primary" id="btnUpdate">Simpan Password</button>
         </div>
+      </div>
 
-        <div id="verify-state" class="hidden">
-            <h2>Email Terverifikasi</h2>
-            <p>Email Anda berhasil diverifikasi. Mengalihkan ke halaman login...</p>
-        </div>
+      <div id="verifyArea" style="display: none;">
+        <h2>Verifikasi Email</h2>
+        <p id="verifyStatus" class="loading">Memproses validasi akun...</p>
+      </div>
 
-        <div id="error-state" class="hidden">
-            <h2 style="color: #d93025;">Terjadi Kesalahan</h2>
-            <p id="error-msg">Link kadaluarsa atau sudah pernah digunakan.</p>
-            <a href="index.html" class="btn btn-primary" style="text-decoration: none; display: inline-block;">Kembali ke Beranda</a>
-        </div>
+      <div id="messageBox" class="status-msg"></div>
+
+      <div class="actions">
+        <a href="login.html" class="btn btn-secondary">Kembali ke Login</a>
+      </div>
     </div>
+    
+    <footer>© 2026 ALDOTUNE CREATIVE STUDIO</footer>
+  </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, confirmPasswordReset, verifyPasswordResetCode, applyActionCode } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, confirmPasswordReset, verifyPasswordResetCode, applyActionCode, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
-            authDomain: "aldotune-records.firebaseapp.com",
-            projectId: "aldotune-records",
-            storageBucket: "aldotune-records.firebasestorage.app",
-            messagingSenderId: "311200667476",
-            appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
-        };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+      authDomain: "aldotune-records.firebaseapp.com",
+      projectId: "aldotune-records",
+      storageBucket: "aldotune-records.firebasestorage.app",
+      messagingSenderId: "311200667476",
+      appId: "1:311200667476:web:7805289d9d01c981ef5ac1"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const mode = urlParams.get('mode');
-        const actionCode = urlParams.get('oobCode');
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const actionCode = urlParams.get('oobCode');
 
-        const loadingState = document.getElementById('loading-state');
-        const resetState = document.getElementById('reset-state');
-        const verifyState = document.getElementById('verify-state');
-        const errorState = document.getElementById('error-state');
+    const msgBox = document.getElementById("messageBox");
+    const resetArea = document.getElementById("resetArea");
+    const verifyArea = document.getElementById("verifyArea");
 
-        // Router
-        switch (mode) {
-            case 'resetPassword':
-                handleResetPassword();
-                break;
-            case 'verifyEmail':
-                handleVerifyEmail();
-                break;
-            default:
-                showError("Aksi tidak valid.");
-        }
+    // FUNGSI BERSIHKAN SEMUA DATA BROWSER & LOGOUT
+    async function clearAllSessions() {
+      try {
+        await signOut(auth);
+        localStorage.clear();
+        sessionStorage.clear();
+        document.cookie.split(";").forEach((c) => {
+          document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
+      } catch (e) { console.error(e); }
+    }
 
-        // --- RESET PASSWORD ---
-        function handleResetPassword() {
-            verifyPasswordResetCode(auth, actionCode)
-                .then(() => {
-                    loadingState.classList.add('hidden');
-                    resetState.classList.remove('hidden');
-                })
-                .catch(() => showError("Link reset PIN kadaluarsa."));
-        }
-
-        document.getElementById('reset-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const newPassword = document.getElementById('new-password').value;
-            
-            // Validasi tambahan untuk memastikan tepat 6 digit
-            if (newPassword.length !== 6 || isNaN(newPassword)) {
-                alert("PIN harus berupa 6 digit angka.");
-                return;
-            }
-
-            loadingState.classList.remove('hidden');
-            resetState.classList.add('hidden');
-
-            confirmPasswordReset(auth, actionCode, newPassword)
-                .then(() => {
-                    alert("PIN Berhasil diperbarui!");
-                    window.location.href = "index.html"; // Arahkan ke index
-                })
-                .catch(() => showError("Gagal memperbarui PIN."));
+    if (!mode || !actionCode) {
+      showMessage("❌ <strong>Akses Ditolak:</strong> Link tidak valid.", "error");
+    } else {
+      
+      // MODE: RESET PASSWORD
+      if (mode === 'resetPassword') {
+        verifyPasswordResetCode(auth, actionCode).then(() => {
+          resetArea.style.display = "block";
+        }).catch(() => {
+          showMessage("❌ <strong>Link Kadaluarsa:</strong> Silakan minta link reset baru.", "error");
         });
 
-        // --- VERIFY EMAIL ---
-        function handleVerifyEmail() {
-            applyActionCode(auth, actionCode)
-                .then(() => {
-                    loadingState.classList.add('hidden');
-                    verifyState.classList.remove('hidden');
-                    // Tunggu 2 detik lalu arahkan ke index
-                    setTimeout(() => {
-                        window.location.href = "index.html";
-                    }, 2000);
-                })
-                .catch(() => showError("Gagal verifikasi email."));
-        }
+        document.getElementById("btnUpdate").onclick = async () => {
+          const newPass = document.getElementById("newPassword").value;
+          const btn = document.getElementById("btnUpdate");
+          if (newPass.length < 6) return alert("Minimal 6 karakter!");
 
-        function showError(msg) {
-            loadingState.classList.add('hidden');
-            resetState.classList.add('hidden');
-            verifyState.classList.add('hidden');
-            errorState.classList.remove('hidden');
-            document.getElementById('error-msg').innerText = msg;
-        }
-    </script>
+          btn.disabled = true; btn.innerText = "Memproses...";
+          try {
+            await confirmPasswordReset(auth, actionCode, newPass);
+            await clearAllSessions();
+            resetArea.style.display = "none";
+            showMessage("✅ <strong>Berhasil!</strong> Password diperbarui dan sesi lama telah dibersihkan.", "success");
+          } catch (err) {
+            btn.disabled = false; btn.innerText = "Simpan Password";
+            showMessage("❌ <strong>Gagal:</strong> Terjadi kesalahan sistem.", "error");
+          }
+        };
+      }
+
+      // MODE: VERIFIKASI EMAIL
+      else if (mode === 'verifyEmail') {
+        verifyArea.style.display = "block";
+        applyActionCode(auth, actionCode).then(async () => {
+          await clearAllSessions();
+          verifyArea.style.display = "none";
+          showMessage("✅ <strong>Email Terverifikasi!</strong> Sesi Anda telah dibersihkan demi keamanan. Silakan login kembali.", "success");
+        }).catch(() => {
+          verifyArea.style.display = "none";
+          showMessage("❌ <strong>Gagal:</strong> Link tidak valid atau sudah digunakan.", "error");
+        });
+      }
+    }
+
+    function showMessage(txt, type) {
+      msgBox.innerHTML = txt;
+      msgBox.className = `status-msg ${type}`;
+      msgBox.style.display = "block";
+    }
+  </script>
 </body>
 </html>
