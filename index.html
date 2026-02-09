@@ -237,9 +237,8 @@
     const slogan     = document.getElementById("slogan");
     const onboarding = document.getElementById("onboarding");
 
-    function isAldotuneApp() {
-      return /aldotune\.com/i.test(navigator.userAgent || "");
-    }
+    // Deteksi apakah di Median/GoNative app
+    const isMedianApp = /median/i.test(navigator.userAgent);
 
     // ==================== SPLASH ANIMATION ====================
     function playSplash() {
@@ -256,27 +255,21 @@
       setTimeout(() => {
         shine.classList.add("run");
 
-        setTimeout(() => {
-          slogan.classList.add("show");
-        }, 200);
+        setTimeout(() => slogan.classList.add("show"), 200);
 
         setTimeout(() => {
           splash.classList.add("hide");
-
-          setTimeout(checkAuthAndRedirect, 600); // setelah fade selesai
-
+          setTimeout(checkAuthAndRedirect, 600);
         }, 1800);
-
       }, 600);
     }
 
-    // ==================== AUTH CHECK + REDIRECT + BACK HANDLING ====================
+    // ==================== AUTH CHECK + REDIRECT ====================
     function checkAuthAndRedirect() {
       auth.onAuthStateChanged((user) => {
         if (user) {
           const pinVerified = localStorage.getItem('pinVerified') === 'true';
 
-          // Gunakan replace supaya history sebelumnya hilang (susah balik ke splash)
           if (pinVerified) {
             history.replaceState(null, null, 'dashboard.html');
             window.location.replace('dashboard.html');
@@ -285,33 +278,46 @@
             window.location.replace('pin.html');
           }
         } else {
-          // Belum login → onboarding + konfirmasi back
           onboarding.style.display = "flex";
-
-          // Tambah entry dummy untuk tangkap back
-          history.pushState({ page: "onboarding" }, "", location.href);
-
-          // Listener back button (browser / hardware di Android)
-          window.addEventListener('popstate', function handleBack(e) {
-            const confirmKeluar = confirm("Yakin ingin keluar dari Aldotune?");
-
-            if (confirmKeluar) {
-              // Ganti window.close() yang tidak jalan → redirect ke blank / pesan
-              // Ini bikin tab terasa "tertutup" (paling reliable di browser modern & PWA)
-              window.location.replace('about:blank');
-              // Alternatif custom pesan:
-              // window.location.href = 'data:text/html,<body style="margin:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;"><h1>Sampai jumpa di Aldotune!<br>Tab bisa ditutup sekarang.</h1></body>';
-            } else {
-              // Batal → jebak lagi supaya tidak balik
-              history.pushState({ page: "onboarding" }, "", location.href);
-            }
-          });
+          initBackHandler(); // aktifkan handler back di onboarding
         }
       });
     }
 
-    // ==================== MULAI ====================
-    const delay = isAldotuneApp() ? 800 : 100;
+    // ==================== DOUBLE-TAP BACK HANDLER (untuk Median app & browser) ====================
+    let lastBackPressTime = 0;
+    const doubleTapTimeout = 2000; // 2 detik
+
+    function initBackHandler() {
+      // Tambah dummy history entry
+      history.pushState({ intent: "stay" }, "", location.href);
+
+      window.addEventListener('popstate', function(e) {
+        const currentTime = Date.now();
+
+        if (currentTime - lastBackPressTime < doubleTapTimeout) {
+          // Double tap → exit feel
+          if (isMedianApp) {
+            // Di Median: redirect ke blank (webview akan terasa mati)
+            window.location.replace('about:blank');
+          } else {
+            // Browser biasa: coba close tab (kalau memungkinkan)
+            window.close();
+          }
+        } else {
+          // First tap → tampilkan pesan
+          alert("Tekan sekali lagi untuk keluar dari Aldotune");
+
+          lastBackPressTime = currentTime;
+
+          // Push lagi supaya bisa double-tap
+          history.pushState({ intent: "stay" }, "", location.href);
+        }
+      });
+    }
+
+    // ==================== START APLIKASI ====================
+    const delay = isMedianApp ? 800 : 100;
     setTimeout(playSplash, delay);
 
     // Ulang splash kalau tab kembali aktif
