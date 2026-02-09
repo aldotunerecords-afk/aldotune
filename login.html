@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Masuk - Aldotune</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { 
+      margin: 0; padding: 0; width: 100%; height: 100%; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #ffffff, #f3f8ff); 
+      display: flex; align-items: center; justify-content: center; 
+      overflow: hidden;
+    }
+    .container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
+    .acss-logo { width: 100px; margin-bottom: 20px; }
+    
+    .step { 
+      display: none; background: white; padding: 30px; 
+      border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); 
+      animation: fadeIn 0.4s ease; text-align: left; 
+    }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 20px; color: #1f3a5f; margin-bottom: 10px; text-align: center; }
+    .display-name { color: #1d4ed8; font-weight: bold; }
+    p { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #1f3a5f; margin-bottom: 5px; margin-top: 10px; }
+    
+    input { 
+      width: 100%; padding: 12px; border-radius: 10px; 
+      border: 1px solid #ddd; font-size: 14px; outline: none; transition: 0.3s; 
+    }
+    input:focus { border-color: #1f3a5f; }
+    
+    .input-group { position: relative; width: 100%; }
+    .toggle-password { 
+      position: absolute; right: 15px; top: 50%; 
+      transform: translateY(-50%); cursor: pointer; 
+      color: #1f3a5f; font-size: 18px; user-select: none;
+    }
+    
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #1f3a5f; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 20px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .actions { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
+    .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; }
+    .btn-primary { background: #1f3a5f; color: white; }
+    .btn-secondary { background: #f1f5f9; color: #475569; }
+    
+    .recovery-link { 
+      margin-top: 20px; text-align: center; 
+      display: block; font-size: 13px; color: #1d4ed8; 
+      text-decoration: none; font-weight: 600;
+    }
+
+    #toast-container {
+      position: fixed; bottom: 30px; left: 50%;
+      transform: translateX(-50%); z-index: 10000;
+      pointer-events: none;
+    }
+    .toast {
+      background: rgba(0, 0, 0, 0.8); color: white;
+      padding: 12px 24px; border-radius: 25px;
+      font-size: 13px; margin-bottom: 10px;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+
+  <div id="toast-container"></div>
+
+  <div class="container">
+    <img src="acss.png" alt="Aldotune Logo" class="acss-logo">
+
+    <div class="step active" id="stepUser">
+      <h1>Selamat Datang</h1>
+      <p>Masukkan username unik Anda untuk memulai.</p>
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Contoh: bud123">
+      <div class="actions">
+        <button class="btn btn-primary" onclick="checkUser()">Lanjut</button>
+        <button class="btn btn-secondary" onclick="location.href='index.html'">Kembali</button>
+      </div>
+      <a href="pemulihan.html" class="recovery-link">Lupa Username atau Akun?</a>
+    </div>
+
+    <div class="step" id="stepLoading">
+      <h1>Memverifikasi...</h1>
+      <div class="loader"></div>
+      <p>Mencocokkan identitas pengguna...</p>
+    </div>
+
+    <div class="step" id="stepPass">
+      <h1>Halo, <span id="userDisplayName" class="display-name">...</span>!</h1>
+      <p>Silakan masukkan kode akses untuk masuk.</p>
+      <label>Kode Akses (6 Karakter)</label>
+      <div class="input-group">
+        <input type="password" id="password" maxlength="6" placeholder="Masukkan 6 karakter">
+        <span class="toggle-password" onclick="toggleView()">👁️</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btnFinalLogin">Masuk Sekarang</button>
+        <button class="btn btn-secondary" onclick="showStep('stepUser')">Bukan Akun Saya</button>
+      </div>
+      <a href="pemulihan.html" class="recovery-link">Lupa Kode Akses?</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+      authDomain: "aldotune-records.firebaseapp.com",
+      databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "aldotune-records"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db2 = getDatabase(app, "https://aldotune-records.asia-southeast1.firebasedatabase.app");
+
+    let savedEmail = "";
+
+    function showToast(msg) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerText = msg;
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 100);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    window.showStep = (id) => {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    };
+
+    window.toggleView = () => {
+      const el = document.getElementById('password');
+      el.type = el.type === "password" ? "text" : "password";
+    };
+
+    // CHECK USERNAME & GET FULL NAME
+    window.checkUser = async () => {
+      const userInp = document.getElementById('username').value.trim().toLowerCase();
+      if (!userInp) return showToast("Masukkan username Anda!");
+
+      showStep('stepLoading');
+
+      try {
+        const snapshot = await get(ref(db2, "users"));
+        let userData = null;
+        
+        if (snapshot.exists()) {
+          snapshot.forEach((child) => {
+            if (child.val().username === userInp) {
+              userData = child.val();
+            }
+          });
+        }
+
+        setTimeout(() => {
+          if (userData) {
+            savedEmail = userData.email;
+            document.getElementById('userDisplayName').innerText = userData.nama;
+            showStep('stepPass');
+          } else {
+            showToast("Username tidak ditemukan!");
+            showStep('stepUser');
+          }
+        }, 1200);
+
+      } catch (err) {
+        showToast("Gagal memuat data.");
+        showStep('stepUser');
+      }
+    };
+
+    // FINAL LOGIN
+    document.getElementById('btnFinalLogin').onclick = async () => {
+      const passInp = document.getElementById('password').value;
+      const btn = document.getElementById('btnFinalLogin');
+
+      if (passInp.length < 6) return showToast("Kode akses wajib 6 karakter!");
+
+      btn.disabled = true; btn.innerText = "Memproses...";
+
+      try {
+        await signInWithEmailAndPassword(auth, savedEmail, passInp);
+        window.location.replace('pin.html');
+      } catch (err) {
+        btn.disabled = false; btn.innerText = "Masuk Sekarang";
+        if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password") {
+          showToast("Kode akses salah!");
+        } else {
+          showToast("Terjadi kesalahan.");
+        }
+      }
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) window.location.replace('pin.html');
+    });
+  </script>
+</body>
+</html>
