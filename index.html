@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Aldotune</title>
 
-  <!-- Firebase SDK (compat version - lebih mudah untuk pemula) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <!-- Opsional: kalau PIN disimpan di Realtime DB, uncomment ini -->
+  <!-- Uncomment kalau pakai Realtime DB untuk simpan PIN -->
   <!-- <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script> -->
 
   <style>
@@ -23,7 +23,6 @@
       background: linear-gradient(135deg, #ffffff, #f3f8ff);
     }
 
-    /* Splash Screen */
     #splash {
       position: fixed;
       inset: 0;
@@ -61,14 +60,8 @@
     }
 
     @keyframes slideInCenter {
-      from {
-        opacity: 0;
-        transform: translateX(140px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+      from { opacity: 0; transform: translateX(140px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
 
     .shine {
@@ -77,12 +70,7 @@
       left: -60%;
       width: 60%;
       height: 100%;
-      background: linear-gradient(
-        120deg,
-        rgba(255,255,255,0),
-        rgba(255,255,255,0.7),
-        rgba(255,255,255,0)
-      );
+      background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.7), rgba(255,255,255,0));
       transform: skewX(-20deg);
       pointer-events: none;
       opacity: 0;
@@ -95,7 +83,7 @@
 
     @keyframes shineMove {
       from { left: -60%; }
-      to { left: 130%; }
+      to   { left: 130%; }
     }
 
     .slogan {
@@ -114,7 +102,6 @@
       transform: translateY(0);
     }
 
-    /* Onboarding */
     #onboarding {
       min-height: 100vh;
       display: flex;
@@ -133,14 +120,8 @@
     }
 
     @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-12px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     h1 {
@@ -182,9 +163,7 @@
       color: white;
     }
 
-    .btn-primary:hover {
-      background: #16304d;
-    }
+    .btn-primary:hover { background: #16304d; }
 
     .btn-outline {
       background: transparent;
@@ -218,7 +197,7 @@
     </div>
   </div>
 
-  <!-- Onboarding (tampilan setelah splash kalau belum login) -->
+  <!-- Onboarding (hanya muncul kalau belum login) -->
   <div id="onboarding" style="display: none;">
     <img src="acss.png" alt="Logo Aldotune" class="onboard-logo">
 
@@ -228,12 +207,8 @@
     </p>
 
     <div class="actions">
-      <button class="btn btn-primary" onclick="location.href='login.html'">
-        Masuk
-      </button>
-      <button class="btn btn-outline" onclick="location.href='register.html'">
-        Daftar
-      </button>
+      <button class="btn btn-primary" onclick="location.href='login.html'">Masuk</button>
+      <button class="btn btn-outline" onclick="location.href='register.html'">Daftar</button>
     </div>
 
     <div class="footer-text">
@@ -242,7 +217,7 @@
   </div>
 
   <script>
-    // ==================== KONFIGURASI FIREBASE ====================
+    // ==================== FIREBASE CONFIG ====================
     const firebaseConfig = {
       apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
       authDomain: "aldotune-records.firebaseapp.com",
@@ -254,38 +229,32 @@
       measurementId: "G-GQ3Y2GKWG1"
     };
 
-    // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // ==================== ELEMENT DOM ====================
-    const logo = document.getElementById("logo");
-    const shine = document.getElementById("shine");
-    const slogan = document.getElementById("slogan");
-    const splash = document.getElementById("splash");
+    // ==================== DOM ELEMENTS ====================
+    const splash    = document.getElementById("splash");
+    const logo      = document.getElementById("logo");
+    const shine     = document.getElementById("shine");
+    const slogan    = document.getElementById("slogan");
     const onboarding = document.getElementById("onboarding");
 
     function isAldotuneApp() {
-      const ua = navigator.userAgent || "";
-      return /aldotune\.com/i.test(ua);
+      return /aldotune\.com/i.test(navigator.userAgent || "");
     }
 
-    // ==================== ANIMASI SPLASH ====================
+    // ==================== SPLASH ANIMATION ====================
     function playSplash() {
-      // Reset semua
       logo.classList.remove("logo-animate");
       shine.classList.remove("run");
       slogan.classList.remove("show");
       splash.classList.remove("hide");
       onboarding.style.display = "none";
 
-      // Force reflow
-      void logo.offsetWidth;
+      void logo.offsetWidth; // force reflow
 
-      // 1. Logo slide in
       logo.classList.add("logo-animate");
 
-      // 2. Shine + slogan + fade out
       setTimeout(() => {
         shine.classList.add("run");
 
@@ -293,52 +262,67 @@
           slogan.classList.add("show");
         }, 200);
 
-        // Splash selesai → fade out
         setTimeout(() => {
           splash.classList.add("hide");
 
-          // Tunggu transisi fade selesai, baru tampilkan onboarding atau redirect
           setTimeout(() => {
             checkAuthAndRedirect();
-          }, 500); // beri waktu transisi opacity selesai
+          }, 600); // tunggu transisi fade selesai
 
         }, 1800);
 
       }, 600);
     }
 
-    // ==================== CEK AUTH SETELAH SPLASH ====================
+    // ==================== AUTH CHECK + JEBAK BACK BUTTON ====================
     function checkAuthAndRedirect() {
       auth.onAuthStateChanged((user) => {
         if (user) {
-          // User sudah login
+          // Sudah login → cek PIN
           const pinVerified = localStorage.getItem('pinVerified') === 'true';
 
+          // Ganti history supaya back tidak kembali ke index
           if (pinVerified) {
-            // Sudah verifikasi PIN → ke dashboard
-            window.location.href = 'dashboard.html'; // sesuaikan nama file dashboard
+            history.replaceState(null, null, 'dashboard.html');
+            window.location.replace('dashboard.html'); // replace supaya tidak ada back history
           } else {
-            // Belum verifikasi PIN → ke pin.html
-            window.location.href = 'pin.html';
+            history.replaceState(null, null, 'pin.html');
+            window.location.replace('pin.html');
           }
         } else {
           // Belum login → tampilkan onboarding
           onboarding.style.display = "flex";
+
+          // Jebak back di onboarding (opsional: close atau stay)
+          window.history.pushState(null, null, window.location.href);
+          window.onpopstate = () => {
+            // Back ditekan di onboarding → bisa close tab/aplikasi
+            // window.close(); // efektif di PWA/WebView
+            // atau stay
+            window.history.pushState(null, null, window.location.href);
+          };
         }
       });
     }
 
-    // Mulai splash dengan delay kecil kalau dari WebView
-    const delay = isAldotuneApp() ? 800 : 100; // sedikit delay biar terasa natural
+    // ==================== START ====================
+    const delay = isAldotuneApp() ? 800 : 100;
+    setTimeout(playSplash, delay);
 
-    setTimeout(() => {
-      playSplash();
-    }, delay);
-
-    // Ulang splash + check kalau tab kembali aktif
+    // Ulang splash kalau tab kembali aktif
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) {
-        playSplash();
+      if (!document.hidden) playSplash();
+    });
+
+    // ==================== JEBAK BACK GLOBAL (untuk semua halaman protected) ====================
+    // Tambahkan script serupa ini di pin.html dan dashboard.html juga
+    window.addEventListener('load', () => {
+      if (location.pathname.includes('pin.html') || location.pathname.includes('dashboard.html')) {
+        history.pushState(null, null, location.href);
+        window.onpopstate = () => {
+          history.pushState(null, null, location.href);
+          // Alternatif: window.close(); // close app kalau dari PWA/WebView
+        };
       }
     });
   </script>
