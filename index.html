@@ -27,12 +27,12 @@
       flex-direction: column;
       z-index: 9999;
       overflow: hidden;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
+      transition: opacity 0.8s ease;
     }
 
     #splash.hide {
       opacity: 0;
-      visibility: hidden;
+      pointer-events: none;
     }
 
     .logo-wrapper {
@@ -46,17 +46,17 @@
       max-width: 80vw;
       height: auto;
       opacity: 0;
-      transform: translateX(160px);
+      transform: translateX(140px);
     }
 
     .logo-animate {
-      animation: slideInCenter 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: slideInCenter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
     @keyframes slideInCenter {
       from {
         opacity: 0;
-        transform: translateX(160px);
+        transform: translateX(140px);
       }
       to {
         opacity: 1;
@@ -64,7 +64,7 @@
       }
     }
 
-    /* Efek kilap */
+    /* Efek kilap (lebih pendek) */
     .shine {
       position: absolute;
       top: 0;
@@ -74,7 +74,7 @@
       background: linear-gradient(
         120deg,
         rgba(255,255,255,0),
-        rgba(255,255,255,0.65),
+        rgba(255,255,255,0.7),
         rgba(255,255,255,0)
       );
       transform: skewX(-20deg);
@@ -84,7 +84,7 @@
 
     .shine.run {
       opacity: 1;
-      animation: shineMove 0.8s ease-in-out forwards;
+      animation: shineMove 0.7s ease-in-out forwards;
     }
 
     @keyframes shineMove {
@@ -99,8 +99,8 @@
       letter-spacing: 1px;
       color: #555;
       opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
       text-align: center;
     }
 
@@ -257,49 +257,33 @@
       // Force reflow
       void logo.offsetWidth;
 
-      // 1️⃣ Logo slide masuk
+      // 1. Logo slide masuk (lebih cepat)
       logo.classList.add("logo-animate");
 
-      // 2️⃣ Kilap 2x setelah logo masuk
+      // 2. Kilap hanya 1x, mulai setelah logo setengah jalan
       setTimeout(() => {
-        runShine(2, () => {
-          // 3️⃣ Tampilkan slogan
-          slogan.classList.add("show");
-
-          // 4️⃣ Fade out splash
-          setTimeout(() => {
-            splash.classList.add("hide");
-          }, 1400);
-        });
-      }, 1000);
-    }
-
-    function runShine(times, callback) {
-      let count = 0;
-      const shineOnce = () => {
         shine.classList.add("run");
 
+        // 3. Slogan muncul bareng shine
         setTimeout(() => {
-          shine.classList.remove("run");
-          count++;
-          if (count < times) {
-            setTimeout(shineOnce, 250);
-          } else if (callback) {
-            callback();
-          }
-        }, 800);
-      };
-      shineOnce();
+          slogan.classList.add("show");
+        }, 200);
+
+        // 4. Fade out splash setelah semuanya kelihatan
+        setTimeout(() => {
+          splash.classList.add("hide");
+        }, 1800); // total ~2.5 detik dari start
+      }, 600);
     }
 
-    // Delay khusus jika dari App WebView
-    const delay = isAldotuneApp() ? 1000 : 0;
+    // Delay kecil kalau dari WebView app
+    const delay = isAldotuneApp() ? 800 : 0;
 
     setTimeout(() => {
       startSplash();
     }, delay);
 
-    // Jika user kembali ke tab, ulang splash (tanpa delay)
+    // Ulang splash kalau tab kembali aktif (tanpa delay)
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) {
         startSplash();
