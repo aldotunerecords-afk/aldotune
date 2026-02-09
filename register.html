@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Daftar - Aldotune</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { 
+      margin: 0; padding: 0; width: 100%; height: 100%; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #ffffff, #f3f8ff); 
+      display: flex; align-items: center; justify-content: center; 
+    }
+    .container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
+    .acss-logo { width: 100px; margin-bottom: 20px; }
+    
+    .step { 
+      display: none; background: white; padding: 30px; 
+      border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); 
+      animation: fadeIn 0.4s ease; text-align: left; 
+    }
+    .step.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 20px; color: #1f3a5f; margin-bottom: 10px; text-align: center; }
+    p { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #1f3a5f; margin-bottom: 5px; margin-top: 10px; }
+    
+    .input-group { position: relative; width: 100%; }
+    input { 
+      width: 100%; padding: 12px; padding-right: 45px; border-radius: 10px; 
+      border: 1px solid #ddd; font-size: 14px; outline: none; transition: 0.3s; 
+    }
+    input:focus { border-color: #1f3a5f; }
+    
+    .toggle-password { 
+      position: absolute; right: 15px; top: 50%; 
+      transform: translateY(-50%); cursor: pointer; 
+      color: #1f3a5f; font-size: 18px; user-select: none;
+    }
+    
+    .username-display { background: #f0f7ff; padding: 20px; border-radius: 12px; border: 2px dashed #1f3a5f; text-align: center; margin: 15px 0; }
+    .username-text { font-size: 24px; font-weight: bold; color: #1f3a5f; letter-spacing: 2px; }
+    
+    .loader { border: 4px solid #f3f3f3; border-top: 4px solid #1f3a5f; border-radius: 50%; width: 35px; height: 35px; animation: spin 1s linear infinite; margin: 20px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .actions { margin-top: 25px; display: flex; flex-direction: column; gap: 10px; }
+    .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.3s; }
+    .btn-primary { background: #1f3a5f; color: white; }
+    .btn-secondary { background: #f1f5f9; color: #475569; }
+    
+    .confirm-box { background: #f8fafc; border-radius: 12px; padding: 15px; border: 1px solid #e2e8f0; }
+    .confirm-item { margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #edf2f7; padding-bottom: 5px; }
+    .confirm-label { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; }
+    .success-icon { font-size: 60px; color: #22c55e; margin-bottom: 10px; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="mainContainer">
+    <img src="acss.png" alt="Aldotune Logo" class="acss-logo">
+
+    <div class="step active" id="step1">
+      <h1>Siapa namamu?</h1>
+      <p>Masukkan nama lengkap Anda.</p>
+      <label>Nama Lengkap</label>
+      <input type="text" id="nama" placeholder="Contoh: Budi Santoso">
+      <div class="actions">
+        <button class="btn btn-primary" onclick="generateUserStep()">Lanjut</button>
+      </div>
+    </div>
+
+    <div class="step" id="stepUsername">
+      <h1>Menyiapkan Akun...</h1>
+      <div id="loadingUser">
+        <div class="loader"></div>
+        <p style="text-align: center;">Mengecek ketersediaan username...</p>
+      </div>
+      <div id="resultUser" style="display:none;">
+        <div class="username-display">
+          <span class="confirm-label">USERNAME UNIK ANDA</span>
+          <span class="username-text" id="generatedUser"></span>
+        </div>
+        <div class="actions">
+          <button class="btn btn-primary" onclick="nextStep(3)">Suka, Lanjutkan</button>
+          <button class="btn btn-secondary" onclick="generateUserStep()">Ganti Username</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" id="step3">
+      <h1>Kontak & Pemulihan</h1>
+      <label>Email Aktif</label>
+      <input type="email" id="email" placeholder="budi@email.com">
+      <label>Tanggal Lahir</label>
+      <input type="date" id="tgl_lahir">
+      <div class="actions">
+        <button class="btn btn-primary" onclick="nextStep(4)">Lanjut</button>
+        <button class="btn btn-secondary" onclick="nextStep(1)">Kembali</button>
+      </div>
+    </div>
+
+    <div class="step" id="step4">
+      <h1>Keamanan Akun</h1>
+      <label>Kode Akses (6 Karakter)</label>
+      <div class="input-group">
+        <input type="password" id="password" maxlength="6" placeholder="Masukkan 6 karakter">
+        <span class="toggle-password" onclick="toggleView('password')">👁️</span>
+      </div>
+      <label>PIN Keamanan (6 Digit)</label>
+      <div class="input-group">
+        <input type="password" id="pin" maxlength="6" inputmode="numeric" placeholder="Masukkan 6 angka">
+        <span class="toggle-password" onclick="toggleView('pin')">👁️</span>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="reviewData()">Konfirmasi Data</button>
+        <button class="btn btn-secondary" onclick="nextStep(3)">Kembali</button>
+      </div>
+    </div>
+
+    <div class="step" id="step5">
+      <h1>Cek Kembali Data</h1>
+      <div class="confirm-box" id="reviewContent"></div>
+      <div class="actions">
+        <button class="btn btn-primary" id="btnFinalDaftar">Daftar Sekarang</button>
+        <button class="btn btn-secondary" onclick="nextStep(4)">Ubah Data</button>
+      </div>
+    </div>
+
+    <div class="step success-tab" id="step6" style="text-align:center;">
+      <div class="success-icon">✓</div>
+      <h1>Pendaftaran Berhasil!</h1>
+      <p>Selamat! Akun Anda sudah siap digunakan.</p>
+      <div class="actions">
+        <button class="btn btn-primary" onclick="location.href='login.html'">Masuk Sekarang</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
+      authDomain: "aldotune-records.firebaseapp.com",
+      databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "aldotune-records"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db1 = getDatabase(app);
+    const db2 = getDatabase(app, "https://aldotune-records.asia-southeast1.firebasedatabase.app");
+
+    let finalUsername = "";
+
+    // ==================== CEK SESI AKTIF ====================
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Jika sudah login, lempar ke pin.html
+        window.location.replace('pin.html');
+      }
+    });
+
+    window.toggleView = (id) => {
+      const el = document.getElementById(id);
+      const icon = el.nextElementSibling;
+      if (el.type === "password") {
+        el.type = "text";
+        icon.innerText = "🔓";
+      } else {
+        el.type = "password";
+        icon.innerText = "👁️";
+      }
+    };
+
+    window.nextStep = (n) => {
+      document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+      let target = (n === 1) ? 'step1' : (n === 3) ? 'step3' : (n === 4) ? 'step4' : (n === 5) ? 'step5' : (n === 6) ? 'step6' : 'stepUsername';
+      document.getElementById(target).classList.add('active');
+    };
+
+    window.generateUserStep = async () => {
+      const nama = document.getElementById("nama").value.trim();
+      if(!nama) return alert("Isi namamu dulu!");
+
+      nextStep(2);
+      document.getElementById('loadingUser').style.display = "block";
+      document.getElementById('resultUser').style.display = "none";
+
+      setTimeout(async () => {
+        let namePart = nama.split(' ')[0].toLowerCase().replace(/[^a-z]/g, '');
+        if (namePart.length > 3) namePart = namePart.substring(0, 3);
+        let needed = 6 - namePart.length;
+        let randomNum = Math.floor(Math.pow(10, needed-1) + Math.random() * (Math.pow(10, needed) - Math.pow(10, needed-1)));
+        let candidate = namePart + randomNum;
+
+        finalUsername = candidate;
+        document.getElementById('generatedUser').innerText = "@" + finalUsername;
+        document.getElementById('loadingUser').style.display = "none";
+        document.getElementById('resultUser').style.display = "block";
+      }, 1500); 
+    };
+
+    window.reviewData = () => {
+      const pin = document.getElementById("pin").value;
+      const tgl = document.getElementById("tgl_lahir").value.replace(/-/g, ""); 
+      const pass = document.getElementById("password").value;
+
+      if (pass.length !== 6 || pin.length !== 6) return alert("Password & PIN harus 6 karakter!");
+      if (tgl && tgl.includes(pin)) return alert("PIN tidak boleh mengandung tanggal lahir!");
+
+      document.getElementById("reviewContent").innerHTML = `
+        <div class="confirm-item"><span class="confirm-label">NAMA</span>${document.getElementById("nama").value}</div>
+        <div class="confirm-item"><span class="confirm-label">USERNAME</span>@${finalUsername}</div>
+        <div class="confirm-item"><span class="confirm-label">EMAIL</span>${document.getElementById("email").value}</div>
+        <div class="confirm-item"><span class="confirm-label">TGL LAHIR</span>${document.getElementById("tgl_lahir").value}</div>
+      `;
+      nextStep(5);
+    };
+
+    document.getElementById('btnFinalDaftar').onclick = async () => {
+      const btn = document.getElementById('btnFinalDaftar');
+      btn.disabled = true; btn.innerText = "Memproses...";
+      try {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+        const pin = document.getElementById("pin").value;
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+        await set(ref(db1, "pins/" + uid), { pin: pin, locked: false, failedAttempts: 0 });
+        await set(ref(db2, "users/" + uid), {
+          nama: document.getElementById("nama").value,
+          username: finalUsername,
+          email: email,
+          tanggal_lahir: document.getElementById("tgl_lahir").value
+        });
+        nextStep(6);
+      } catch (err) {
+        alert("Gagal: " + err.message);
+        btn.disabled = false; btn.innerText = "Daftar Sekarang";
+      }
+    };
+  </script>
+</body>
+</html>
