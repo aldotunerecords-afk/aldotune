@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pemulihan Akun - Aldotune</title>
+  <style>
+    /* Menyelaraskan dengan Global Style Aldotune */
+    * { box-sizing: border-box; }
+    html, body { 
+      margin: 0; padding: 0; width: 100%; height: 100%; 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #ffffff, #f3f8ff); 
+      display: flex; align-items: center; justify-content: center; 
+      overflow: hidden;
+    }
+    .container { width: 100%; max-width: 400px; padding: 20px; text-align: center; }
+    .acss-logo { width: 100px; margin-bottom: 20px; cursor: pointer; }
+    
+    .recovery-box { 
+      background: white; padding: 30px; 
+      border-radius: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); 
+      animation: fadeIn 0.4s ease; text-align: left; 
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    h1 { font-size: 20px; color: #1f3a5f; margin-bottom: 10px; text-align: center; }
+    p { font-size: 13px; color: #64748b; text-align: center; margin-bottom: 25px; line-height: 1.5; }
+    
+    /* Menu Options Style */
+    .menu-options { display: flex; flex-direction: column; gap: 12px; }
+    
+    .option-card {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+    
+    .option-card:hover {
+      border-color: #1f3a5f;
+      background: #f0f7ff;
+      transform: translateX(5px);
+    }
+    
+    .icon-box {
+      width: 40px; height: 40px;
+      background: #1f3a5f; color: white;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; margin-right: 15px;
+    }
+    
+    .option-text { flex: 1; }
+    .option-title { display: block; font-size: 14px; font-weight: 600; color: #1f3a5f; }
+    .option-desc { font-size: 11px; color: #94a3b8; }
+    
+    .actions { margin-top: 25px; }
+    .btn-back { 
+      width: 100%; padding: 14px; border-radius: 12px; 
+      font-size: 14px; font-weight: 600; cursor: pointer; 
+      border: none; background: #f1f5f9; color: #475569; transition: 0.3s;
+    }
+    .btn-back:hover { background: #e2e8f0; }
+
+    footer { margin-top: 20px; font-size: 11px; color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <img src="acss.png" alt="Aldotune Logo" class="acss-logo" onclick="location.href='login.html'">
+
+    <div class="recovery-box">
+      <h1>Butuh Bantuan?</h1>
+      <p>Pilih kendala yang Anda alami untuk memulihkan akses ke layanan Aldotune.</p>
+      
+      <div class="menu-options">
+        
+        <a href="lupa-username.html" class="option-card">
+          <div class="icon-box">👤</div>
+          <div class="option-text">
+            <span class="option-title">Lupa Username</span>
+            <span class="option-desc">Cari username menggunakan email terdaftar.</span>
+          </div>
+        </a>
+
+        <a href="lupa-password.html" class="option-card">
+          <div class="icon-box">🔑</div>
+          <div class="option-text">
+            <span class="option-title">Lupa Kode Akses</span>
+            <span class="option-desc">Atur ulang sandi login akun Anda.</span>
+          </div>
+        </a>
+
+        <a href="akun-terkunci.html" class="option-card">
+          <div class="icon-box">🔒</div>
+          <div class="option-text">
+            <span class="option-title">Akun Terkunci</span>
+            <span class="option-desc">Buka blokir karena salah PIN berkali-kali.</span>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="actions">
+        <button class="btn-back" onclick="location.href='login.html'">Kembali ke Login</button>
+      </div>
+    </div>
+    
+    <footer>© 2026 ALDOTUNE CREATIVE STUDIO</footer>
+  </div>
+
+</body>
+</html>
