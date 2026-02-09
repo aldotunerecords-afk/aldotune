@@ -8,8 +8,6 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <!-- Uncomment kalau pakai Realtime DB untuk simpan PIN -->
-  <!-- <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script> -->
 
   <style>
     * { box-sizing: border-box; }
@@ -197,7 +195,7 @@
     </div>
   </div>
 
-  <!-- Onboarding (hanya muncul kalau belum login) -->
+  <!-- Onboarding (muncul kalau belum login) -->
   <div id="onboarding" style="display: none;">
     <img src="acss.png" alt="Logo Aldotune" class="onboard-logo">
 
@@ -233,10 +231,10 @@
     const auth = firebase.auth();
 
     // ==================== DOM ELEMENTS ====================
-    const splash    = document.getElementById("splash");
-    const logo      = document.getElementById("logo");
-    const shine     = document.getElementById("shine");
-    const slogan    = document.getElementById("slogan");
+    const splash     = document.getElementById("splash");
+    const logo       = document.getElementById("logo");
+    const shine      = document.getElementById("shine");
+    const slogan     = document.getElementById("slogan");
     const onboarding = document.getElementById("onboarding");
 
     function isAldotuneApp() {
@@ -265,65 +263,60 @@
         setTimeout(() => {
           splash.classList.add("hide");
 
-          setTimeout(() => {
-            checkAuthAndRedirect();
-          }, 600); // tunggu transisi fade selesai
+          setTimeout(checkAuthAndRedirect, 600); // setelah fade selesai
 
         }, 1800);
 
       }, 600);
     }
 
-    // ==================== AUTH CHECK + JEBAK BACK BUTTON ====================
+    // ==================== AUTH CHECK + REDIRECT + BACK HANDLING ====================
     function checkAuthAndRedirect() {
       auth.onAuthStateChanged((user) => {
         if (user) {
-          // Sudah login → cek PIN
           const pinVerified = localStorage.getItem('pinVerified') === 'true';
 
-          // Ganti history supaya back tidak kembali ke index
+          // Gunakan replace supaya history sebelumnya hilang (susah balik ke splash)
           if (pinVerified) {
             history.replaceState(null, null, 'dashboard.html');
-            window.location.replace('dashboard.html'); // replace supaya tidak ada back history
+            window.location.replace('dashboard.html');
           } else {
             history.replaceState(null, null, 'pin.html');
             window.location.replace('pin.html');
           }
         } else {
-          // Belum login → tampilkan onboarding
+          // Belum login → onboarding + konfirmasi back
           onboarding.style.display = "flex";
 
-          // Jebak back di onboarding (opsional: close atau stay)
-          window.history.pushState(null, null, window.location.href);
-          window.onpopstate = () => {
-            // Back ditekan di onboarding → bisa close tab/aplikasi
-            // window.close(); // efektif di PWA/WebView
-            // atau stay
-            window.history.pushState(null, null, window.location.href);
-          };
+          // Tambah entry dummy untuk tangkap back
+          history.pushState({ page: "onboarding" }, "", location.href);
+
+          // Listener back button (browser / hardware di Android)
+          window.addEventListener('popstate', function handleBack(e) {
+            const confirmKeluar = confirm("Yakin ingin keluar dari Aldotune?");
+
+            if (confirmKeluar) {
+              // Ganti window.close() yang tidak jalan → redirect ke blank / pesan
+              // Ini bikin tab terasa "tertutup" (paling reliable di browser modern & PWA)
+              window.location.replace('about:blank');
+              // Alternatif custom pesan:
+              // window.location.href = 'data:text/html,<body style="margin:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Arial;"><h1>Sampai jumpa di Aldotune!<br>Tab bisa ditutup sekarang.</h1></body>';
+            } else {
+              // Batal → jebak lagi supaya tidak balik
+              history.pushState({ page: "onboarding" }, "", location.href);
+            }
+          });
         }
       });
     }
 
-    // ==================== START ====================
+    // ==================== MULAI ====================
     const delay = isAldotuneApp() ? 800 : 100;
     setTimeout(playSplash, delay);
 
     // Ulang splash kalau tab kembali aktif
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) playSplash();
-    });
-
-    // ==================== JEBAK BACK GLOBAL (untuk semua halaman protected) ====================
-    // Tambahkan script serupa ini di pin.html dan dashboard.html juga
-    window.addEventListener('load', () => {
-      if (location.pathname.includes('pin.html') || location.pathname.includes('dashboard.html')) {
-        history.pushState(null, null, location.href);
-        window.onpopstate = () => {
-          history.pushState(null, null, location.href);
-          // Alternatif: window.close(); // close app kalau dari PWA/WebView
-        };
-      }
     });
   </script>
 
