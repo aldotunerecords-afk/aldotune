@@ -1,369 +1,106 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aldotune</title>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-
-  <style>
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #ffffff, #f3f8ff);
-    }
-
-    /* Toast Style */
-    #toast-container {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 99999;
-      pointer-events: none;
-    }
-
-    .toast {
-      background: rgba(0, 0, 0, 0.85);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-size: 14px;
-      margin-bottom: 10px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.4s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Splash & Onboarding styles (sama seperti sebelumnya) */
-    #splash {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(135deg, #ffffff, #f3f8ff);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      z-index: 9999;
-      overflow: hidden;
-      transition: opacity 0.8s ease;
-    }
-
-    #splash.hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .logo-wrapper {
-      position: relative;
-      width: fit-content;
-      overflow: hidden;
-    }
-
-    #logo {
-      width: 200px;
-      max-width: 80vw;
-      height: auto;
-      opacity: 0;
-      transform: translateX(140px);
-    }
-
-    .logo-animate {
-      animation: slideInCenter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    }
-
-    @keyframes slideInCenter {
-      from { opacity: 0; transform: translateX(140px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
-
-    .shine {
-      position: absolute;
-      top: 0;
-      left: -60%;
-      width: 60%;
-      height: 100%;
-      background: linear-gradient(120deg, rgba(255,255,255,0), rgba(255,255,255,0.7), rgba(255,255,255,0));
-      transform: skewX(-20deg);
-      pointer-events: none;
-      opacity: 0;
-    }
-
-    .shine.run {
-      opacity: 1;
-      animation: shineMove 0.7s ease-in-out forwards;
-    }
-
-    @keyframes shineMove {
-      from { left: -60%; }
-      to   { left: 130%; }
-    }
-
-    .slogan {
-      margin-top: 20px;
-      font-size: 14px;
-      letter-spacing: 1px;
-      color: #555;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
-      text-align: center;
-    }
-
-    .slogan.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    #onboarding {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      text-align: center;
-    }
-
-    .onboard-logo {
-      width: 140px;
-      max-width: 60vw;
-      margin-bottom: 24px;
-      animation: fadeInDown 0.8s ease;
-    }
-
-    @keyframes fadeInDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    h1 {
-      font-size: 22px;
-      margin: 0;
-      color: #1f3a5f;
-    }
-
-    p {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #555;
-      max-width: 420px;
-      line-height: 1.6;
-    }
-
-    .actions {
-      margin-top: 32px;
-      width: 100%;
-      max-width: 320px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary {
-      background: #1f3a5f;
-      color: white;
-    }
-
-    .btn-primary:hover { background: #16304d; }
-
-    .btn-outline {
-      background: transparent;
-      color: #1f3a5f;
-      border: 2px solid #1f3a5f;
-    }
-
-    .btn-outline:hover {
-      background: #1f3a5f;
-      color: white;
-    }
-
-    .footer-text {
-      margin-top: 28px;
-      font-size: 12px;
-      color: #888;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Maintenance - Aldotune</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        .logo {
+            max-width: 120px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #d32f2f; /* Warna merah peringatan yang profesional */
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        p {
+            line-height: 1.6;
+            color: #555;
+        }
+        .status-list {
+            text-align: left;
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #d32f2f;
+        }
+        .status-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .status-item:last-child { margin-bottom: 0; }
+        .icon-off {
+            color: #d32f2f;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 13px;
+            color: #888;
+        }
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Toast Container -->
-  <div id="toast-container"></div>
+<div class="container">
+    <img src="acss.png" alt="Logo ACSS" class="logo">
+    
+    <h1>Gangguan Sistem Terdeteksi</h1>
+    <p>Mohon maaf, saat ini server <strong>Aldotune</strong> sedang mengalami gangguan teknis menyeluruh. Tim kami sedang bekerja keras untuk memulihkan layanan.</p>
 
-  <!-- Splash Screen -->
-  <div id="splash">
-    <div class="logo-wrapper">
-      <img id="logo" src="acss.png" alt="Logo Aldotune">
-      <div class="shine" id="shine"></div>
+    <div class="status-list">
+        <div class="status-item"><span class="icon-off">✕</span> Akses Login (Offline)</div>
+        <div class="status-item"><span class="icon-off">✕</span> Cek Status Lagu (Offline)</div>
+        <div class="status-item"><span class="icon-off">✕</span> Upload Lagu (Offline)</div>
     </div>
 
-    <div class="slogan" id="slogan">
-      Merekam Nada, Menghidupkan Cerita
+    <p style="font-size: 14px;">Kami akan segera kembali setelah sistem dinyatakan stabil.</p>
+
+    <div class="footer">
+        <div class="spinner"></div> Sedang dalam perbaikan teknis...
+        <br><br>
+        &copy; 2026 Aldotune Support Team
     </div>
-  </div>
-
-  <!-- Onboarding -->
-  <div id="onboarding" style="display: none;">
-    <img src="acss.png" alt="Logo Aldotune" class="onboard-logo">
-
-    <h1>Selamat datang di Aldotune</h1>
-    <p>
-      Platform kreatif untuk musisi dan label. Masuk ke akunmu atau buat akun baru untuk mulai berkarya.
-    </p>
-
-    <div class="actions">
-      <button class="btn btn-primary" onclick="location.href='login.html'">Masuk</button>
-      <button class="btn btn-outline" onclick="location.href='register.html'">Daftar</button>
-    </div>
-
-    <div class="footer-text">
-      © Aldotune Creative Studio
-    </div>
-  </div>
-
-  <script>
-    // ==================== FIREBASE CONFIG ====================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAqOzMh1oUnzxohMET1SsA8ZpnPm7rgjrY",
-      authDomain: "aldotune-records.firebaseapp.com",
-      databaseURL: "https://aldotune-records-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "aldotune-records",
-      storageBucket: "aldotune-records.firebasestorage.app",
-      messagingSenderId: "311200667476",
-      appId: "1:311200667476:web:7805289d9d01c981ef5ac1",
-      measurementId: "G-GQ3Y2GKWG1"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
-    // ==================== DOM ====================
-    const splash     = document.getElementById("splash");
-    const logo       = document.getElementById("logo");
-    const shine      = document.getElementById("shine");
-    const slogan     = document.getElementById("slogan");
-    const onboarding = document.getElementById("onboarding");
-    const toastContainer = document.getElementById("toast-container");
-
-    const isMedianApp = /median/i.test(navigator.userAgent);
-
-    // ==================== TOAST FUNCTION ====================
-    function showToast(message, duration = 2000) {
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      toast.textContent = message;
-      toastContainer.appendChild(toast);
-
-      // Tampilkan
-      setTimeout(() => toast.classList.add("show"), 100);
-
-      // Hilangkan otomatis
-      setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 400);
-      }, duration);
-    }
-
-    // ==================== SPLASH ANIMATION ====================
-    function playSplash() {
-      logo.classList.remove("logo-animate");
-      shine.classList.remove("run");
-      slogan.classList.remove("show");
-      splash.classList.remove("hide");
-      onboarding.style.display = "none";
-
-      void logo.offsetWidth;
-
-      logo.classList.add("logo-animate");
-
-      setTimeout(() => {
-        shine.classList.add("run");
-        setTimeout(() => slogan.classList.add("show"), 200);
-
-        setTimeout(() => {
-          splash.classList.add("hide");
-          setTimeout(checkAuthAndRedirect, 600);
-        }, 1800);
-      }, 600);
-    }
-
-    // ==================== AUTH CHECK ====================
-    function checkAuthAndRedirect() {
-      auth.onAuthStateChanged((user) => {
-        if (user) {
-          const pinVerified = localStorage.getItem('pinVerified') === 'true';
-
-          if (pinVerified) {
-            history.replaceState(null, null, 'dashboard.html');
-            window.location.replace('dashboard.html');
-          } else {
-            history.replaceState(null, null, 'pin.html');
-            window.location.replace('pin.html');
-          }
-        } else {
-          onboarding.style.display = "flex";
-          initBackHandler();
-        }
-      });
-    }
-
-    // ==================== DOUBLE-TAP BACK dengan TOAST ====================
-    let lastBackTime = 0;
-    const doubleTapInterval = 2000;
-
-    function initBackHandler() {
-      history.pushState({ intent: "stay" }, "", location.href);
-
-      window.addEventListener('popstate', function(e) {
-        const now = Date.now();
-
-        if (now - lastBackTime < doubleTapInterval) {
-          // Double tap → exit
-          showToast("Keluar aplikasi...", 1500);
-          setTimeout(() => {
-            window.location.replace('about:blank');
-          }, 800);
-        } else {
-          showToast("Tekan sekali lagi untuk keluar", 2000);
-          lastBackTime = now;
-          history.pushState({ intent: "stay" }, "", location.href);
-        }
-      });
-    }
-
-    // ==================== START ====================
-    const delay = isMedianApp ? 800 : 100;
-    setTimeout(playSplash, delay);
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) playSplash();
-    });
-  </script>
+</div>
 
 </body>
 </html>
